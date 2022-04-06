@@ -1,0 +1,3 @@
+[submodule "Azteck/vendor/spdlog"]
+	path = Azteck/vendor/spdlog
+	url = https://github.com/gabime/spdlog
