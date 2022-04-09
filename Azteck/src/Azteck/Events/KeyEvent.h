@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Azteck
 {
 	class AZTECK_API KeyEvent : public Event
@@ -59,5 +57,23 @@ namespace Azteck
 		}
 
 		EVENT_CLASS_TYPE(KeyReleased)
+	};
+
+	//---------------------------------------------------------------------------------------------
+	class AZTECK_API KeyTypedEvent : public KeyEvent
+	{
+	public:
+		KeyTypedEvent(int keyCode)
+			: KeyEvent(keyCode)
+		{}
+
+		std::string toString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << _keyCode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
 	};
 }

@@ -2,14 +2,12 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Azteck
 {
-	class AZTECK_API WindowResizeEvent : public Event
+	class AZTECK_API WindowResizedEvent : public Event
 	{
 	public:
-		WindowResizeEvent(unsigned int width, unsigned int height)
+		WindowResizedEvent(unsigned int width, unsigned int height)
 			: _width(width)
 			, _height(height)
 		{}

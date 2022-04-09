@@ -1,3 +1,9 @@
 [submodule "Azteck/vendor/spdlog"]
 	path = Azteck/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Azteck/vendor/GLFW"]
+	path = Azteck/vendor/GLFW
+	url = https://github.com/TheCherno/GLFW
+[submodule "Azteck/vendor/imgui"]
+	path = Azteck/vendor/imgui
+	url = https://github.com/TheCherno/imgui

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Azteck/Core.h"
+#include "azpch.h"
 
-#include <string>
-#include <functional>
+#include "Azteck/Core.h"
 
 namespace Azteck
 {
@@ -12,7 +11,7 @@ namespace Azteck
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
-		KeyPressed, KeyReleased,
+		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
@@ -41,6 +40,7 @@ namespace Azteck
 		virtual int getCategoryFlags() const = 0;
 		virtual std::string toString() const { return getName(); }
 
+		inline bool isHandled() const { return _handled; }
 		inline bool isInCategory(EventCategory category) { return getCategoryFlags() & category; }
 
 	protected:

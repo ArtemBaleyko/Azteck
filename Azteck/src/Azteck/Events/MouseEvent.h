@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Azteck
 {
 	class AZTECK_API MouseMovedEvent : public Event
