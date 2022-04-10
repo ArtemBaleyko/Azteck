@@ -21,9 +21,9 @@ namespace Azteck
 		void pushLayer(Layer* layer);
 		void pushOverlay(Layer* layer);
 
-		inline Window& GetWindow() const { return *_window; }
+		inline Window& getWindow() const { return *_window; }
 
-		inline static Application& GetInstance() { return *_instance; }
+		inline static Application& getInstance() { return *_instance; }
 
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
