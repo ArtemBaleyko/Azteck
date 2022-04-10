@@ -61,8 +61,8 @@ namespace Azteck
 	void ImGuiLayer::onUpdate()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2(app.GetWindow().getWidth(), app.GetWindow().getHeight());
+		Application& app = Application::getInstance();
+		io.DisplaySize = ImVec2(app.getWindow().getWidth(), app.getWindow().getHeight());
 
 		float time = glfwGetTime();
 		io.DeltaTime = _time > 0.0f ? (time - _time) : (1.0f / 60.0f);

@@ -1,6 +1,7 @@
 #include "azpch.h"
 #include "Application.h"
 #include "Azteck/Log.h"
+#include "Input.h"
 
 #include <glad/glad.h>
 
@@ -27,8 +28,6 @@ namespace Azteck
 		EventDispatcher dispatcher(e);
 
 		dispatcher.dispatch<WindowCloseEvent>(AZ_BIND_EVENT_FN(Application::onWindowClose));
-
-		AZ_CORE_TRACE("{0}", e);
 
 		for (auto it = _layerStack.end(); it != _layerStack.begin();)
 		{
