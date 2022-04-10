@@ -15,7 +15,7 @@ namespace Azteck
 		_instance = this;
 
 		_window = std::unique_ptr<Window>(Window::Create());
-		_window->setEventCallback(std::bind(&Application::onEvent, this, std::placeholders::_1));
+		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 	}
 
 	Application::~Application()
@@ -26,7 +26,7 @@ namespace Azteck
 	{
 		EventDispatcher dispatcher(e);
 
-		dispatcher.dispatch<WindowCloseEvent>(std::bind(&Application::onWindowClose, this, std::placeholders::_1));
+		dispatcher.dispatch<WindowCloseEvent>(AZ_BIND_EVENT_FN(Application::onWindowClose));
 
 		AZ_CORE_TRACE("{0}", e);
 
