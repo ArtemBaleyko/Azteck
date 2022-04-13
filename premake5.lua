@@ -15,6 +15,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Azteck/vendor/GLFW/include"
 IncludeDir["Glad"] = "Azteck/vendor/Glad/include"
 IncludeDir["ImGui"] = "Azteck/vendor/imgui"
+IncludeDir["glm"] = "Azteck/vendor/glm"
 
 group "Dependencies"
 	include "Azteck/vendor/GLFW"
@@ -24,9 +25,10 @@ group ""
 
 project "Azteck"
 	location "Azteck"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,7 +39,14 @@ project "Azteck"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs 
@@ -46,7 +55,8 @@ project "Azteck"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -58,42 +68,37 @@ project "Azteck"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
 		{
 			"AZ_PLATFORM_WINDOWS",
 			"AZ_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
-		}
-
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
+			"GLFW_INCLUDE_NONE",
 		}
 
 	filter "configurations:Debug"
 		defines "AZ_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "AZ_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "AZ_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -107,7 +112,8 @@ project "Sandbox"
 	includedirs 
 	{
 		"Azteck/vendor/spdlog/include",
-		"Azteck/src"
+		"Azteck/src",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -116,7 +122,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -127,14 +132,14 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "AZ_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "AZ_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "AZ_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

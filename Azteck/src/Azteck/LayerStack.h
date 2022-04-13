@@ -21,6 +21,6 @@ namespace Azteck
 
 	private:
 		std::vector<Layer*> _layers;
-		std::vector<Layer*>::iterator _layerInsert;
+		size_t _layerInsertIndex;
 	};
 }

@@ -4,6 +4,7 @@
 #include "Input.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 namespace Azteck
 {
@@ -17,6 +18,9 @@ namespace Azteck
 
 		_window = std::unique_ptr<Window>(Window::Create());
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
+
+		_imGuiLayer = new ImGuiLayer;
+		pushOverlay(_imGuiLayer);
 	}
 
 	Application::~Application()
@@ -62,9 +66,12 @@ namespace Azteck
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			for (Layer* layer : _layerStack)
-				layer->onUpdate();
+			_imGuiLayer->begin();
 
+			for (Layer* layer : _layerStack)
+				layer->onImGuiRender();
+
+			_imGuiLayer->end();
 			_window->onUpdate();
 		}
 	}

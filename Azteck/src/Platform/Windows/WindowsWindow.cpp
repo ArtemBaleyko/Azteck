@@ -167,7 +167,7 @@ namespace Azteck
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				MouseScrolledEvent event(xOffset, yOffset);
+				MouseScrolledEvent event((float)xOffset, (float)yOffset);
 				data.eventCallback(event);
 			});
 
@@ -175,7 +175,7 @@ namespace Azteck
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				MouseMovedEvent event(xPox, yPos);
+				MouseMovedEvent event((float)xPox, (float)yPos);
 				data.eventCallback(event);
 			});
 	}

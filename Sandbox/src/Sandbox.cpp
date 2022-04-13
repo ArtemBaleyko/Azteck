@@ -10,12 +10,10 @@ public:
 
 	void onUpdate() override
 	{
-		//AZ_INFO("ExampleLayer::onUpdate");
 	}
 
 	void onEvent(Azteck::Event& e) override
 	{
-		//AZ_TRACE("{0}", e);
 	}
 };
 
@@ -25,7 +23,6 @@ public:
 	Sandbox() 
 	{
 		pushLayer(new ExampleLayer());
-		pushOverlay(new Azteck::ImGuiLayer());
 	}
 
 	~Sandbox() {}

@@ -1,11 +1,15 @@
 #pragma once
 
 #ifdef AZ_PLATFORM_WINDOWS
+#if AZ_DYNAMIC_LINK
 	#ifdef AZ_BUILD_DLL
 		#define AZTECK_API __declspec(dllexport)
 	#else
 		#define AZTECK_API __declspec(dllimport)
 	#endif
+#else
+	#define AZTECK_API
+#endif
 #else
 	#error Azteck only supports Windows
 #endif

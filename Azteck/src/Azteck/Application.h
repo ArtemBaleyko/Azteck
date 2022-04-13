@@ -6,6 +6,8 @@
 #include "Azteck/LayerStack.h"
 #include "Window.h"
 
+#include "ImGui/ImGuiLayer.h"
+
 namespace Azteck
 {
 	class AZTECK_API Application
@@ -30,6 +32,7 @@ namespace Azteck
 
 	private:
 		std::unique_ptr<Window> _window;
+		ImGuiLayer* _imGuiLayer;
 		bool _isRunning;
 		LayerStack _layerStack;
 

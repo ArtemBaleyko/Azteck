@@ -5,8 +5,8 @@ namespace Azteck
 {
 	LayerStack::LayerStack()
 		: _layers()
+		, _layerInsertIndex(0)
 	{
-		_layerInsert = _layers.begin();
 	}
 
 	LayerStack::~LayerStack()
@@ -17,7 +17,8 @@ namespace Azteck
 
 	void LayerStack::pushLayer(Layer* layer)
 	{
-		_layerInsert = _layers.emplace(_layerInsert, layer);
+		_layers.emplace(_layers.begin() + _layerInsertIndex, layer);
+		_layerInsertIndex++;
 	}
 
 	void LayerStack::pushOverlay(Layer* overlay)
@@ -31,7 +32,7 @@ namespace Azteck
 		if (it != _layers.end())
 		{
 			_layers.erase(it);
-			_layerInsert--;
+			_layerInsertIndex--;
 		}
 	}
 
