@@ -4,3 +4,10 @@
 [submodule "Azteck/vendor/glm"]
 	path = Azteck/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Azteck/vendor/GLFW"]
+	path = Azteck/vendor/GLFW
+	url = https://github.com/ArtemBaleyko/glfw
+[submodule "Azteck/vendor/imgui"]
+	path = Azteck/vendor/imgui
+	url = https://github.com/ArtemBaleyko/imgui
+	branch = docking
