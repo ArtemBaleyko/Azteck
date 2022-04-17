@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Azteck/Window.h"
-
+#include "Azteck/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
+
+//#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Azteck
 {
@@ -38,6 +40,7 @@ namespace Azteck
 			EventCallbackFn eventCallback;
 		};
 		
+		GraphicsContext* _context;
 		GLFWwindow* _window;
 		WindowData _data;
 	};

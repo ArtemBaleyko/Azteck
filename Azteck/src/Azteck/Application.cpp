@@ -21,6 +21,65 @@ namespace Azteck
 
 		_imGuiLayer = new ImGuiLayer;
 		pushOverlay(_imGuiLayer);
+
+		_vertexArray.reset(VertexArray::create());
+
+		float vertices[] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
+		};
+
+		std::shared_ptr<VertexBuffer> vertexBuffer;
+		vertexBuffer.reset(VertexBuffer::create(vertices, sizeof(vertices)));
+
+		BufferLayout layout = {
+			{ShaderDataType::Float3, "vertices"},
+			{ShaderDataType::Float4, "color"},
+		};
+
+		vertexBuffer->setLayout(layout);
+		_vertexArray->addVertexBuffer(vertexBuffer);
+
+		uint32_t indices[] = { 0, 1, 2 };
+
+		std::shared_ptr<IndexBuffer> indexBuffer;
+		indexBuffer.reset(IndexBuffer::create(indices, 3));
+
+		_vertexArray->setIndexBuffer(indexBuffer);
+
+		std::string vertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;					
+			layout(location = 1) in vec4 a_Color;					
+
+			out vec3 v_Position;
+			out vec4 v_Color;
+			
+			void main()
+			{
+				v_Color = a_Color;
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string fragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;			
+
+			in vec3 v_Position;
+			in vec4 v_Color;
+
+			void main()
+			{
+				color = v_Color;
+			}
+		)";
+
+		_shader.reset(new Shader(vertexSrc, fragmentSrc));
 	}
 
 	Application::~Application()
@@ -63,8 +122,15 @@ namespace Azteck
 	{
 		while (_isRunning)
 		{
-			glClearColor(1, 0, 1, 1);
+			glClearColor(0.1f, 0.1f, 0.1f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			_shader->bind();
+			_vertexArray->bind();
+			glDrawElements(GL_TRIANGLES, _vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+
+			for (Layer* layer : _layerStack)
+				layer->onUpdate();
 
 			_imGuiLayer->begin();
 
