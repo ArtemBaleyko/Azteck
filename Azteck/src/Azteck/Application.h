@@ -8,6 +8,10 @@
 
 #include "ImGui/ImGuiLayer.h"
 
+#include "Azteck/Renderer/Shader.h"
+#include "Azteck/Renderer/Buffer.h"
+#include "Azteck/Renderer/VertexArray.h"
+
 namespace Azteck
 {
 	class AZTECK_API Application
@@ -32,10 +36,16 @@ namespace Azteck
 
 	private:
 		std::unique_ptr<Window> _window;
+
 		ImGuiLayer* _imGuiLayer;
-		bool _isRunning;
 		LayerStack _layerStack;
 
+		std::shared_ptr<Shader> _shader;
+		std::shared_ptr<VertexArray> _vertexArray;
+
+		bool _isRunning;
+
+	private:
 		static Application* _instance;
 	};
 

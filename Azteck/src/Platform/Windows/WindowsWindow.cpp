@@ -4,8 +4,7 @@
 #include "Azteck/Events/ApplicationEvent.h"
 #include "Azteck/Events/KeyEvent.h"
 #include "Azteck/Events/MouseEvent.h"
-
-#include <glad/glad.h>
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Azteck
 {
@@ -34,7 +33,7 @@ namespace Azteck
 	void WindowsWindow::onUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(_window);
+		_context->swapBuffers();
 	}
 
 	void WindowsWindow::setEventCallback(const EventCallbackFn& callback)
@@ -74,10 +73,8 @@ namespace Azteck
 		}
 
 		_window = glfwCreateWindow(static_cast<int>(props.width), static_cast<int>(props.height), _data.title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(_window);
-
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		AZ_CORE_ASSERT(status, "Failed to initialize GLAD!");
+		_context = new OpenGLContext(_window);
+		_context->init();
 
 		glfwSetWindowUserPointer(_window, &_data);
 		setVSync(true);
