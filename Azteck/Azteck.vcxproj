@@ -157,6 +157,7 @@
     <ClInclude Include="src\Azteck\MouseButtonCodes.h" />
     <ClInclude Include="src\Azteck\Renderer\Buffer.h" />
     <ClInclude Include="src\Azteck\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Azteck\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Azteck\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Azteck\Renderer\Renderer.h" />
     <ClInclude Include="src\Azteck\Renderer\RendererAPI.h" />
@@ -594,6 +595,7 @@
     <ClCompile Include="src\Azteck\LayerStack.cpp" />
     <ClCompile Include="src\Azteck\Log.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Azteck\Renderer\RendererAPI.cpp" />

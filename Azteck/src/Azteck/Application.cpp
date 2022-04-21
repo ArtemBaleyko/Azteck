@@ -2,17 +2,17 @@
 #include "Application.h"
 #include "Azteck/Log.h"
 #include "Input.h"
+#include "Azteck/Renderer/Renderer.h"
 
 #include <glm/glm.hpp>
-
-#include "Azteck/Renderer/Renderer.h"
 
 namespace Azteck
 {
 	Application* Application::_instance = nullptr;
 
 	Application::Application()
-		: _isRunning(true)
+		: _camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		,_isRunning(true)
 	{
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
@@ -55,6 +55,8 @@ namespace Azteck
 			layout(location = 0) in vec3 a_Position;					
 			layout(location = 1) in vec4 a_Color;					
 
+			uniform mat4 u_viewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 			
@@ -62,7 +64,7 @@ namespace Azteck
 			{
 				v_Color = a_Color;
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_viewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -126,10 +128,9 @@ namespace Azteck
 			RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 			RenderCommand::clear();
 
-			Renderer::beginScene();
+			Renderer::beginScene(_camera);
 
-			_shader->bind();
-			Renderer::submit(_vertexArray);
+			Renderer::submit(_shader, _vertexArray);
 
 			Renderer::endScene();
 

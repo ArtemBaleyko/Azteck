@@ -11,6 +11,7 @@
 #include "Azteck/Renderer/Shader.h"
 #include "Azteck/Renderer/Buffer.h"
 #include "Azteck/Renderer/VertexArray.h"
+#include "Azteck/Renderer/OrthographicCamera.h"
 
 namespace Azteck
 {
@@ -42,6 +43,8 @@ namespace Azteck
 
 		std::shared_ptr<Shader> _shader;
 		std::shared_ptr<VertexArray> _vertexArray;
+
+		OrthographicCamera _camera;
 
 		bool _isRunning;
 
