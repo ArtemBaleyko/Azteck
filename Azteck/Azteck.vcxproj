@@ -143,6 +143,7 @@
     <ClInclude Include="src\Azteck.h" />
     <ClInclude Include="src\Azteck\Application.h" />
     <ClInclude Include="src\Azteck\Core.h" />
+    <ClInclude Include="src\Azteck\Core\Timestep.h" />
     <ClInclude Include="src\Azteck\EntryPoint.h" />
     <ClInclude Include="src\Azteck\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Azteck\Events\Event.h" />

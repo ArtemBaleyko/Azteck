@@ -13,6 +13,8 @@
 #include "Azteck/Renderer/VertexArray.h"
 #include "Azteck/Renderer/OrthographicCamera.h"
 
+#include "Azteck/Core/Timestep.h"
+
 namespace Azteck
 {
 	class AZTECK_API Application
@@ -41,13 +43,8 @@ namespace Azteck
 		ImGuiLayer* _imGuiLayer;
 		LayerStack _layerStack;
 
-		std::shared_ptr<Shader> _shader;
-		std::shared_ptr<VertexArray> _vertexArray;
-
-		OrthographicCamera _camera;
-
 		bool _isRunning;
-
+		float _lastFrameTime;
 	private:
 		static Application* _instance;
 	};

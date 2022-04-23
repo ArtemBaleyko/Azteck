@@ -6,13 +6,15 @@
 
 #include <glm/glm.hpp>
 
+#include <glfw/glfw3.h>
+
 namespace Azteck
 {
 	Application* Application::_instance = nullptr;
 
 	Application::Application()
-		: _camera(-1.6f, 1.6f, -0.9f, 0.9f)
-		,_isRunning(true)
+		: _isRunning(true)
+		, _lastFrameTime(0.0f)
 	{
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
@@ -22,67 +24,6 @@ namespace Azteck
 
 		_imGuiLayer = new ImGuiLayer;
 		pushOverlay(_imGuiLayer);
-
-		_vertexArray.reset(VertexArray::create());
-
-		float vertices[] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
-		};
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::create(vertices, sizeof(vertices)));
-
-		BufferLayout layout = {
-			{ShaderDataType::Float3, "vertices"},
-			{ShaderDataType::Float4, "color"},
-		};
-
-		vertexBuffer->setLayout(layout);
-		_vertexArray->addVertexBuffer(vertexBuffer);
-
-		uint32_t indices[] = { 0, 1, 2 };
-
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::create(indices, 3));
-
-		_vertexArray->setIndexBuffer(indexBuffer);
-
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;					
-			layout(location = 1) in vec4 a_Color;					
-
-			uniform mat4 u_viewProjection;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-			
-			void main()
-			{
-				v_Color = a_Color;
-				v_Position = a_Position;
-				gl_Position = u_viewProjection * vec4(a_Position, 1.0);
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;			
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		_shader.reset(new Shader(vertexSrc, fragmentSrc));
 	}
 
 	Application::~Application()
@@ -125,17 +66,12 @@ namespace Azteck
 	{
 		while (_isRunning)
 		{
-			RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-			RenderCommand::clear();
-
-			Renderer::beginScene(_camera);
-
-			Renderer::submit(_shader, _vertexArray);
-
-			Renderer::endScene();
+			float time = (float)glfwGetTime();
+			Timestep timestep = time - _lastFrameTime;
+			_lastFrameTime = time;
 
 			for (Layer* layer : _layerStack)
-				layer->onUpdate();
+				layer->onUpdate(timestep);
 
 			_imGuiLayer->begin();
 

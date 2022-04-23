@@ -3,6 +3,8 @@
 #include "Core.h"
 #include "Events/Event.h"
 
+#include "Azteck/Core/Timestep.h"
+
 namespace Azteck
 {
 	class AZTECK_API Layer
@@ -13,7 +15,7 @@ namespace Azteck
 
 		virtual void onAttach() {}
 		virtual void onDetach() {}
-		virtual void onUpdate() {}
+		virtual void onUpdate(Timestep timestep) {}
 		virtual void onImGuiRender() {}
 		virtual void onEvent(Event& event) {}
 
