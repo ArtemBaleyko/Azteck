@@ -113,7 +113,8 @@ project "Sandbox"
 	{
 		"Azteck/vendor/spdlog/include",
 		"Azteck/src",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef AZ_PLATFORM_WINDOWS
 #if AZ_DYNAMIC_LINK
 	#ifdef AZ_BUILD_DLL
@@ -29,3 +31,12 @@
 #define BIT(x) (1 << x)
 
 #define AZ_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace Azteck
+{
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+}

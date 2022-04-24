@@ -1,22 +1,16 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 namespace Azteck
 {
 	class Shader
 	{
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		~Shader();
+		virtual ~Shader() = default;
 
-		void bind() const;
-		void unBind() const;
+		virtual void bind() const = 0;
+		virtual void unBind() const = 0;
 
-		void uploadUniformMat4(const std::string& name, const glm::mat4& matrix);
-
-	private:
-		uint32_t _rendererId;
+		static Shader* create(const std::string& vertexSrc, const std::string& fragmentSrc);
 	};
 }
 

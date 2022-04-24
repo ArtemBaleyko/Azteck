@@ -7,14 +7,23 @@
     <Filter Include="src\Azteck">
       <UniqueIdentifier>{1E33BE05-0AEB-FF52-73F2-D8AE5FC99A43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Azteck\Core">
+      <UniqueIdentifier>{36FA098D-A285-7751-AB96-FA4517A1D351}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Azteck\Events">
       <UniqueIdentifier>{427193FC-AE87-9192-F7FE-1CB46354621A}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Azteck\ImGui">
       <UniqueIdentifier>{C806B42E-B4FF-D280-DD31-B805C989B28C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Azteck\Renderer">
+      <UniqueIdentifier>{84D82F66-F039-0D74-79A7-5326E5074433}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\OpenGL">
+      <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform\Windows">
       <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
@@ -50,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="src\Azteck\Core.h">
       <Filter>src\Azteck</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\Timestep.h">
+      <Filter>src\Azteck\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\EntryPoint.h">
       <Filter>src\Azteck</Filter>
@@ -87,8 +99,47 @@
     <ClInclude Include="src\Azteck\MouseButtonCodes.h">
       <Filter>src\Azteck</Filter>
     </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\Buffer.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\GraphicsContext.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\OrthographicCamera.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\RenderCommand.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\Renderer.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\RendererAPI.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\Shader.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\VertexArray.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Azteck\Window.h">
       <Filter>src\Azteck</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
+      <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>src\Platform\Windows</Filter>
@@ -1344,19 +1395,6 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Renderer\GraphicsContext.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
-    <ClInclude Include="src\Azteck\Renderer\Shader.h" />
-    <ClInclude Include="src\Azteck\Renderer\Buffer.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
-    <ClInclude Include="src\Azteck\Renderer\Renderer.h" />
-    <ClInclude Include="src\Azteck\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Azteck\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\Azteck\Renderer\RenderCommand.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
-    <ClInclude Include="src\Azteck\Renderer\OrthographicCamera.h" />
-    <ClInclude Include="src\Azteck\Core\Timestep.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Azteck\Application.cpp">
@@ -1377,6 +1415,42 @@
     <ClCompile Include="src\Azteck\Log.cpp">
       <Filter>src\Azteck</Filter>
     </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\Buffer.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\Renderer.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\RendererAPI.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\Shader.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\VertexArray.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
@@ -1386,16 +1460,5 @@
     <ClCompile Include="src\azpch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\Buffer.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\VertexArray.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
-    <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp" />
   </ItemGroup>
 </Project>

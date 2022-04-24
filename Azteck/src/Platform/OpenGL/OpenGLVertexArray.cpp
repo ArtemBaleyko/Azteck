@@ -48,7 +48,7 @@ namespace Azteck
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
 		glBindVertexArray(_rendererId);
 		vertexBuffer->bind();
@@ -74,7 +74,7 @@ namespace Azteck
 		_vertexBuffers.push_back(vertexBuffer);
 	}
 
-	void OpenGLVertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(_rendererId);
 		indexBuffer->bind();
@@ -82,12 +82,12 @@ namespace Azteck
 		_indexBuffer = indexBuffer;
 	}
 
-	const std::vector<std::shared_ptr<Azteck::VertexBuffer>>& OpenGLVertexArray::getVertexBuffers() const
+	const std::vector<Ref<Azteck::VertexBuffer>>& OpenGLVertexArray::getVertexBuffers() const
 	{
 		return _vertexBuffers;
 	}
 
-	const std::shared_ptr<Azteck::IndexBuffer>& OpenGLVertexArray::getIndexBuffer() const
+	const Ref<Azteck::IndexBuffer>& OpenGLVertexArray::getIndexBuffer() const
 	{
 		return _indexBuffer;
 	}

@@ -17,7 +17,7 @@ namespace Azteck
 			_rendererAPI->clear();
 		}
 
-		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
 		{
 			_rendererAPI->DrawIndexed(vertexArray);
 		}

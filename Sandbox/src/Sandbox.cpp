@@ -1,5 +1,11 @@
 #include <Azteck.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include "Platform/OpenGL/OpenGLShader.h"
+
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
+
 class ExampleLayer : public Azteck::Layer
 {
 public:
@@ -10,49 +16,56 @@ public:
 		, _cameraMoveSpeed(5.0f)
 		, _cameraRotation(0.0f)
 		, _cameraRotationSpeed(180.0f)
+		, _squarePosition(0.0f)
+		, _moveSpeed(1.0f)
+		, _squareColor(0.2f, 0.3f, 0.8f)
 	{
 		_vertexArray.reset(Azteck::VertexArray::create());
 
+		//float vertices[] = {
+		//	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		//	 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		//	 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
+		//};
+
 		float vertices[] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f,
 		};
 
-		std::shared_ptr<Azteck::VertexBuffer> vertexBuffer;
+		Azteck::Ref<Azteck::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(Azteck::VertexBuffer::create(vertices, sizeof(vertices)));
 
 		Azteck::BufferLayout layout = {
 			{Azteck::ShaderDataType::Float3, "vertices"},
-			{Azteck::ShaderDataType::Float4, "color"},
 		};
 
 		vertexBuffer->setLayout(layout);
 		_vertexArray->addVertexBuffer(vertexBuffer);
 
-		uint32_t indices[] = { 0, 1, 2 };
+		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
 
-		std::shared_ptr<Azteck::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Azteck::IndexBuffer::create(indices, 3));
+		Azteck::Ref<Azteck::IndexBuffer> indexBuffer;
+		indexBuffer.reset(Azteck::IndexBuffer::create(indices, 6));
 
 		_vertexArray->setIndexBuffer(indexBuffer);
 
 		std::string vertexSrc = R"(
 			#version 330 core
 			
-			layout(location = 0) in vec3 a_Position;					
-			layout(location = 1) in vec4 a_Color;					
+			layout(location = 0) in vec3 a_Position;									
 
-			uniform mat4 u_viewProjection;
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
-			out vec4 v_Color;
 			
 			void main()
 			{
-				v_Color = a_Color;
 				v_Position = a_Position;
-				gl_Position = u_viewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -62,15 +75,16 @@ public:
 			layout(location = 0) out vec4 color;			
 
 			in vec3 v_Position;
-			in vec4 v_Color;
+
+			uniform vec3 u_Color;
 
 			void main()
 			{
-				color = v_Color;
+				color = vec4(u_Color, 1.0);
 			}
 		)";
 
-		_shader.reset(new Azteck::Shader(vertexSrc, fragmentSrc));
+		_shader.reset(Azteck::Shader::create(vertexSrc, fragmentSrc));
 	}
 
 	void onUpdate(Azteck::Timestep timestep) override
@@ -92,6 +106,16 @@ public:
 		else if (Azteck::Input::isKeyPressed(AZ_KEY_D))
 			_cameraRotation -= _cameraRotationSpeed * timestep;
 
+		if (Azteck::Input::isKeyPressed(AZ_KEY_L))
+			_squarePosition.x += _moveSpeed * timestep;
+		else if (Azteck::Input::isKeyPressed(AZ_KEY_J))
+			_squarePosition.x -= _moveSpeed * timestep;
+
+		if (Azteck::Input::isKeyPressed(AZ_KEY_I))
+			_squarePosition.y += _moveSpeed * timestep;
+		else if (Azteck::Input::isKeyPressed(AZ_KEY_K))
+			_squarePosition.y -= _moveSpeed * timestep;
+
 		Azteck::RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		Azteck::RenderCommand::clear();
 
@@ -100,7 +124,23 @@ public:
 
 		Azteck::Renderer::beginScene(_camera);
 
-		Azteck::Renderer::submit(_shader, _vertexArray);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), _squarePosition);
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		auto openGLShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(_shader);
+		openGLShader->bind();
+		openGLShader->uploadUniformFloat3("u_Color", _squareColor);
+
+		for (size_t i = 0; i < 20; i++)
+		{
+			for (size_t j = 0; j < 20; j++)
+			{
+				glm::vec3 pos(i * 0.11f, j * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+
+				Azteck::Renderer::submit(_shader, _vertexArray, transform);
+			}
+		}
 
 		Azteck::Renderer::endScene();
 	}
@@ -110,15 +150,27 @@ public:
 
 	}
 
+	void onImGuiRender() override
+	{
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Color", glm::value_ptr(_squareColor));
+		ImGui::End();
+	}
+
 private:
-	std::shared_ptr<Azteck::Shader> _shader;
-	std::shared_ptr<Azteck::VertexArray> _vertexArray;
+	Azteck::Ref<Azteck::Shader> _shader;
+	Azteck::Ref<Azteck::VertexArray> _vertexArray;
 
 	Azteck::OrthographicCamera _camera;
 	glm::vec3 _cameraPosition;
 	float _cameraRotation;
 	float _cameraMoveSpeed;
 	float _cameraRotationSpeed;
+
+	glm::vec3 _squarePosition;
+	float _moveSpeed;
+
+	glm::vec3 _squareColor;
 };
 
 class Sandbox : public Azteck::Application
