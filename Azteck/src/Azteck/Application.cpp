@@ -22,6 +22,8 @@ namespace Azteck
 		_window = std::unique_ptr<Window>(Window::Create());
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
+		Renderer::init();
+
 		_imGuiLayer = new ImGuiLayer;
 		pushOverlay(_imGuiLayer);
 	}

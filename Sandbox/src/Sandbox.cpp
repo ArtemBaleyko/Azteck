@@ -20,7 +20,7 @@ public:
 		, _moveSpeed(1.0f)
 		, _squareColor(0.2f, 0.3f, 0.8f)
 	{
-		_vertexArray.reset(Azteck::VertexArray::create());
+		_vertexArray = Azteck::VertexArray::create();
 
 		//float vertices[] = {
 		//	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -29,17 +29,18 @@ public:
 		//};
 
 		float vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 		};
 
 		Azteck::Ref<Azteck::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Azteck::VertexBuffer::create(vertices, sizeof(vertices)));
+		vertexBuffer = Azteck::VertexBuffer::create(vertices, sizeof(vertices));
 
 		Azteck::BufferLayout layout = {
-			{Azteck::ShaderDataType::Float3, "vertices"},
+			{Azteck::ShaderDataType::Float3, "a_Position"},
+			{Azteck::ShaderDataType::Float2, "a_TexCoord"}
 		};
 
 		vertexBuffer->setLayout(layout);
@@ -48,7 +49,7 @@ public:
 		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
 
 		Azteck::Ref<Azteck::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Azteck::IndexBuffer::create(indices, 6));
+		indexBuffer = Azteck::IndexBuffer::create(indices, 6);
 
 		_vertexArray->setIndexBuffer(indexBuffer);
 
@@ -84,7 +85,14 @@ public:
 			}
 		)";
 
-		_shader.reset(Azteck::Shader::create(vertexSrc, fragmentSrc));
+		_shader = Azteck::Shader::create("flat", vertexSrc, fragmentSrc);
+
+		auto textureShader = _shaderLibrary.load("assets/shaders/Texture.glsl");
+		_texture = Azteck::Texture2D::create("assets/textures/checkerboard.png");
+
+		auto openGLTextureShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(textureShader);
+		openGLTextureShader->bind();
+		openGLTextureShader->uploadUniformInt("u_Texture", 0);
 	}
 
 	void onUpdate(Azteck::Timestep timestep) override
@@ -124,7 +132,7 @@ public:
 
 		Azteck::Renderer::beginScene(_camera);
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), _squarePosition);
+		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), _squarePosition);
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		auto openGLShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(_shader);
@@ -142,6 +150,11 @@ public:
 			}
 		}
 
+		auto textureShader = _shaderLibrary.get("Texture");
+
+		_texture->bind();
+		Azteck::Renderer::submit(textureShader, _vertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
 		Azteck::Renderer::endScene();
 	}
 
@@ -158,8 +171,11 @@ public:
 	}
 
 private:
+	Azteck::ShaderLibrary _shaderLibrary;
+
 	Azteck::Ref<Azteck::Shader> _shader;
 	Azteck::Ref<Azteck::VertexArray> _vertexArray;
+	Azteck::Ref<Azteck::Texture2D> _texture;
 
 	Azteck::OrthographicCamera _camera;
 	glm::vec3 _cameraPosition;

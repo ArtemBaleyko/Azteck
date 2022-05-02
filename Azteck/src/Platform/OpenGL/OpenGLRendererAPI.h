@@ -6,9 +6,12 @@ namespace Azteck
 {
 	class OpenGLRendererAPI : public RendererAPI
 	{
-		virtual void setClearColor(const glm::vec4& color) override;
-		virtual void clear() override;
+	public:
+		void init() override;
 
-		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) override;
+		void setClearColor(const glm::vec4& color) override;
+		void clear() override;
+
+		void DrawIndexed(const Ref<VertexArray>& vertexArray) override;
 	};
 }

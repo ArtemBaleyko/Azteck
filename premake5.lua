@@ -16,6 +16,7 @@ IncludeDir["GLFW"] = "Azteck/vendor/GLFW/include"
 IncludeDir["Glad"] = "Azteck/vendor/Glad/include"
 IncludeDir["ImGui"] = "Azteck/vendor/imgui"
 IncludeDir["glm"] = "Azteck/vendor/glm"
+IncludeDir["stb_image"] = "Azteck/vendor/stb_image"
 
 group "Dependencies"
 	include "Azteck/vendor/GLFW"
@@ -40,6 +41,8 @@ project "Azteck"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
 	}
@@ -56,7 +59,8 @@ project "Azteck"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links

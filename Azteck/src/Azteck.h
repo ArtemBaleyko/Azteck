@@ -20,6 +20,7 @@
 #include "Azteck/Renderer/Buffer.h"
 #include "Azteck/Renderer/VertexArray.h"
 #include "Azteck/Renderer/Shader.h"
+#include "Azteck/Renderer/Texture.h"
 
 #include "Azteck/Renderer/OrthographicCamera.h"
 // ------------------------------

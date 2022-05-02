@@ -8,6 +8,11 @@ namespace Azteck
 {
 	Renderer::SceneData* Renderer::_sceneData = new Renderer::SceneData;
 
+	void Renderer::init()
+	{
+		RenderCommand::init();
+	}
+
 	void Renderer::beginScene(const OrthographicCamera& camera)
 	{
 		_sceneData->viewProjectionMatrix = camera.getViewProjectionMatrix();
