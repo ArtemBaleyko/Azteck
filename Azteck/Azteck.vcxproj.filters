@@ -57,17 +57,38 @@
     <ClInclude Include="src\Azteck.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Application.h">
-      <Filter>src\Azteck</Filter>
+    <ClInclude Include="src\Azteck\Core\Application.h">
+      <Filter>src\Azteck\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Core.h">
-      <Filter>src\Azteck</Filter>
+    <ClInclude Include="src\Azteck\Core\Core.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\EntryPoint.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\Input.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\KeyCodes.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\Layer.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\LayerStack.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\Log.h">
+      <Filter>src\Azteck\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Core\MouseButtonCodes.h">
+      <Filter>src\Azteck\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Core\Timestep.h">
       <Filter>src\Azteck\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\EntryPoint.h">
-      <Filter>src\Azteck</Filter>
+    <ClInclude Include="src\Azteck\Core\Window.h">
+      <Filter>src\Azteck\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Events\ApplicationEvent.h">
       <Filter>src\Azteck\Events</Filter>
@@ -84,24 +105,6 @@
     <ClInclude Include="src\Azteck\ImGui\ImGuiLayer.h">
       <Filter>src\Azteck\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Input.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\KeyCodes.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\Layer.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\LayerStack.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\Log.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\MouseButtonCodes.h">
-      <Filter>src\Azteck</Filter>
-    </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\Buffer.h">
       <Filter>src\Azteck\Renderer</Filter>
     </ClInclude>
@@ -109,6 +112,9 @@
       <Filter>src\Azteck\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\OrthographicCamera.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\OrthographicCameraController.h">
       <Filter>src\Azteck\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\RenderCommand.h">
@@ -128,9 +134,6 @@
     </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\VertexArray.h">
       <Filter>src\Azteck\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Azteck\Window.h">
-      <Filter>src\Azteck</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
@@ -1409,8 +1412,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Azteck\Application.cpp">
-      <Filter>src\Azteck</Filter>
+    <ClCompile Include="src\Azteck\Core\Application.cpp">
+      <Filter>src\Azteck\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Core\Layer.cpp">
+      <Filter>src\Azteck\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Core\LayerStack.cpp">
+      <Filter>src\Azteck\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Core\Log.cpp">
+      <Filter>src\Azteck\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Azteck\ImGui\ImGuiBuild.cpp">
       <Filter>src\Azteck\ImGui</Filter>
@@ -1418,19 +1430,13 @@
     <ClCompile Include="src\Azteck\ImGui\ImGuiLayer.cpp">
       <Filter>src\Azteck\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\Azteck\Layer.cpp">
-      <Filter>src\Azteck</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Azteck\LayerStack.cpp">
-      <Filter>src\Azteck</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Azteck\Log.cpp">
-      <Filter>src\Azteck</Filter>
-    </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\Buffer.cpp">
       <Filter>src\Azteck\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\OrthographicCameraController.cpp">
       <Filter>src\Azteck\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp">

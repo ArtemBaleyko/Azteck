@@ -11,13 +11,7 @@ class ExampleLayer : public Azteck::Layer
 public:
 	ExampleLayer()
 		: Layer("Example")
-		, _camera(-1.6f, 1.6f, -0.9f, 0.9f)
-		, _cameraPosition(0.0f)
-		, _cameraMoveSpeed(5.0f)
-		, _cameraRotation(0.0f)
-		, _cameraRotationSpeed(180.0f)
-		, _squarePosition(0.0f)
-		, _moveSpeed(1.0f)
+		, _cameraController(1280.0f / 720.0f, true)
 		, _squareColor(0.2f, 0.3f, 0.8f)
 	{
 		_vertexArray = Azteck::VertexArray::create();
@@ -97,42 +91,13 @@ public:
 
 	void onUpdate(Azteck::Timestep timestep) override
 	{
-		AZ_TRACE("Delta time: {0}s ({1}ms)", timestep, timestep.getMilliseconds());
-
-		if (Azteck::Input::isKeyPressed(AZ_KEY_LEFT))
-			_cameraPosition.x -= _cameraMoveSpeed * timestep;
-		else if (Azteck::Input::isKeyPressed(AZ_KEY_RIGHT))
-			_cameraPosition.x += _cameraMoveSpeed * timestep;
-
-		if (Azteck::Input::isKeyPressed(AZ_KEY_UP))
-			_cameraPosition.y += _cameraMoveSpeed * timestep;
-		else if (Azteck::Input::isKeyPressed(AZ_KEY_DOWN))
-			_cameraPosition.y -= _cameraMoveSpeed * timestep;
-
-		if (Azteck::Input::isKeyPressed(AZ_KEY_A))
-			_cameraRotation += _cameraRotationSpeed * timestep;
-		else if (Azteck::Input::isKeyPressed(AZ_KEY_D))
-			_cameraRotation -= _cameraRotationSpeed * timestep;
-
-		if (Azteck::Input::isKeyPressed(AZ_KEY_L))
-			_squarePosition.x += _moveSpeed * timestep;
-		else if (Azteck::Input::isKeyPressed(AZ_KEY_J))
-			_squarePosition.x -= _moveSpeed * timestep;
-
-		if (Azteck::Input::isKeyPressed(AZ_KEY_I))
-			_squarePosition.y += _moveSpeed * timestep;
-		else if (Azteck::Input::isKeyPressed(AZ_KEY_K))
-			_squarePosition.y -= _moveSpeed * timestep;
+		_cameraController.onUpdate(timestep);
 
 		Azteck::RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		Azteck::RenderCommand::clear();
 
-		_camera.setPosition(_cameraPosition);
-		_camera.setRotation(_cameraRotation);
+		Azteck::Renderer::beginScene(_cameraController.getCamera());
 
-		Azteck::Renderer::beginScene(_camera);
-
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), _squarePosition);
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		auto openGLShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(_shader);
@@ -160,7 +125,7 @@ public:
 
 	void onEvent(Azteck::Event& e) override
 	{
-
+		_cameraController.onEvent(e);
 	}
 
 	void onImGuiRender() override
@@ -177,14 +142,7 @@ private:
 	Azteck::Ref<Azteck::VertexArray> _vertexArray;
 	Azteck::Ref<Azteck::Texture2D> _texture;
 
-	Azteck::OrthographicCamera _camera;
-	glm::vec3 _cameraPosition;
-	float _cameraRotation;
-	float _cameraMoveSpeed;
-	float _cameraRotationSpeed;
-
-	glm::vec3 _squarePosition;
-	float _moveSpeed;
+	Azteck::OrthographicCameraController _cameraController;
 
 	glm::vec3 _squareColor;
 };

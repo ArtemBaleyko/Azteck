@@ -9,11 +9,14 @@ namespace Azteck
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
 
+		void setProjection(float left, float right, float bottom, float top);
+
 		inline const glm::vec3& getPosition() const { return _position; };
 		void setPosition(const glm::vec3& position);
 
 		inline float getRotation() const { return _rotation; }
 		void setRotation(float rotation);
+
 
 		inline const glm::mat4& getProjectionMatrix() const { return _projectionMatrix; }
 		inline const glm::mat4& getViewMatrix() const { return _viewMatrix; }

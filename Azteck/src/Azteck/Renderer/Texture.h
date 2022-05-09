@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Azteck/Core.h"
+#include "Azteck/Core/Core.h"
 
 namespace Azteck
 {

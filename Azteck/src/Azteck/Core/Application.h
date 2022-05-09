@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Core.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
-#include "Azteck/LayerStack.h"
+#include "Azteck/Events/Event.h"
+#include "Azteck/Events/ApplicationEvent.h"
+#include "Azteck/Core/LayerStack.h"
 #include "Window.h"
 
-#include "ImGui/ImGuiLayer.h"
+#include "Azteck/ImGui/ImGuiLayer.h"
 
 #include "Azteck/Renderer/Shader.h"
 #include "Azteck/Renderer/Buffer.h"
@@ -36,6 +36,7 @@ namespace Azteck
 
 	private:
 		bool onWindowClose(WindowCloseEvent& e);
+		bool onWindowResized(WindowResizedEvent& e);
 
 	private:
 		std::unique_ptr<Window> _window;
@@ -43,6 +44,7 @@ namespace Azteck
 		ImGuiLayer* _imGuiLayer;
 		LayerStack _layerStack;
 
+		bool _isMinimised;
 		bool _isRunning;
 		float _lastFrameTime;
 	private:

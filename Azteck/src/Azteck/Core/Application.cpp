@@ -1,6 +1,6 @@
 #include "azpch.h"
 #include "Application.h"
-#include "Azteck/Log.h"
+#include "Azteck/Core/Log.h"
 #include "Input.h"
 #include "Azteck/Renderer/Renderer.h"
 
@@ -14,6 +14,7 @@ namespace Azteck
 
 	Application::Application()
 		: _isRunning(true)
+		, _isMinimised(false)
 		, _lastFrameTime(0.0f)
 	{
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
@@ -37,6 +38,7 @@ namespace Azteck
 		EventDispatcher dispatcher(e);
 
 		dispatcher.dispatch<WindowCloseEvent>(AZ_BIND_EVENT_FN(Application::onWindowClose));
+		dispatcher.dispatch<WindowResizedEvent>(AZ_BIND_EVENT_FN(Application::onWindowResized));
 
 		for (auto it = _layerStack.end(); it != _layerStack.begin();)
 		{
@@ -64,6 +66,20 @@ namespace Azteck
 		return true;
 	}
 
+	bool Application::onWindowResized(WindowResizedEvent& e)
+	{
+		uint32_t width = e.getWidth();
+		uint32_t height = e.getHeight();
+
+		_isMinimised = width == 0 || height == 0;
+
+		if (_isMinimised)
+			return false;
+
+		Renderer::onWindowResized(width, height);
+		return false;
+	}
+
 	void Application::run()
 	{
 		while (_isRunning)
@@ -72,15 +88,17 @@ namespace Azteck
 			Timestep timestep = time - _lastFrameTime;
 			_lastFrameTime = time;
 
-			for (Layer* layer : _layerStack)
-				layer->onUpdate(timestep);
+			if (!_isMinimised)
+			{
+				for (Layer* layer : _layerStack)
+					layer->onUpdate(timestep);
+			}
 
 			_imGuiLayer->begin();
-
 			for (Layer* layer : _layerStack)
 				layer->onImGuiRender();
-
 			_imGuiLayer->end();
+
 			_window->onUpdate();
 		}
 	}

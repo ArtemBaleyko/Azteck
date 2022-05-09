@@ -1,6 +1,6 @@
 #include "azpch.h"
 #include "WindowsInput.h"
-#include "Azteck/Application.h"
+#include "Azteck/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 

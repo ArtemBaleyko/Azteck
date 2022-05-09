@@ -32,6 +32,12 @@ namespace Azteck
 		openGLShader->uploadUniformMat4("u_Transform", transform);
 
 		vertexArray->bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		RenderCommand::drawIndexed(vertexArray);
 	}
+
+	void Renderer::onWindowResized(uint32_t width, uint32_t height)
+	{
+		RenderCommand::setViewport(0, 0, width, height);
+	}
+
 }

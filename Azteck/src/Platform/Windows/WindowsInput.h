@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Azteck/Input.h"
+#include "Azteck/Core/Input.h"
 
 namespace Azteck
 {

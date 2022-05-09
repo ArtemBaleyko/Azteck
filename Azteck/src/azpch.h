@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Azteck/Log.h"
+#include "Azteck/Core/Log.h"
 
 #ifdef AZ_PLATFORM_WINDOWS
 	#include <Windows.h>

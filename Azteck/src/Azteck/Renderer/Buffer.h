@@ -37,7 +37,14 @@ namespace Azteck
 
 	struct BufferElement
 	{
-		BufferElement() {}
+		BufferElement()
+			: name("")
+			, type(ShaderDataType::None)
+			, size(0)
+			, offset(0)
+			, normalized(false)
+		{}
+
 		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
 			: name(name)
 			, type(type)

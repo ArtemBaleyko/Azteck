@@ -1,15 +1,15 @@
 #pragma once
 
 // For use by Azteck applications
-#include "Azteck/Application.h"
-#include "Azteck/Layer.h"
-#include "Azteck/Log.h"
+#include "Azteck/Core/Application.h"
+#include "Azteck/Core/Layer.h"
+#include "Azteck/Core/Log.h"
 
 #include "Azteck/Core/Timestep.h"
 
-#include "Azteck/Input.h"
-#include "Azteck/KeyCodes.h"
-#include "Azteck/MouseButtonCodes.h"
+#include "Azteck/Core/Input.h"
+#include "Azteck/Core/KeyCodes.h"
+#include "Azteck/Core/MouseButtonCodes.h"
 
 #include "Azteck/ImGui/ImGuiLayer.h"
 
@@ -23,8 +23,9 @@
 #include "Azteck/Renderer/Texture.h"
 
 #include "Azteck/Renderer/OrthographicCamera.h"
+#include "Azteck/Renderer/OrthographicCameraController.h"
 // ------------------------------
 
 // -----Entry Point--------------
-#include "Azteck/EntryPoint.h"
+#include "Azteck/Core/EntryPoint.h"
 // ------------------------------

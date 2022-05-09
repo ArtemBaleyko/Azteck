@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Azteck/Window.h"
+#include "Azteck/Core/Window.h"
 #include "Azteck/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 

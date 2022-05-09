@@ -141,31 +141,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Azteck.h" />
-    <ClInclude Include="src\Azteck\Application.h" />
-    <ClInclude Include="src\Azteck\Core.h" />
+    <ClInclude Include="src\Azteck\Core\Application.h" />
+    <ClInclude Include="src\Azteck\Core\Core.h" />
+    <ClInclude Include="src\Azteck\Core\EntryPoint.h" />
+    <ClInclude Include="src\Azteck\Core\Input.h" />
+    <ClInclude Include="src\Azteck\Core\KeyCodes.h" />
+    <ClInclude Include="src\Azteck\Core\Layer.h" />
+    <ClInclude Include="src\Azteck\Core\LayerStack.h" />
+    <ClInclude Include="src\Azteck\Core\Log.h" />
+    <ClInclude Include="src\Azteck\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\Azteck\Core\Timestep.h" />
-    <ClInclude Include="src\Azteck\EntryPoint.h" />
+    <ClInclude Include="src\Azteck\Core\Window.h" />
     <ClInclude Include="src\Azteck\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Azteck\Events\Event.h" />
     <ClInclude Include="src\Azteck\Events\KeyEvent.h" />
     <ClInclude Include="src\Azteck\Events\MouseEvent.h" />
     <ClInclude Include="src\Azteck\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\Azteck\Input.h" />
-    <ClInclude Include="src\Azteck\KeyCodes.h" />
-    <ClInclude Include="src\Azteck\Layer.h" />
-    <ClInclude Include="src\Azteck\LayerStack.h" />
-    <ClInclude Include="src\Azteck\Log.h" />
-    <ClInclude Include="src\Azteck\MouseButtonCodes.h" />
     <ClInclude Include="src\Azteck\Renderer\Buffer.h" />
     <ClInclude Include="src\Azteck\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Azteck\Renderer\OrthographicCamera.h" />
+    <ClInclude Include="src\Azteck\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="src\Azteck\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Azteck\Renderer\Renderer.h" />
     <ClInclude Include="src\Azteck\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Azteck\Renderer\Shader.h" />
     <ClInclude Include="src\Azteck\Renderer\Texture.h" />
     <ClInclude Include="src\Azteck\Renderer\VertexArray.h" />
-    <ClInclude Include="src\Azteck\Window.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
@@ -593,14 +594,15 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Azteck\Application.cpp" />
+    <ClCompile Include="src\Azteck\Core\Application.cpp" />
+    <ClCompile Include="src\Azteck\Core\Layer.cpp" />
+    <ClCompile Include="src\Azteck\Core\LayerStack.cpp" />
+    <ClCompile Include="src\Azteck\Core\Log.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="src\Azteck\Layer.cpp" />
-    <ClCompile Include="src\Azteck\LayerStack.cpp" />
-    <ClCompile Include="src\Azteck\Log.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Azteck\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Azteck\Renderer\RendererAPI.cpp" />

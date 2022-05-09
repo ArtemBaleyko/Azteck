@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core.h"
-#include "Events/Event.h"
+#include "Azteck/Core/Core.h"
+#include "Azteck/Events/Event.h"
 
 #include "Azteck/Core/Timestep.h"
 

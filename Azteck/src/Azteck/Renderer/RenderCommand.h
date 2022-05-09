@@ -22,9 +22,14 @@ namespace Azteck
 			_rendererAPI->clear();
 		}
 
-		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
+		inline static void drawIndexed(const Ref<VertexArray>& vertexArray)
 		{
-			_rendererAPI->DrawIndexed(vertexArray);
+			_rendererAPI->drawIndexed(vertexArray);
+		}
+
+		inline static void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+		{
+			_rendererAPI->setViewport(x, y, width, height);
 		}
 
 	private:
