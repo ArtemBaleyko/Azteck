@@ -2,13 +2,19 @@
 
 #include "Azteck/Renderer/Texture.h"
 
+#include <glad/glad.h>
+
 namespace Azteck
 {
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
 		OpenGLTexture2D(const std::string& path);
+		OpenGLTexture2D(uint32_t width, uint32_t height);
+
 		virtual ~OpenGLTexture2D();
+
+		void setData(void* data, uint32_t size) override;
 
 		inline uint32_t getWidth() const override { return _width; };
 		inline uint32_t getHeight() const override { return _height; };
@@ -20,5 +26,9 @@ namespace Azteck
 		uint32_t _width;
 		uint32_t _height;
 		uint32_t _renderedId;
+
+		GLenum _internalFormat;
+		GLenum _dataFormat;
+
 	};
 }

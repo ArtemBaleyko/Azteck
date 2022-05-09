@@ -3,6 +3,7 @@
 #include "Shader.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Renderer2D.h"
 
 namespace Azteck
 {
@@ -11,6 +12,7 @@ namespace Azteck
 	void Renderer::init()
 	{
 		RenderCommand::init();
+		Renderer2D::init();
 	}
 
 	void Renderer::beginScene(const OrthographicCamera& camera)

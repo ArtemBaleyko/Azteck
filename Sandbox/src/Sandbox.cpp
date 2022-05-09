@@ -6,6 +6,9 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Azteck/Core/EntryPoint.h"
+#include "Sandbox2D.h"
+
 class ExampleLayer : public Azteck::Layer
 {
 public:
@@ -15,12 +18,6 @@ public:
 		, _squareColor(0.2f, 0.3f, 0.8f)
 	{
 		_vertexArray = Azteck::VertexArray::create();
-
-		//float vertices[] = {
-		//	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		//	 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		//	 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
-		//};
 
 		float vertices[] = {
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -152,7 +149,8 @@ class Sandbox : public Azteck::Application
 public:
 	Sandbox() 
 	{
-		pushLayer(new ExampleLayer());
+		//pushLayer(new ExampleLayer());
+		pushLayer(new Sandbox2D());
 	}
 
 	~Sandbox() {}

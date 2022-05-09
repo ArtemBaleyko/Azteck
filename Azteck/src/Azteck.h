@@ -15,6 +15,7 @@
 
 // -----Renderer-----------------
 #include "Azteck/Renderer/Renderer.h"
+#include "Azteck/Renderer/Renderer2D.h"
 #include "Azteck/Renderer/RenderCommand.h"
 
 #include "Azteck/Renderer/Buffer.h"
@@ -24,8 +25,4 @@
 
 #include "Azteck/Renderer/OrthographicCamera.h"
 #include "Azteck/Renderer/OrthographicCameraController.h"
-// ------------------------------
-
-// -----Entry Point--------------
-#include "Azteck/Core/EntryPoint.h"
-// ------------------------------
+// --------------------------------

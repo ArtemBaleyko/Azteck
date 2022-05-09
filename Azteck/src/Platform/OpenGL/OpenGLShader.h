@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-typedef unsigned int GLenum;
+using GLenum = unsigned int;
 
 namespace Azteck
 {
@@ -17,6 +17,11 @@ namespace Azteck
 
 		void bind() const override;
 		void unBind() const override;
+
+		void setMat4(const std::string& name, const glm::mat4& value) override;
+		void setFloat3(const std::string& name, const glm::vec3& value) override;
+		void setFloat4(const std::string& name, const glm::vec4& value) override;
+		void setInt(const std::string& name, int value) override;
 
 		inline const std::string& getName() const override { return _name; };
 

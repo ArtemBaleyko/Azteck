@@ -60,6 +60,26 @@ namespace Azteck
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& value)
+	{
+		uploadUniformMat4(name, value);
+	}
+
+	void OpenGLShader::setFloat3(const std::string& name, const glm::vec3& value)
+	{
+		uploadUniformFloat3(name, value);
+	}
+
+	void OpenGLShader::setFloat4(const std::string& name, const glm::vec4& value)
+	{
+		uploadUniformFloat4(name, value);
+	}
+
+	void OpenGLShader::setInt(const std::string& name, int value)
+	{
+		uploadUniformInt(name, value);
+	}
+
 	void OpenGLShader::uploadUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
 		int location = glGetUniformLocation(_rendererId, name.c_str());
