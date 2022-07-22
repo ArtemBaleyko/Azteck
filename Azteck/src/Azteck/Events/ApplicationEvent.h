@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Event.h"
+#include "Azteck/Events/Event.h"
 
 namespace Azteck
 {
-	class AZTECK_API WindowResizedEvent : public Event
+	class WindowResizedEvent : public Event
 	{
 	public:
 		WindowResizedEvent(unsigned int width, unsigned int height)
@@ -31,7 +31,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() {};
@@ -41,7 +41,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API AppTickEvent : public Event
+	class AppTickEvent : public Event
 	{
 	public:
 		AppTickEvent() {};
@@ -51,7 +51,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API AppUpdateEvent : public Event
+	class AppUpdateEvent : public Event
 	{
 	public:
 		AppUpdateEvent() {};
@@ -61,7 +61,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API AppRenderEvent : public Event
+	class AppRenderEvent : public Event
 	{
 	public:
 		AppRenderEvent() {};

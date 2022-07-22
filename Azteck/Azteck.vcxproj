@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>azpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_PLATFORM_WINDOWS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>azpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_PLATFORM_WINDOWS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -120,7 +120,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>azpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_PLATFORM_WINDOWS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;AZ_BUILD_DLL;GLFW_INCLUDE_NONE;AZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -152,6 +152,7 @@
     <ClInclude Include="src\Azteck\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\Azteck\Core\Timestep.h" />
     <ClInclude Include="src\Azteck\Core\Window.h" />
+    <ClInclude Include="src\Azteck\Debug\Instrumentor.h" />
     <ClInclude Include="src\Azteck\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Azteck\Events\Event.h" />
     <ClInclude Include="src\Azteck\Events\KeyEvent.h" />
@@ -602,6 +603,7 @@
     <ClCompile Include="src\Azteck\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Azteck\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="src\Azteck\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Azteck\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Azteck\Renderer\RenderCommand.cpp" />

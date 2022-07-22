@@ -1,15 +1,14 @@
 #include "azpch.h"
-#include "RendererAPI.h"
+#include "GraphicsContext.h"
 
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "Azteck/Renderer/Renderer.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Azteck
 {
-	RendererAPI::API RendererAPI::_api = RendererAPI::API::OpenGL;
-
-	Scope<RendererAPI> RendererAPI::create()
+	Scope<GraphicsContext> GraphicsContext::create(void* window)
 	{
-		switch (_api)
+		switch (Renderer::getAPI())
 		{
 			case RendererAPI::API::None:
 			{
@@ -19,7 +18,7 @@ namespace Azteck
 
 			case RendererAPI::API::OpenGL:
 			{
-				return createScope<OpenGLRendererAPI>();
+				return createScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
 			}
 
 			default:

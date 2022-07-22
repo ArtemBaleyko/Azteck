@@ -10,6 +10,8 @@ namespace Azteck
 		, _internalFormat(0)
 		, _dataFormat(0)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		int width, height, channels;
 
 		stbi_set_flip_vertically_on_load(1);
@@ -53,6 +55,8 @@ namespace Azteck
 		, _internalFormat(GL_RGBA8)
 		, _dataFormat(GL_RGBA)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &_renderedId);
 		glTextureStorage2D(_renderedId, 1, _internalFormat, _width, _height);
 
@@ -65,11 +69,15 @@ namespace Azteck
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glDeleteTextures(1, &_renderedId);
 	}
 
 	void OpenGLTexture2D::setData(void* data, uint32_t size)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uint32_t bytesPerPixel = _dataFormat == GL_RGBA ? 4 : 3;
 		AZ_CORE_ASSERT(size == _width * _height * bytesPerPixel, "Data must be entire texture");
 		glTextureSubImage2D(_renderedId, 0, 0, 0, _width, _height, _dataFormat, GL_UNSIGNED_BYTE, data);
@@ -77,6 +85,8 @@ namespace Azteck
 
 	void OpenGLTexture2D::bind(uint32_t slot) const
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glBindTextureUnit(slot, _renderedId);
 	}
 }

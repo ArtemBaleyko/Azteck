@@ -7,7 +7,7 @@
 
 namespace Azteck
 {
-	class AZTECK_API ImGuiLayer : public Layer
+	class ImGuiLayer : public Layer
 	{
 	public:
 		ImGuiLayer();

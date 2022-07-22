@@ -7,12 +7,19 @@
 
 namespace Azteck
 {
-	Renderer::SceneData* Renderer::_sceneData = new Renderer::SceneData;
+	Scope<Renderer::SceneData> Renderer::_sceneData = createScope<Renderer::SceneData>();
 
 	void Renderer::init()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		RenderCommand::init();
 		Renderer2D::init();
+	}
+
+	void Renderer::shutdown()
+	{
+		Renderer2D::shutdown();
 	}
 
 	void Renderer::beginScene(const OrthographicCamera& camera)
@@ -28,10 +35,8 @@ namespace Azteck
 	void Renderer::submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->bind();
-
-		auto openGLShader = std::dynamic_pointer_cast<OpenGLShader>(shader);
-		openGLShader->uploadUniformMat4("u_ViewProjection", _sceneData->viewProjectionMatrix);
-		openGLShader->uploadUniformMat4("u_Transform", transform);
+		shader->setMat4("u_ViewProjection", _sceneData->viewProjectionMatrix);
+		shader->setMat4("u_Transform", transform);
 
 		vertexArray->bind();
 		RenderCommand::drawIndexed(vertexArray);

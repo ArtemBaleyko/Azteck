@@ -15,23 +15,29 @@ namespace Azteck
 		AZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProps& props)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return createScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		init(props);
 	}
 
 	WindowsWindow::~WindowsWindow()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		shutdown();
 	}
 
 	void WindowsWindow::onUpdate()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		_context->swapBuffers();
 	}
@@ -43,6 +49,8 @@ namespace Azteck
 
 	void WindowsWindow::setVSync(bool enabled)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else
@@ -58,6 +66,8 @@ namespace Azteck
 
 	void WindowsWindow::init(const WindowProps& props)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		_data.title = props.title;
 		_data.width = props.width;
 		_data.height = props.height;
@@ -73,7 +83,7 @@ namespace Azteck
 		}
 
 		_window = glfwCreateWindow(static_cast<int>(props.width), static_cast<int>(props.height), _data.title.c_str(), nullptr, nullptr);
-		_context = new OpenGLContext(_window);
+		_context = GraphicsContext::create(_window);
 		_context->init();
 
 		glfwSetWindowUserPointer(_window, &_data);
@@ -179,6 +189,8 @@ namespace Azteck
 
 	void WindowsWindow::shutdown()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(_window);
 	} 
 }

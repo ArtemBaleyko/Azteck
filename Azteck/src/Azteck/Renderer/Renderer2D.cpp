@@ -20,6 +20,8 @@ namespace Azteck
 
 	void Renderer2D::init()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		_data = new Renderer2DStorage;
 		_data->vertexArray = VertexArray::create();
 
@@ -30,8 +32,7 @@ namespace Azteck
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 		};
 
-		Ref<VertexBuffer> vertexBuffer;
-		vertexBuffer = VertexBuffer::create(vertices, sizeof(vertices));
+		Ref<VertexBuffer> vertexBuffer = VertexBuffer::create(vertices, sizeof(vertices));
 
 		BufferLayout layout = {
 			{ShaderDataType::Float3, "a_Position"},
@@ -43,8 +44,7 @@ namespace Azteck
 
 		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
 
-		Ref<IndexBuffer> indexBuffer;
-		indexBuffer = IndexBuffer::create(indices, 6);
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, 6);
 
 		_data->vertexArray->setIndexBuffer(indexBuffer);
 
@@ -59,18 +59,22 @@ namespace Azteck
 
 	void Renderer2D::shutdown()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		delete _data;
 	}
 
 	void Renderer2D::beginScene(const OrthographicCamera& camera)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		_data->textureShader->bind();
 		_data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 	}
 
 	void Renderer2D::endScene()
 	{
-
+		AZ_PROFILE_FUNCTION();
 	}
 
 	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -95,6 +99,8 @@ namespace Azteck
 
 	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
 		transform = glm::scale(transform, { size.x, size.y, 1.0f });
 

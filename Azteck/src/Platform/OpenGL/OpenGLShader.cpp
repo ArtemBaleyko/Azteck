@@ -22,6 +22,8 @@ namespace Azteck
 		: _rendererId(0)
 		, _name(name)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> sources = {
 			{GL_VERTEX_SHADER, vertexSrc},
 			{GL_FRAGMENT_SHADER, fragmentSrc}
@@ -33,6 +35,8 @@ namespace Azteck
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 		: _rendererId(0)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		std::string source = readFile(filepath);
 		auto shaderSources = preProcess(source);
 		compile(shaderSources);
@@ -47,16 +51,22 @@ namespace Azteck
 
 	OpenGLShader::~OpenGLShader()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glDeleteProgram(_rendererId);
 	}
 
 	void OpenGLShader::bind() const
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glUseProgram(_rendererId);
 	}
 
 	void OpenGLShader::unBind() const
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 
@@ -124,6 +134,8 @@ namespace Azteck
 
 	std::string OpenGLShader::readFile(const std::string& filepath)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		std::string result;
 		std::ifstream file(filepath, std::ios::in | std::ios::binary);
 		
@@ -146,25 +158,26 @@ namespace Azteck
 
 	std::unordered_map<GLenum, std::string> OpenGLShader::preProcess(const std::string& source)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const char* typeToken = "#type";
 		size_t typeTokenLength = strlen(typeToken);
-		size_t pos = source.find(typeToken, 0);
-		
+		size_t pos = source.find(typeToken, 0); //Start of shader type declaration line
 		while (pos != std::string::npos)
 		{
-			size_t eol = source.find_first_of("\r\n", pos);
-			AZ_CORE_ASSERT(eol != std::string::npos, "Shader syntax error");
-
-			size_t begin = pos + typeTokenLength + 1;
+			size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
+			AZ_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+			size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
-			AZ_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel", "Invalid shader type");
+			AZ_CORE_ASSERT(shaderTypeFromString(type), "Invalid shader type specified");
 
-			size_t nextLinePos = source.find_first_of("\r\n", eol);
-			pos = source.find(typeToken, nextLinePos);
-			size_t endPos = nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos;
-			shaderSources[shaderTypeFromString(type)] = source.substr(nextLinePos, pos - endPos);
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			AZ_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
+
+			shaderSources[shaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
 		}
 
 		return shaderSources;
@@ -172,6 +185,8 @@ namespace Azteck
 
 	void OpenGLShader::compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		AZ_CORE_ASSERT(shaderSources.size() <= 2, "Only 2 shaders can be loaded at once");
 
 		GLuint program = glCreateProgram();
@@ -234,7 +249,10 @@ namespace Azteck
 		}
 
 		for (auto shaderId : shadersIds)
+		{
 			glDetachShader(program, shaderId);
+			glDeleteShader(shaderId);
+		}
 
 		_rendererId = program;
 	}

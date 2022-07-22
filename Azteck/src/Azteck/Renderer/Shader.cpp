@@ -29,7 +29,7 @@ namespace Azteck
 		}
 	}
 
-	Ref<Azteck::Shader> Shader::create(const std::string& filepath)
+	Ref<Shader> Shader::create(const std::string& filepath)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -64,7 +64,7 @@ namespace Azteck
 		_shaders[name] = shader;
 	}
 
-	Azteck::Ref<Azteck::Shader> ShaderLibrary::load(const std::string& filepath)
+	Ref<Shader> ShaderLibrary::load(const std::string& filepath)
 	{
 		auto shader = Shader::create(filepath);
 		add(shader);
@@ -72,7 +72,7 @@ namespace Azteck
 		return shader;
 	}
 
-	Azteck::Ref<Azteck::Shader> ShaderLibrary::load(const std::string& name, const std::string& filepath)
+	Ref<Shader> ShaderLibrary::load(const std::string& name, const std::string& filepath)
 	{
 		auto shader = Shader::create(filepath);
 		add(name, shader);
@@ -80,7 +80,7 @@ namespace Azteck
 		return shader;
 	}
 
-	Azteck::Ref<Azteck::Shader> ShaderLibrary::get(const std::string& name) const
+	Ref<Shader> ShaderLibrary::get(const std::string& name) const
 	{
 		if (!exists(name))
 		{

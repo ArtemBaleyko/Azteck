@@ -25,13 +25,13 @@ namespace Azteck
 		EventCategoryMouseButton	= BIT(4)
 	};
 
-#define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::##type; } \
+#define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::type; } \
 								virtual EventType getEventType() const override { return getStaticType(); } \
 								virtual const char* getName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int getCategoryFlags() const override { return category; }
 
-	class AZTECK_API Event
+	class  Event
 	{
 		friend class EventDispatcher;
 	public:
@@ -49,20 +49,17 @@ namespace Azteck
 
 	class EventDispatcher
 	{
-		template<typename T>
-		using EventFn = std::function<bool(T&)>;
-
 	public:
 		EventDispatcher(Event& event)
 			: _event(event)
 		{}
 
-		template<typename T>
-		bool dispatch(EventFn<T> func)
+		template<typename T, typename Fn>
+		bool dispatch(const Fn& func)
 		{
 			if (_event.getEventType() == T::getStaticType())
 			{
-				_event._handled = func(*(T*)&_event);
+				_event._handled = func(static_cast<T&>(_event));
 				return true;
 			}
 

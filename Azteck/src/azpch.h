@@ -16,6 +16,8 @@
 
 #include "Azteck/Core/Log.h"
 
+#include "Azteck/Debug/Instrumentor.h"
+
 #ifdef AZ_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

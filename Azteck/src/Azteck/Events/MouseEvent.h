@@ -4,7 +4,7 @@
 
 namespace Azteck
 {
-	class AZTECK_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float posX, float posY)
@@ -30,7 +30,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API MouseScrolledEvent : public Event
+	class MouseScrolledEvent : public Event
 	{
 	public:
 		MouseScrolledEvent(float offsetX, float offsetY)
@@ -56,7 +56,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
 	public:
 		inline int getMouseButton() const { return _buttonCode; }
@@ -73,7 +73,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonPressedEvent(int buttonCode)
@@ -91,7 +91,7 @@ namespace Azteck
 	};
 
 	//---------------------------------------------------------------------------------------------
-	class AZTECK_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonReleasedEvent(int buttonCode)

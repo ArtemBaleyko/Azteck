@@ -76,7 +76,6 @@ project "Azteck"
 
 		defines
 		{
-			"AZ_PLATFORM_WINDOWS",
 			"AZ_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
 		}
@@ -128,11 +127,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-
-		defines
-		{
-			"AZ_PLATFORM_WINDOWS"
-		}
 
 	filter "configurations:Debug"
 		defines "AZ_DEBUG"

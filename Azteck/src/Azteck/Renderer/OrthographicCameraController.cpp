@@ -22,15 +22,29 @@ namespace Azteck
 
 	void OrthographicCameraController::onUpdate(Timestep ts)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		if (Input::isKeyPressed(AZ_KEY_A))
-			_cameraPosition.x -= _cameraTranslationSpeed * ts;
+		{
+			_cameraPosition.x -= cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+			_cameraPosition.y -= sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+		}
 		else if (Input::isKeyPressed(AZ_KEY_D))
-			_cameraPosition.x += _cameraTranslationSpeed * ts;
+		{
+			_cameraPosition.x += cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+			_cameraPosition.y += sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+		}
 
 		if (Input::isKeyPressed(AZ_KEY_W))
-			_cameraPosition.y += _cameraTranslationSpeed * ts;
+		{
+			_cameraPosition.x += -sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+			_cameraPosition.y += cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+		}
 		else if (Input::isKeyPressed(AZ_KEY_S))
-			_cameraPosition.y -= _cameraTranslationSpeed * ts;
+		{
+			_cameraPosition.x -= -sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+			_cameraPosition.y -= cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
+		}
 
 		if (_doRotation)
 		{
@@ -38,6 +52,11 @@ namespace Azteck
 				_cameraRotation += _cameraRotationSpeed * ts;
 			else if (Input::isKeyPressed(AZ_KEY_E))
 				_cameraRotation -= _cameraRotationSpeed * ts;
+
+			if (_cameraRotation > 180.0f)
+				_cameraRotation -= 360.0f;
+			else if (_cameraRotation <= -180.0f)
+				_cameraRotation += 360.0f;
 
 			_camera.setRotation(_cameraRotation);
 		}
@@ -49,6 +68,8 @@ namespace Azteck
 
 	void OrthographicCameraController::onEvent(Event& e)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 
 		dispatcher.dispatch<MouseScrolledEvent>(AZ_BIND_EVENT_FN(OrthographicCameraController::onMouseScrolled));
@@ -67,6 +88,8 @@ namespace Azteck
 
 	bool OrthographicCameraController::onMouseScrolled(MouseScrolledEvent& e)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		_zoomLevel -= e.getOffsetY() * 0.25f;
 		_zoomLevel = std::max(_zoomLevel, 0.25f);
 		_camera.setProjection(-_aspectRatio * _zoomLevel, +_aspectRatio * _zoomLevel, -_zoomLevel, _zoomLevel);
@@ -75,6 +98,8 @@ namespace Azteck
 
 	bool OrthographicCameraController::onWindowResized(WindowResizedEvent& e)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		_aspectRatio = e.getWidth() / (float)e.getHeight();
 		_camera.setProjection(-_aspectRatio * _zoomLevel, +_aspectRatio * _zoomLevel, -_zoomLevel, _zoomLevel);
 		return false;

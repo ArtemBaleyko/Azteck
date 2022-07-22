@@ -26,8 +26,7 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
 		};
 
-		Azteck::Ref<Azteck::VertexBuffer> vertexBuffer;
-		vertexBuffer = Azteck::VertexBuffer::create(vertices, sizeof(vertices));
+		Azteck::Ref<Azteck::VertexBuffer> vertexBuffer = Azteck::VertexBuffer::create(vertices, sizeof(vertices));
 
 		Azteck::BufferLayout layout = {
 			{Azteck::ShaderDataType::Float3, "a_Position"},
@@ -39,8 +38,7 @@ public:
 
 		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
 
-		Azteck::Ref<Azteck::IndexBuffer> indexBuffer;
-		indexBuffer = Azteck::IndexBuffer::create(indices, 6);
+		Azteck::Ref<Azteck::IndexBuffer> indexBuffer = Azteck::IndexBuffer::create(indices, 6);
 
 		_vertexArray->setIndexBuffer(indexBuffer);
 
@@ -81,9 +79,8 @@ public:
 		auto textureShader = _shaderLibrary.load("assets/shaders/Texture.glsl");
 		_texture = Azteck::Texture2D::create("assets/textures/checkerboard.png");
 
-		auto openGLTextureShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(textureShader);
-		openGLTextureShader->bind();
-		openGLTextureShader->uploadUniformInt("u_Texture", 0);
+		textureShader->bind();
+		textureShader->setInt("u_Texture", 0);
 	}
 
 	void onUpdate(Azteck::Timestep timestep) override
@@ -97,9 +94,8 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-		auto openGLShader = std::dynamic_pointer_cast<Azteck::OpenGLShader>(_shader);
-		openGLShader->bind();
-		openGLShader->uploadUniformFloat3("u_Color", _squareColor);
+		_shader->bind();
+		_shader->setFloat3("u_Color", _squareColor);
 
 		for (size_t i = 0; i < 20; i++)
 		{

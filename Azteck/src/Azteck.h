@@ -1,6 +1,9 @@
 #pragma once
 
 // For use by Azteck applications
+
+#include "Azteck/Core/Core.h"
+
 #include "Azteck/Core/Application.h"
 #include "Azteck/Core/Layer.h"
 #include "Azteck/Core/Log.h"

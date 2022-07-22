@@ -10,6 +10,9 @@
     <Filter Include="src\Azteck\Core">
       <UniqueIdentifier>{36FA098D-A285-7751-AB96-FA4517A1D351}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Azteck\Debug">
+      <UniqueIdentifier>{149C552E-0095-7480-29C7-5905151F548C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Azteck\Events">
       <UniqueIdentifier>{427193FC-AE87-9192-F7FE-1CB46354621A}</UniqueIdentifier>
     </Filter>
@@ -90,6 +93,9 @@
     <ClInclude Include="src\Azteck\Core\Window.h">
       <Filter>src\Azteck\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Azteck\Debug\Instrumentor.h">
+      <Filter>src\Azteck\Debug</Filter>
+    </ClInclude>
     <ClInclude Include="src\Azteck\Events\ApplicationEvent.h">
       <Filter>src\Azteck\Events</Filter>
     </ClInclude>
@@ -121,6 +127,9 @@
       <Filter>src\Azteck\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\Renderer.h">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Azteck\Renderer\Renderer2D.h">
       <Filter>src\Azteck\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Azteck\Renderer\RendererAPI.h">
@@ -1410,7 +1419,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Renderer\Renderer2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Azteck\Core\Application.cpp">
@@ -1444,6 +1452,9 @@
       <Filter>src\Azteck\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\Renderer.cpp">
+      <Filter>src\Azteck\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Azteck\Renderer\Renderer2D.cpp">
       <Filter>src\Azteck\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\RendererAPI.cpp">
@@ -1488,6 +1499,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Azteck\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Azteck\Renderer\GraphicsContext.cpp" />
   </ItemGroup>
 </Project>

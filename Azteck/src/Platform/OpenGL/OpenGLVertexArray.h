@@ -23,5 +23,6 @@ namespace Azteck
 		std::vector<Ref<VertexBuffer>> _vertexBuffers;
 		Ref<IndexBuffer> _indexBuffer;
 		uint32_t _rendererId;
+		uint32_t _vertexBufferIndex;
 	};
 }

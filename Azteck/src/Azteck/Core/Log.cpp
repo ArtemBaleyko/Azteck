@@ -1,12 +1,12 @@
 #include "azpch.h"
-#include "Log.h"
+#include "Azteck/Core/Log.h"
 
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Azteck
 {
-	std::shared_ptr<spdlog::logger> Log::_coreLogger;
-	std::shared_ptr<spdlog::logger> Log::_clientLogger;
+	Ref<spdlog::logger> Log::_coreLogger;
+	Ref<spdlog::logger> Log::_clientLogger;
 
 	void Log::init()
 	{

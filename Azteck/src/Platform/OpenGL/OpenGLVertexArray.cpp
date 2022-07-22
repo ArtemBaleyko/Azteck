@@ -9,17 +9,17 @@ namespace Azteck
 	{
 		switch (type)
 		{
-			case Azteck::ShaderDataType::Int:		return GL_INT;
-			case Azteck::ShaderDataType::Int2:		return GL_INT;
-			case Azteck::ShaderDataType::Int3:		return GL_INT;
-			case Azteck::ShaderDataType::Int4:		return GL_INT;
-			case Azteck::ShaderDataType::Float:		return GL_FLOAT;
-			case Azteck::ShaderDataType::Float2:	return GL_FLOAT;
-			case Azteck::ShaderDataType::Float3:	return GL_FLOAT;
-			case Azteck::ShaderDataType::Float4:	return GL_FLOAT;
-			case Azteck::ShaderDataType::Mat3:		return GL_FLOAT;
-			case Azteck::ShaderDataType::Mat4:		return GL_FLOAT;
-			case Azteck::ShaderDataType::Bool:		return GL_BOOL;
+			case ShaderDataType::Int:		return GL_INT;
+			case ShaderDataType::Int2:		return GL_INT;
+			case ShaderDataType::Int3:		return GL_INT;
+			case ShaderDataType::Int4:		return GL_INT;
+			case ShaderDataType::Float:		return GL_FLOAT;
+			case ShaderDataType::Float2:	return GL_FLOAT;
+			case ShaderDataType::Float3:	return GL_FLOAT;
+			case ShaderDataType::Float4:	return GL_FLOAT;
+			case ShaderDataType::Mat3:		return GL_FLOAT;
+			case ShaderDataType::Mat4:		return GL_FLOAT;
+			case ShaderDataType::Bool:		return GL_BOOL;
 			default:
 			{
 				AZ_CORE_ASSERT(false, "Unknown ShaderDataType");
@@ -29,46 +29,56 @@ namespace Azteck
 	}
 
 	OpenGLVertexArray::OpenGLVertexArray()
+		: _vertexBufferIndex(0)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glCreateVertexArrays(1, &_rendererId);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glDeleteVertexArrays(1, &_rendererId);
 	}
 
 	void OpenGLVertexArray::bind() const
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glBindVertexArray(_rendererId);
 	}
 
 	void OpenGLVertexArray::unbind() const
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::addVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glBindVertexArray(_rendererId);
 		vertexBuffer->bind();
 
 		AZ_CORE_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex Buffer has no layout");
 
-		uint32_t index = 0;
 		const BufferLayout& layout = vertexBuffer->getLayout();
 
 		for (const BufferElement& element : layout)
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
+			glEnableVertexAttribArray(_vertexBufferIndex);
+			glVertexAttribPointer(_vertexBufferIndex,
 				element.getComponentCount(),
 				ShaderDataTypeToOpenGLBaseType(element.type),
 				element.normalized ? GL_TRUE : GL_FALSE,
 				layout.getStride(),
-				(void*)element.offset);
+				(const void*)(intptr_t)element.offset);
 
-			index++;
+			_vertexBufferIndex++;
 		}
 
 		_vertexBuffers.push_back(vertexBuffer);
@@ -76,6 +86,8 @@ namespace Azteck
 
 	void OpenGLVertexArray::setIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		glBindVertexArray(_rendererId);
 		indexBuffer->bind();
 

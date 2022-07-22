@@ -4,8 +4,6 @@
 #include "Azteck/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 
-//#include "Platform/OpenGL/OpenGLContext.h"
-
 namespace Azteck
 {
 	class WindowsWindow : public Window
@@ -40,7 +38,7 @@ namespace Azteck
 			EventCallbackFn eventCallback;
 		};
 		
-		GraphicsContext* _context;
+		Scope<GraphicsContext> _context;
 		GLFWwindow* _window;
 		WindowData _data;
 	};

@@ -10,6 +10,7 @@ namespace Azteck
 	{
 	public:
 		static void init();
+		static void shutdown();
 
 		static void beginScene(const OrthographicCamera& camera);
 		static void endScene();
@@ -26,6 +27,6 @@ namespace Azteck
 			glm::mat4 viewProjectionMatrix;
 		};
 
-		static SceneData* _sceneData;
+		static Scope<SceneData> _sceneData;
 	};
 }

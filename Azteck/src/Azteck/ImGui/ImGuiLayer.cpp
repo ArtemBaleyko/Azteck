@@ -1,11 +1,11 @@
 #include "azpch.h"
 #include "ImGuiLayer.h"
 
-#include "imgui.h"
+#include <imgui.h>
 
-#include "backends/imgui_impl_opengl3_loader.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
+#include <backends/imgui_impl_opengl3_loader.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 
 #include "Azteck/Core/Application.h"
 
@@ -26,6 +26,8 @@ namespace Azteck
 
 	void ImGuiLayer::onAttach()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -59,6 +61,8 @@ namespace Azteck
 
 	void ImGuiLayer::onDetach()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -71,6 +75,8 @@ namespace Azteck
 
 	void ImGuiLayer::begin()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -78,6 +84,8 @@ namespace Azteck
 
 	void ImGuiLayer::end()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::getInstance();
 		io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());

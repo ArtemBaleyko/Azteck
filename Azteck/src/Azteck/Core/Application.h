@@ -1,23 +1,20 @@
 #pragma once
 
-#include "Core.h"
+#include "Azteck/Core/Core.h"
 #include "Azteck/Events/Event.h"
 #include "Azteck/Events/ApplicationEvent.h"
 #include "Azteck/Core/LayerStack.h"
-#include "Window.h"
-
+#include "Azteck/Core/Window.h"
 #include "Azteck/ImGui/ImGuiLayer.h"
-
 #include "Azteck/Renderer/Shader.h"
 #include "Azteck/Renderer/Buffer.h"
 #include "Azteck/Renderer/VertexArray.h"
 #include "Azteck/Renderer/OrthographicCamera.h"
-
 #include "Azteck/Core/Timestep.h"
 
 namespace Azteck
 {
-	class AZTECK_API Application
+	class  Application
 	{
 	public:
 		Application();

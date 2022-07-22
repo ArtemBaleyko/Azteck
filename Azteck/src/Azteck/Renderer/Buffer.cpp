@@ -18,7 +18,7 @@ namespace Azteck
 
 			case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+				return createRef<OpenGLVertexBuffer>(vertices, size);
 			}
 
 			default:
@@ -41,7 +41,7 @@ namespace Azteck
 
 			case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLIndexBuffer>(indices, count);
+				return createRef<OpenGLIndexBuffer>(indices, count);
 			}
 
 			default:

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Core.h"
-#include "Layer.h"
+#include "Azteck/Core/Core.h"
+#include "Azteck/Core/Layer.h"
 
 namespace Azteck
 {
-	class AZTECK_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack();

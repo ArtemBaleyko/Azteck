@@ -24,6 +24,8 @@ namespace Azteck
 		virtual void drawIndexed(const Ref<VertexArray>& vertexArray) = 0;
 
 		inline static API getAPI() { return _api; }
+
+		static Scope<RendererAPI> create();
 	private:
 		static API _api;
 	};

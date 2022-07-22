@@ -1,12 +1,15 @@
 [submodule "Azteck/vendor/spdlog"]
 	path = Azteck/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+	branch = v1.x
 [submodule "Azteck/vendor/glm"]
 	path = Azteck/vendor/glm
 	url = https://github.com/g-truc/glm
+	branch = master
 [submodule "Azteck/vendor/GLFW"]
 	path = Azteck/vendor/GLFW
 	url = https://github.com/ArtemBaleyko/glfw
+	branch = master
 [submodule "Azteck/vendor/imgui"]
 	path = Azteck/vendor/imgui
 	url = https://github.com/ArtemBaleyko/imgui

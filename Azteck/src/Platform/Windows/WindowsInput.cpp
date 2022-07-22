@@ -6,7 +6,7 @@
 
 namespace Azteck
 {
-	Input* Input::_instance = new WindowsInput();
+	Scope<Input> Input::_instance = createScope<WindowsInput>();
 
 	bool WindowsInput::isKeyPressedImpl(int keyCode)
 	{

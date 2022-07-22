@@ -1,18 +1,20 @@
 #include "azpch.h"
-#include "LayerStack.h"
+#include "Azteck/Core/LayerStack.h"
 
 namespace Azteck
 {
 	LayerStack::LayerStack()
-		: _layers()
-		, _layerInsertIndex(0)
+		: _layerInsertIndex(0)
 	{
 	}
 
 	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : _layers)
+		{
+			layer->onDetach();
 			delete layer;
+		}
 	}
 
 	void LayerStack::pushLayer(Layer* layer)
@@ -28,9 +30,10 @@ namespace Azteck
 
 	void LayerStack::popLayer(Layer* layer)
 	{
-		auto it = std::find(_layers.begin(), _layers.end(), layer);
-		if (it != _layers.end())
+		auto it = std::find(_layers.begin(), _layers.begin() + _layerInsertIndex, layer);
+		if (it != _layers.begin() + _layerInsertIndex)
 		{
+			layer->onDetach();
 			_layers.erase(it);
 			_layerInsertIndex--;
 		}
@@ -38,8 +41,11 @@ namespace Azteck
 
 	void LayerStack::popOverlay(Layer* overlay)
 	{
-		auto it = std::find(_layers.begin(), _layers.end(), overlay);
+		auto it = std::find(_layers.begin(), _layers.begin() + _layerInsertIndex, overlay);
 		if (it != _layers.end())
+		{
+			overlay->onDetach();
 			_layers.erase(it);
+		}
 	}
 }

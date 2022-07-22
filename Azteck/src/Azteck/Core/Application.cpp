@@ -1,7 +1,8 @@
 #include "azpch.h"
-#include "Application.h"
+
+#include "Azteck/Core/Application.h"
 #include "Azteck/Core/Log.h"
-#include "Input.h"
+#include "Azteck/Core/Input.h"
 #include "Azteck/Renderer/Renderer.h"
 
 #include <glm/glm.hpp>
@@ -17,6 +18,8 @@ namespace Azteck
 		, _isMinimised(false)
 		, _lastFrameTime(0.0f)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
 
@@ -31,10 +34,13 @@ namespace Azteck
 
 	Application::~Application()
 	{
+		Renderer::shutdown();
 	}
 
 	void Application::onEvent(Event& e)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 
 		dispatcher.dispatch<WindowCloseEvent>(AZ_BIND_EVENT_FN(Application::onWindowClose));
@@ -50,12 +56,18 @@ namespace Azteck
 
 	void Application::pushLayer(Layer* layer)
 	{
+		if (layer == nullptr)
+			return;
+
 		_layerStack.pushLayer(layer);
 		layer->onAttach();
 	}
 
 	void Application::pushOverlay(Layer* layer)
 	{
+		if (layer == nullptr)
+			return;
+
 		_layerStack.pushOverlay(layer);
 		layer->onAttach();
 	}
@@ -68,6 +80,8 @@ namespace Azteck
 
 	bool Application::onWindowResized(WindowResizedEvent& e)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uint32_t width = e.getWidth();
 		uint32_t height = e.getHeight();
 
@@ -82,22 +96,33 @@ namespace Azteck
 
 	void Application::run()
 	{
+		AZ_PROFILE_FUNCTION();
+
 		while (_isRunning)
 		{
+			AZ_PROFILE_SCOPE("Run loop");
+
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - _lastFrameTime;
 			_lastFrameTime = time;
 
 			if (!_isMinimised)
 			{
-				for (Layer* layer : _layerStack)
-					layer->onUpdate(timestep);
-			}
+				{
+					AZ_PROFILE_SCOPE("Layer updates");
 
-			_imGuiLayer->begin();
-			for (Layer* layer : _layerStack)
-				layer->onImGuiRender();
-			_imGuiLayer->end();
+					for (Layer* layer : _layerStack)
+						layer->onUpdate(timestep);
+				}
+
+				_imGuiLayer->begin();
+				{
+					AZ_PROFILE_SCOPE("Layer imGui rendering");
+					for (Layer* layer : _layerStack)
+						layer->onImGuiRender();
+				}
+				_imGuiLayer->end();
+			}
 
 			_window->onUpdate();
 		}
