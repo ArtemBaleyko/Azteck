@@ -1,7 +1,5 @@
 #pragma once
 
-// From glfw3.h
-
 /* Printable keys */
 #define AZ_KEY_SPACE              32
 #define AZ_KEY_APOSTROPHE         39  /* ' */

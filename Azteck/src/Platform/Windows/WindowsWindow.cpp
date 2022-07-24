@@ -1,6 +1,7 @@
 #include "azpch.h"
 #include "WindowsWindow.h"
 
+#include "Azteck/Renderer/Renderer.h"
 #include "Azteck/Events/ApplicationEvent.h"
 #include "Azteck/Events/KeyEvent.h"
 #include "Azteck/Events/MouseEvent.h"
@@ -81,6 +82,11 @@ namespace Azteck
 
 			glfwInitialized = true;
 		}
+
+	#if defined(AZ_DEBUG)
+			if (Renderer::getAPI() == RendererAPI::API::OpenGL)
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	#endif
 
 		_window = glfwCreateWindow(static_cast<int>(props.width), static_cast<int>(props.height), _data.title.c_str(), nullptr, nullptr);
 		_context = GraphicsContext::create(_window);

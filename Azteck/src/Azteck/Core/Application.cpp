@@ -23,7 +23,7 @@ namespace Azteck
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
 
-		_window = std::unique_ptr<Window>(Window::Create());
+		_window = Window::Create();
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();
@@ -46,9 +46,9 @@ namespace Azteck
 		dispatcher.dispatch<WindowCloseEvent>(AZ_BIND_EVENT_FN(Application::onWindowClose));
 		dispatcher.dispatch<WindowResizedEvent>(AZ_BIND_EVENT_FN(Application::onWindowResized));
 
-		for (auto it = _layerStack.end(); it != _layerStack.begin();)
+		for (auto it = _layerStack.rbegin(); it != _layerStack.rend(); ++it)
 		{
-			(*--it)->onEvent(e);
+			(*it)->onEvent(e);
 			if (e.isHandled())
 				break;
 		}
