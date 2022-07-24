@@ -72,21 +72,36 @@ namespace Azteck
 
 	void OpenGLShader::setMat4(const std::string& name, const glm::mat4& value)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uploadUniformMat4(name, value);
+	}
+
+	void OpenGLShader::setFloat(const std::string& name, float value)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		uploadUniformFloat(name, value);
 	}
 
 	void OpenGLShader::setFloat3(const std::string& name, const glm::vec3& value)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uploadUniformFloat3(name, value);
 	}
 
 	void OpenGLShader::setFloat4(const std::string& name, const glm::vec4& value)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uploadUniformFloat4(name, value);
 	}
 
 	void OpenGLShader::setInt(const std::string& name, int value)
 	{
+		AZ_PROFILE_FUNCTION();
+
 		uploadUniformInt(name, value);
 	}
 

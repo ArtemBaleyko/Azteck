@@ -84,20 +84,40 @@ namespace Azteck
 
 	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		drawQuad(position, size, _data->whiteTexture, color);
+		drawQuad(position, size, _data->whiteTexture, color, 1.0f);
 	}
 
-	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
-		drawQuad({ position.x, position.y, 0.0f }, size, texture);
+		drawQuad({ position.x, position.y, 0.0f }, size, texture, tilingFactor, tintColor);
 	}
 
-	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
-		drawQuad(position, size, texture, glm::vec4(1.0f));
+		drawQuad(position, size, texture, tintColor, tilingFactor);
 	}
 
-	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color)
+	void Renderer2D::drawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
+	{
+		drawRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, color);
+	}
+
+	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color)
+	{
+		drawRotatedQuad(position, size, rotation, _data->whiteTexture, color, 1.0f);
+	}
+
+	void Renderer2D::drawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		drawRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, texture, tilingFactor, tintColor);
+	}
+
+	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		drawRotatedQuad(position, size, rotation, texture, tintColor, tilingFactor);
+	}
+
+	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
 	{
 		AZ_PROFILE_FUNCTION();
 
@@ -108,6 +128,25 @@ namespace Azteck
 
 		_data->textureShader->setMat4("u_Transform", transform);
 		_data->textureShader->setFloat4("u_Color", color);
+		_data->textureShader->setFloat("u_TilingFactor", tilingFactor);
+
+		_data->vertexArray->bind();
+		RenderCommand::drawIndexed(_data->vertexArray);
+	}
+
+	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
+		transform = glm::rotate(transform, rotation, { 0.0f, 0.0f, 1.0f });
+		transform = glm::scale(transform, { size.x, size.y, 1.0f });
+
+		texture->bind();
+
+		_data->textureShader->setMat4("u_Transform", transform);
+		_data->textureShader->setFloat4("u_Color", color);
+		_data->textureShader->setFloat("u_TilingFactor", tilingFactor);
 
 		_data->vertexArray->bind();
 		RenderCommand::drawIndexed(_data->vertexArray);
