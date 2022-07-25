@@ -19,6 +19,8 @@ namespace Azteck
 		inline static float getMouseX() { return _instance->getMouseXImpl(); };
 		inline static float getMouseY() { return _instance->getMouseYImpl(); };
 
+		static Scope<Input> create();
+
 	protected:
 		Input() = default;
 

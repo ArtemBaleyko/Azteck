@@ -16,11 +16,6 @@ namespace Azteck
 		AZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Scope<Window> Window::Create(const WindowProps& props)
-	{
-		return createScope<WindowsWindow>(props);
-	}
-
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
 		AZ_PROFILE_FUNCTION();

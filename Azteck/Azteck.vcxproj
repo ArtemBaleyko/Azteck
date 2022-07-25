@@ -597,9 +597,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Azteck\Core\Application.cpp" />
+    <ClCompile Include="src\Azteck\Core\Input.cpp" />
     <ClCompile Include="src\Azteck\Core\Layer.cpp" />
     <ClCompile Include="src\Azteck\Core\LayerStack.cpp" />
     <ClCompile Include="src\Azteck\Core\Log.cpp" />
+    <ClCompile Include="src\Azteck\Core\Window.cpp" />
     <ClCompile Include="src\Azteck\Debug\Instrumentor.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiLayer.cpp" />

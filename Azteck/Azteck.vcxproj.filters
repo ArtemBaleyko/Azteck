@@ -1499,5 +1499,7 @@
     </ClCompile>
     <ClCompile Include="src\Azteck\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="src\Azteck\Debug\Instrumentor.cpp" />
+    <ClCompile Include="src\Azteck\Core\Input.cpp" />
+    <ClCompile Include="src\Azteck\Core\Window.cpp" />
   </ItemGroup>
 </Project>

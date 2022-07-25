@@ -6,8 +6,6 @@
 
 namespace Azteck
 {
-	Scope<Input> Input::_instance = createScope<WindowsInput>();
-
 	bool WindowsInput::isKeyPressedImpl(KeyCode keyCode)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());

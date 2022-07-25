@@ -23,7 +23,7 @@ namespace Azteck
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
 
-		_window = Window::Create();
+		_window = Window::create();
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();
