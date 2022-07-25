@@ -1,17 +1,14 @@
 #pragma once
 
-#include <string>
-#include <chrono>
-#include <algorithm>
-#include <fstream>
-#include <thread>
-
 namespace Azteck
 {
+	using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
+
 	struct ProfileResult
 	{
 		std::string name;
-		long long start, end;
+		FloatingPointMicroseconds start;
+		std::chrono::microseconds elapsedTime;
 		std::thread::id threadID;
 	};
 
@@ -58,7 +55,7 @@ namespace Azteck
 
 	private:
 		const char* _name;
-		std::chrono::time_point<std::chrono::high_resolution_clock> _startTimepoint;
+		std::chrono::time_point<std::chrono::steady_clock> _startTimepoint;
 		bool _stopped;
 	};
 }
