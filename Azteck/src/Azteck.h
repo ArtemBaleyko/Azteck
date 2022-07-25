@@ -12,7 +12,7 @@
 
 #include "Azteck/Core/Input.h"
 #include "Azteck/Core/KeyCodes.h"
-#include "Azteck/Core/MouseButtonCodes.h"
+#include "Azteck/Core/MouseCodes.h"
 
 #include "Azteck/ImGui/ImGuiLayer.h"
 

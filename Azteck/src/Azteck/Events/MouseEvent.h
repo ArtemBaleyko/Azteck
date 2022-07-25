@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Event.h"
+#include "Azteck/Events/Event.h"
+#include "Azteck/Core/Input.h"
 
 namespace Azteck
 {
@@ -59,24 +60,24 @@ namespace Azteck
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int getMouseButton() const { return _buttonCode; }
+		inline MouseCode getMouseButton() const { return _buttonCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	protected:
-		MouseButtonEvent(int buttonCode)
+		MouseButtonEvent(MouseCode buttonCode)
 			: _buttonCode(buttonCode)
 		{}
 
 	protected:
-		int _buttonCode;
+		MouseCode _buttonCode;
 	};
 
 	//---------------------------------------------------------------------------------------------
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int buttonCode)
+		MouseButtonPressedEvent(MouseCode buttonCode)
 			: MouseButtonEvent(buttonCode)
 		{}
 
@@ -94,7 +95,7 @@ namespace Azteck
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int buttonCode)
+		MouseButtonReleasedEvent(MouseCode buttonCode)
 			: MouseButtonEvent(buttonCode)
 		{}
 

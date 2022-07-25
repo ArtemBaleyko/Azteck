@@ -8,7 +8,7 @@ namespace Azteck
 {
 	Scope<Input> Input::_instance = createScope<WindowsInput>();
 
-	bool WindowsInput::isKeyPressedImpl(int keyCode)
+	bool WindowsInput::isKeyPressedImpl(KeyCode keyCode)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
@@ -18,11 +18,11 @@ namespace Azteck
 			return false;
 		}
 
-		int state = glfwGetKey(window, keyCode);
+		int state = glfwGetKey(window, static_cast<int32_t>(keyCode));
 		return state == GLFW_PRESS;
 	}
 
-	bool WindowsInput::isMouseButtonPressedImpl(int button)
+	bool WindowsInput::isMouseButtonPressedImpl(MouseCode button)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
@@ -32,7 +32,7 @@ namespace Azteck
 			return false;
 		}
 
-		int state = glfwGetMouseButton(window, button);
+		int state = glfwGetMouseButton(window, static_cast<int32_t>(button));
 		return state == GLFW_PRESS;
 	}
 

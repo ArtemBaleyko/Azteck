@@ -1,28 +1,29 @@
 #pragma once
 
-#include "Event.h"
+#include "Azteck/Events/Event.h"
+#include "Azteck/Core/Input.h"
 
 namespace Azteck
 {
 	class KeyEvent : public Event
 	{
 	public:
-		inline int getKeyCode() const { return _keyCode; }
+		inline KeyCode getKeyCode() const { return _keyCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
-		KeyEvent(int keyCode)
+		KeyEvent(KeyCode keyCode)
 			: _keyCode(keyCode) {}
 
 	protected:
-		int _keyCode;
+		KeyCode _keyCode;
 	};
 
 	//---------------------------------------------------------------------------------------------
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keyCode, int repeatCount)
+		KeyPressedEvent(KeyCode keyCode, int repeatCount)
 			: KeyEvent(keyCode)
 			, _repeatCount(repeatCount)
 		{}
@@ -45,7 +46,7 @@ namespace Azteck
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int keyCode)
+		KeyReleasedEvent(KeyCode keyCode)
 			: KeyEvent(keyCode)
 		{}
 
@@ -63,7 +64,7 @@ namespace Azteck
 	class KeyTypedEvent : public KeyEvent
 	{
 	public:
-		KeyTypedEvent(int keyCode)
+		KeyTypedEvent(KeyCode keyCode)
 			: KeyEvent(keyCode)
 		{}
 

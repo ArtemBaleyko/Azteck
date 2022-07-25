@@ -149,7 +149,7 @@
     <ClInclude Include="src\Azteck\Core\Layer.h" />
     <ClInclude Include="src\Azteck\Core\LayerStack.h" />
     <ClInclude Include="src\Azteck\Core\Log.h" />
-    <ClInclude Include="src\Azteck\Core\MouseButtonCodes.h" />
+    <ClInclude Include="src\Azteck\Core\MouseCodes.h" />
     <ClInclude Include="src\Azteck\Core\Timestep.h" />
     <ClInclude Include="src\Azteck\Core\Window.h" />
     <ClInclude Include="src\Azteck\Debug\Instrumentor.h" />

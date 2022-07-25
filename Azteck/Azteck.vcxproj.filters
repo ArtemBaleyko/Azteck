@@ -84,9 +84,6 @@
     <ClInclude Include="src\Azteck\Core\Log.h">
       <Filter>src\Azteck\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Azteck\Core\MouseButtonCodes.h">
-      <Filter>src\Azteck\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\Azteck\Core\Timestep.h">
       <Filter>src\Azteck\Core</Filter>
     </ClInclude>
@@ -1419,6 +1416,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Azteck\Core\MouseCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Azteck\Core\Application.cpp">
