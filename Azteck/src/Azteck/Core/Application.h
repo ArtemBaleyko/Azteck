@@ -12,6 +12,8 @@
 #include "Azteck/Renderer/OrthographicCamera.h"
 #include "Azteck/Core/Timestep.h"
 
+int main(int argc, char** argv);
+
 namespace Azteck
 {
 	class  Application
@@ -19,8 +21,6 @@ namespace Azteck
 	public:
 		Application();
 		virtual ~Application();
-
-		void run();
 
 		void onEvent(Event& e);
 
@@ -32,6 +32,8 @@ namespace Azteck
 		inline static Application& getInstance() { return *_instance; }
 
 	private:
+		void run();
+
 		bool onWindowClose(WindowCloseEvent& e);
 		bool onWindowResized(WindowResizedEvent& e);
 
@@ -44,8 +46,11 @@ namespace Azteck
 		bool _isMinimised;
 		bool _isRunning;
 		float _lastFrameTime;
+
 	private:
 		static Application* _instance;
+
+		friend int ::main(int argc, char** argv);
 	};
 
 	// To be defined in client
