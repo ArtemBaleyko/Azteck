@@ -4,126 +4,66 @@
 #include <chrono>
 #include <algorithm>
 #include <fstream>
-
 #include <thread>
 
 namespace Azteck
 {
 	struct ProfileResult
 	{
-		std::string Name;
-		long long Start, End;
-		uint32_t ThreadID;
+		std::string name;
+		long long start, end;
+		std::thread::id threadID;
 	};
 
 	struct InstrumentationSession
 	{
-		std::string Name;
+		std::string name;
 	};
 
+	//------------------------------------------------------------------
 	class Instrumentor
 	{
-	private:
-		InstrumentationSession* m_CurrentSession;
-		std::ofstream m_OutputStream;
-		int m_ProfileCount;
 	public:
-		Instrumentor()
-			: m_CurrentSession(nullptr), m_ProfileCount(0)
-		{
-		}
+		Instrumentor();
 
-		void BeginSession(const std::string& name, const std::string& filepath = "results.json")
-		{
-			m_OutputStream.open(filepath);
-			WriteHeader();
-			m_CurrentSession = new InstrumentationSession{ name };
-		}
+		void beginSession(const std::string& name, const std::string& filepath = "results.json");
+		void endSession();
 
-		void EndSession()
-		{
-			WriteFooter();
-			m_OutputStream.close();
-			delete m_CurrentSession;
-			m_CurrentSession = nullptr;
-			m_ProfileCount = 0;
-		}
+		void writeProfile(const ProfileResult& result);
 
-		void WriteProfile(const ProfileResult& result)
-		{
-			if (m_ProfileCount++ > 0)
-				m_OutputStream << ",";
+		static Instrumentor& get();
 
-			std::string name = result.Name;
-			std::replace(name.begin(), name.end(), '"', '\'');
+	private:
+		void writeHeader();
+		void writeFooter();
 
-			m_OutputStream << "{";
-			m_OutputStream << "\"cat\":\"function\",";
-			m_OutputStream << "\"dur\":" << (result.End - result.Start) << ',';
-			m_OutputStream << "\"name\":\"" << name << "\",";
-			m_OutputStream << "\"ph\":\"X\",";
-			m_OutputStream << "\"pid\":0,";
-			m_OutputStream << "\"tid\":" << result.ThreadID << ",";
-			m_OutputStream << "\"ts\":" << result.Start;
-			m_OutputStream << "}";
+		// Note: you must already own lock on _mutex before
+		// calling internalEndSession()
+		void internalEndSession();
 
-			m_OutputStream.flush();
-		}
-
-		void WriteHeader()
-		{
-			m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
-			m_OutputStream.flush();
-		}
-
-		void WriteFooter()
-		{
-			m_OutputStream << "]}";
-			m_OutputStream.flush();
-		}
-
-		static Instrumentor& Get()
-		{
-			static Instrumentor instance;
-			return instance;
-		}
+	private:
+		InstrumentationSession* _currentSession;
+		std::ofstream _outputStream;
+		std::mutex _mutex;
 	};
 
+	//------------------------------------------------------------------
 	class InstrumentationTimer
 	{
 	public:
-		InstrumentationTimer(const char* name)
-			: m_Name(name), m_Stopped(false)
-		{
-			m_StartTimepoint = std::chrono::high_resolution_clock::now();
-		}
+		InstrumentationTimer(const char* name);
+		~InstrumentationTimer();
 
-		~InstrumentationTimer()
-		{
-			if (!m_Stopped)
-				Stop();
-		}
+		void stop();
 
-		void Stop()
-		{
-			auto endTimepoint = std::chrono::high_resolution_clock::now();
-
-			long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
-			long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
-
-			uint32_t threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
-			Instrumentor::Get().WriteProfile({ m_Name, start, end, threadID });
-
-			m_Stopped = true;
-		}
 	private:
-		const char* m_Name;
-		std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
-		bool m_Stopped;
+		const char* _name;
+		std::chrono::time_point<std::chrono::high_resolution_clock> _startTimepoint;
+		bool _stopped;
 	};
 }
 
-#define AZ_PROFILE 1
+#define AZ_PROFILE 0
 #if AZ_PROFILE
 
 	// Resolve which function signature macro will be used.Note that this only
@@ -147,8 +87,8 @@ namespace Azteck
 		#define AZ_FUNC_SIG "HZ_FUNC_SIG unknown!"
 	#endif
 
-	#define AZ_PROFILE_BEGIN_SESSION(name, filepath) ::Azteck::Instrumentor::Get().BeginSession(name, filepath)
-	#define AZ_PROFILE_END_SESSION() ::Azteck::Instrumentor::Get().EndSession()
+	#define AZ_PROFILE_BEGIN_SESSION(name, filepath) ::Azteck::Instrumentor::get().beginSession(name, filepath)
+	#define AZ_PROFILE_END_SESSION() ::Azteck::Instrumentor::get().endSession()
 	#define AZ_PROFILE_SCOPE(name) ::Azteck::InstrumentationTimer timer##__LINE__(name)
 	#define AZ_PROFILE_FUNCTION() AZ_PROFILE_SCOPE(AZ_FUNC_SIG)
 #else

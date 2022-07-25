@@ -600,6 +600,7 @@
     <ClCompile Include="src\Azteck\Core\Layer.cpp" />
     <ClCompile Include="src\Azteck\Core\LayerStack.cpp" />
     <ClCompile Include="src\Azteck\Core\Log.cpp" />
+    <ClCompile Include="src\Azteck\Debug\Instrumentor.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Azteck\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Azteck\Renderer\Buffer.cpp" />
