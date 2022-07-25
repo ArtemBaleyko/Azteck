@@ -3,6 +3,9 @@
 bin/
 bin-int/
 
+# Log files
+*.log
+
 # User specific files
 *.user
 

@@ -2,6 +2,7 @@
 #include "Azteck/Core/Log.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 namespace Azteck
 {
@@ -10,12 +11,21 @@ namespace Azteck
 
 	void Log::init()
 	{
-		spdlog::set_pattern("%^[%T] %n: %v%$");
+		std::vector<spdlog::sink_ptr> logSinks;
+		logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Azteck.log", true));
 
-		_coreLogger = spdlog::stdout_color_mt("Azteck");
+		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
+		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
+
+		_coreLogger = std::make_shared<spdlog::logger>("AZTECK", begin(logSinks), end(logSinks));
+		spdlog::register_logger(_coreLogger);
 		_coreLogger->set_level(spdlog::level::trace);
+		_coreLogger->flush_on(spdlog::level::trace);
 
-		_clientLogger = spdlog::stdout_color_mt("App");
+		_clientLogger = std::make_shared<spdlog::logger>("APP", begin(logSinks), end(logSinks));
+		spdlog::register_logger(_clientLogger);
 		_clientLogger->set_level(spdlog::level::trace);
+		_clientLogger->flush_on(spdlog::level::trace);
 	}
 }
