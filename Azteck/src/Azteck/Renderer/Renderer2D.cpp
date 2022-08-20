@@ -9,72 +9,130 @@
 
 namespace Azteck
 {
-	struct Renderer2DStorage
+	struct QuadVertex
 	{
-		Ref<VertexArray> vertexArray;
-		Ref<Shader> textureShader;
-		Ref<Texture2D> whiteTexture;
+		glm::vec3 position;
+		glm::vec4 color;
+		glm::vec2 texCoord;
+		float texIndex;
+		float tilingFactor;
 	};
 
-	static Renderer2DStorage* _data;
+	struct Renderer2DData
+	{
+		const uint32_t maxQuads = 10000;
+		const uint32_t maxVertices = maxQuads * 4;
+		const uint32_t maxIndices = maxQuads * 6;
+		static const uint32_t maxTextureSlots = 32;
+
+		Ref<VertexArray> quadVertexArray;
+		Ref<VertexBuffer> quadVertexBuffer;
+		Ref<Shader> quadTextureShader;
+		Ref<Texture2D> whiteTexture;
+
+		uint32_t quadIndexCount = 0;
+
+		QuadVertex* quadVertexBufferBase = nullptr;
+		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		std::array<Ref<Texture2D>, maxTextureSlots> textureSlots;
+		uint32_t textureSlotIndex = 1;
+	};
+
+	static Renderer2DData _data;
 
 	void Renderer2D::init()
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_data = new Renderer2DStorage;
-		_data->vertexArray = VertexArray::create();
+		_data.quadVertexArray = VertexArray::create();
 
-		float vertices[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-		};
-
-		Ref<VertexBuffer> vertexBuffer = VertexBuffer::create(vertices, sizeof(vertices));
+		_data.quadVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(QuadVertex));
 
 		BufferLayout layout = {
 			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float2, "a_TexCoord"}
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float2, "a_TexCoord"},
+			{ShaderDataType::Float, "a_TexIndex"},
+			{ShaderDataType::Float, "a_TilingFactor"},
 		};
 
-		vertexBuffer->setLayout(layout);
-		_data->vertexArray->addVertexBuffer(vertexBuffer);
+		_data.quadVertexBuffer->setLayout(layout);
+		_data.quadVertexArray->addVertexBuffer(_data.quadVertexBuffer);
 
-		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
+		_data.quadVertexBufferBase = new QuadVertex[_data.maxVertices];
 
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, 6);
+		uint32_t* indices = new uint32_t[_data.maxIndices];
 
-		_data->vertexArray->setIndexBuffer(indexBuffer);
+		uint32_t offset = 0;
+		for (uint32_t i = 0; i < _data.maxIndices; i += 6)
+		{
+			indices[i + 0] = offset + 0;
+			indices[i + 1] = offset + 1;
+			indices[i + 2] = offset + 2;
 
-		_data->whiteTexture = Texture2D::create(1, 1);
+			indices[i + 3] = offset + 2;
+			indices[i + 4] = offset + 3;
+			indices[i + 5] = offset + 0;
+
+			offset += 4;
+		}
+
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
+		_data.quadVertexArray->setIndexBuffer(indexBuffer);
+
+		delete[] indices;
+
+		_data.whiteTexture = Texture2D::create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
-		_data->whiteTexture->setData(&whiteTextureData, sizeof(whiteTextureData));
+		_data.whiteTexture->setData(&whiteTextureData, sizeof(whiteTextureData));
 
-		_data->textureShader = Shader::create("assets/shaders/Texture.glsl");
-		_data->textureShader->bind();
-		_data->textureShader->setInt("u_Texture", 0);
+		int32_t samplers[_data.maxTextureSlots];
+		for (int32_t i = 0; i < _data.maxTextureSlots; i++)
+			samplers[i] = i;
+
+		_data.quadTextureShader = Shader::create("assets/shaders/Texture.glsl");
+		_data.quadTextureShader->bind();
+		_data.quadTextureShader->setIntArray("u_Textures", samplers, _data.maxTextureSlots);
+
+		_data.textureSlots[0] = _data.whiteTexture;
 	}
 
 	void Renderer2D::shutdown()
 	{
 		AZ_PROFILE_FUNCTION();
 
-		delete _data;
+		delete[] _data.quadVertexBufferBase;
 	}
 
 	void Renderer2D::beginScene(const OrthographicCamera& camera)
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_data->textureShader->bind();
-		_data->textureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+		_data.quadTextureShader->bind();
+		_data.quadTextureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+
+		_data.quadIndexCount = 0;
+		_data.textureSlotIndex = 1;
+		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
 	}
 
 	void Renderer2D::endScene()
 	{
 		AZ_PROFILE_FUNCTION();
+
+		uint32_t dataSize = (uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase;
+		_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
+
+		flush();
+	}
+
+	void Renderer2D::flush()
+	{
+		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
+			_data.textureSlots[i]->bind(i);
+
+		RenderCommand::drawIndexed(_data.quadVertexArray, _data.quadIndexCount);
 	}
 
 	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -84,7 +142,7 @@ namespace Azteck
 
 	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
-		drawQuad(position, size, _data->whiteTexture, color, 1.0f);
+		drawQuad(position, size, _data.whiteTexture, color, 1.0f);
 	}
 
 	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -104,7 +162,7 @@ namespace Azteck
 
 	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color)
 	{
-		drawRotatedQuad(position, size, rotation, _data->whiteTexture, color, 1.0f);
+		drawRotatedQuad(position, size, rotation, _data.whiteTexture, color, 1.0f);
 	}
 
 	void Renderer2D::drawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
@@ -121,17 +179,66 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
-		transform = glm::scale(transform, { size.x, size.y, 1.0f });
+		float textureIndex = -1.0f;
 
-		texture->bind();
+		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
+		{
+			if (*_data.textureSlots[i] == *texture)
+			{
+				textureIndex = (float)i;
+				break;
+			}
+		}
 
-		_data->textureShader->setMat4("u_Transform", transform);
-		_data->textureShader->setFloat4("u_Color", color);
-		_data->textureShader->setFloat("u_TilingFactor", tilingFactor);
+		if (textureIndex == -1.0f)
+		{
+			textureIndex = (float)_data.textureSlotIndex;
+			_data.textureSlots[_data.textureSlotIndex] = texture;
 
-		_data->vertexArray->bind();
-		RenderCommand::drawIndexed(_data->vertexArray);
+			_data.textureSlotIndex++;
+		}
+
+		_data.quadVertexBufferPtr->position = position;
+		_data.quadVertexBufferPtr->color = color;
+		_data.quadVertexBufferPtr->texCoord = { 0.0f, 0.0f };
+		_data.quadVertexBufferPtr->texIndex = textureIndex;
+		_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		_data.quadVertexBufferPtr++;
+
+		_data.quadVertexBufferPtr->position = { position.x + size.x, position.y, 0.0f };
+		_data.quadVertexBufferPtr->color = color;
+		_data.quadVertexBufferPtr->texCoord = { 1.0f, 0.0f };
+		_data.quadVertexBufferPtr->texIndex = textureIndex;
+		_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		_data.quadVertexBufferPtr++;
+
+		_data.quadVertexBufferPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+		_data.quadVertexBufferPtr->color = color;
+		_data.quadVertexBufferPtr->texCoord = { 1.0f, 1.0f };
+		_data.quadVertexBufferPtr->texIndex = textureIndex;
+		_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		_data.quadVertexBufferPtr++;
+
+		_data.quadVertexBufferPtr->position = { position.x, position.y + size.y, 0.0f };
+		_data.quadVertexBufferPtr->color = color;
+		_data.quadVertexBufferPtr->texCoord = { 0.0f, 1.0f };
+		_data.quadVertexBufferPtr->texIndex = textureIndex;
+		_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+		_data.quadVertexBufferPtr++;
+
+		_data.quadIndexCount += 6;
+
+		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
+		//transform = glm::scale(transform, { size.x, size.y, 1.0f });
+
+		//texture->bind();
+
+		//_data.textureShader->setMat4("u_Transform", transform);
+		//_data.textureShader->setFloat4("u_Color", color);
+		//_data.textureShader->setFloat("u_TilingFactor", tilingFactor);
+
+		//_data.vertexArray->bind();
+		//RenderCommand::drawIndexed(_data.vertexArray);
 	}
 
 	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
@@ -144,11 +251,11 @@ namespace Azteck
 
 		texture->bind();
 
-		_data->textureShader->setMat4("u_Transform", transform);
-		_data->textureShader->setFloat4("u_Color", color);
-		_data->textureShader->setFloat("u_TilingFactor", tilingFactor);
+		_data.quadTextureShader->setMat4("u_Transform", transform);
+		_data.quadTextureShader->setFloat4("u_Color", color);
+		_data.quadTextureShader->setFloat("u_TilingFactor", tilingFactor);
 
-		_data->vertexArray->bind();
-		RenderCommand::drawIndexed(_data->vertexArray);
+		_data.quadVertexArray->bind();
+		RenderCommand::drawIndexed(_data.quadVertexArray);
 	}
 }

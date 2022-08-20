@@ -24,6 +24,8 @@ namespace Azteck
 		void setFloat4(const std::string& name, const glm::vec4& value) override;
 		void setInt(const std::string& name, int value) override;
 
+		void setIntArray(const std::string& name, int* values, uint32_t count) override;
+
 		inline const std::string& getName() const override { return _name; };
 
 		void uploadUniformMat3(const std::string& name, const glm::mat3& matrix);
@@ -35,6 +37,8 @@ namespace Azteck
 		void uploadUniformFloat4(const std::string& name, const glm::vec4& values);
 
 		void uploadUniformInt(const std::string& name, int value);
+
+		void uploadUniformIntArray(const std::string& name, int* values, uint32_t count);
 
 	private:
 		std::string readFile(const std::string& filepath);

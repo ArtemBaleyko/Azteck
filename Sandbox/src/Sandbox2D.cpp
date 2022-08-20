@@ -38,7 +38,7 @@ void Sandbox2D::onUpdate(Azteck::Timestep timestep)
 
 	Azteck::Renderer2D::drawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, _squareColor);
 	Azteck::Renderer2D::drawQuad({ 0.5f, -0.5f }, { 0.5f, 0.9f }, { 1.0f, 0.0f, 0.0f, 1.0f });
-	Azteck::Renderer2D::drawQuad({ 0.0f, 0.0f, -0.1f }, { 10.0f, 10.0f }, _texture, 10.0f, glm::vec4(1.0f, 0.9f, 0.9f, 1.0f));
+	Azteck::Renderer2D::drawQuad({ -5.0f, -5.0f, -0.1f }, { 10.0f, 10.0f }, _texture, 10.0f, glm::vec4(1.0f, 0.9f, 0.9f, 1.0f));
 
 	Azteck::Renderer2D::endScene();
 }

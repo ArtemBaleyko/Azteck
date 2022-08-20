@@ -105,6 +105,13 @@ namespace Azteck
 		uploadUniformInt(name, value);
 	}
 
+	void OpenGLShader::setIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		uploadUniformIntArray(name, values, count);
+	}
+
 	void OpenGLShader::uploadUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
 		int location = glGetUniformLocation(_rendererId, name.c_str());
@@ -145,6 +152,12 @@ namespace Azteck
 	{
 		int location = glGetUniformLocation(_rendererId, name.c_str());
 		glUniform1i(location, value);
+	}
+
+	void OpenGLShader::uploadUniformIntArray(const std::string& name, int* values, uint32_t count)
+	{
+		int location = glGetUniformLocation(_rendererId, name.c_str());
+		glUniform1iv(location, count, values);
 	}
 
 	std::string OpenGLShader::readFile(const std::string& filepath)

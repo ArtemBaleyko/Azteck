@@ -21,6 +21,8 @@ namespace Azteck
 
 		void bind(uint32_t slot = 0) const override;
 
+		bool operator==(const Texture& other) const override;
+
 	private:
 		std::string _path;
 		uint32_t _width;

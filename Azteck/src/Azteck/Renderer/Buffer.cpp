@@ -6,6 +6,29 @@
 
 namespace Azteck
 {
+	Ref<VertexBuffer> VertexBuffer::create(uint32_t size)
+	{
+		switch (Renderer::getAPI())
+		{
+		case RendererAPI::API::None:
+		{
+			AZ_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			return nullptr;
+		}
+
+		case RendererAPI::API::OpenGL:
+		{
+			return createRef<OpenGLVertexBuffer>(size);
+		}
+
+		default:
+		{
+			AZ_CORE_ASSERT(false, "RendererAPI type is unknown");
+			return nullptr;
+		}
+		}
+	}
+
 	Ref<VertexBuffer> VertexBuffer::create(float* vertices, uint32_t size)
 	{
 		switch (Renderer::getAPI())

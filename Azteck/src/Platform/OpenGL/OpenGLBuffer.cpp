@@ -8,6 +8,15 @@ namespace Azteck
 	/////////////////////////////////////////////////////////////////////////////
 	//-----------Vertex Buffer---------------------------------------------------
 	/////////////////////////////////////////////////////////////////////////////
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		glCreateBuffers(1, &_rendererId);
+		glBindBuffer(GL_ARRAY_BUFFER, _rendererId);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	}
+
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	{
 		AZ_PROFILE_FUNCTION();
@@ -46,6 +55,12 @@ namespace Azteck
 	void OpenGLVertexBuffer::setLayout(const BufferLayout& layout)
 	{
 		_layout = layout;
+	}
+
+	void OpenGLVertexBuffer::setData(const void* data, uint32_t size)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, _rendererId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
