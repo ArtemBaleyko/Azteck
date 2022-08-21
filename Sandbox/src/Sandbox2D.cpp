@@ -31,14 +31,28 @@ void Sandbox2D::onUpdate(Azteck::Timestep timestep)
 
 	_cameraController.onUpdate(timestep);
 
+	Azteck::Renderer2D::resetStats();
+
 	Azteck::RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	Azteck::RenderCommand::clear();
 
 	Azteck::Renderer2D::beginScene(_cameraController.getCamera());
-
 	Azteck::Renderer2D::drawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, _squareColor);
 	Azteck::Renderer2D::drawQuad({ 0.5f, -0.5f }, { 0.5f, 0.9f }, { 1.0f, 0.0f, 0.0f, 1.0f });
-	Azteck::Renderer2D::drawQuad({ -5.0f, -5.0f, -0.1f }, { 10.0f, 10.0f }, _texture, 10.0f, glm::vec4(1.0f, 0.9f, 0.9f, 1.0f));
+	Azteck::Renderer2D::drawQuad(glm::vec3(0.0f), {10.0f, 10.0f}, _texture, 10.0f, glm::vec4(1.0f, 0.9f, 0.9f, 1.0f));
+	Azteck::Renderer2D::drawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 6.0f, 6.0f }, 45.0f, {0.0f, 1.0f, 0.0f, 1.0f});
+	Azteck::Renderer2D::endScene();
+
+	Azteck::Renderer2D::beginScene(_cameraController.getCamera());
+
+	for (float y = -5.0f; y < 5.0f; y += 0.5f)
+	{
+		for (float x = -5.0f; x < 5.0f; x += 0.5f)
+		{
+			glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 1.0f};
+			Azteck::Renderer2D::drawQuad({ x, y, 0.1f }, { 0.45f, 0.45f }, color);
+		}
+	}
 
 	Azteck::Renderer2D::endScene();
 }
@@ -51,6 +65,14 @@ void Sandbox2D::onEvent(Azteck::Event& e)
 void Sandbox2D::onImGuiRender()
 {
 	ImGui::Begin("Settings");
+
+	auto stats = Azteck::Renderer2D::getStats();
+	ImGui::Text("Renderer 2D stats:");
+	ImGui::Text("Draw calls: %d", stats.drawCalls);
+	ImGui::Text("Quads: %d", stats.quadCount);
+	ImGui::Text("Vertices: %d", stats.getTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.getTotalIndexCount());
+
 	ImGui::ColorEdit4("Color", glm::value_ptr(_squareColor));
 	ImGui::End();
 }
