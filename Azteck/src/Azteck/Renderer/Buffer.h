@@ -66,8 +66,8 @@ namespace Azteck
 				case Azteck::ShaderDataType::Float2:	return 2;
 				case Azteck::ShaderDataType::Float3:	return 3;
 				case Azteck::ShaderDataType::Float4:	return 4;
-				case Azteck::ShaderDataType::Mat3:		return 9;
-				case Azteck::ShaderDataType::Mat4:		return 16;
+				case Azteck::ShaderDataType::Mat3:		return 3;
+				case Azteck::ShaderDataType::Mat4:		return 4;
 				case Azteck::ShaderDataType::Bool:		return 1;
 				default:
 				{

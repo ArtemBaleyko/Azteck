@@ -213,6 +213,9 @@ namespace Azteck
 
 		if (textureIndex == -1.0f)
 		{
+			if (_data.textureSlotIndex >= Renderer2DData::maxTextureSlots)
+				flushAndReset();
+
 			textureIndex = (float)_data.textureSlotIndex;
 			_data.textureSlots[_data.textureSlotIndex] = texture;
 
@@ -257,6 +260,9 @@ namespace Azteck
 
 		if (textureIndex == -1.0f)
 		{
+			if (_data.textureSlotIndex >= Renderer2DData::maxTextureSlots)
+				flushAndReset();
+
 			textureIndex = (float)_data.textureSlotIndex;
 			_data.textureSlots[_data.textureSlotIndex] = texture;
 

@@ -70,15 +70,49 @@ namespace Azteck
 
 		for (const BufferElement& element : layout)
 		{
-			glEnableVertexAttribArray(_vertexBufferIndex);
-			glVertexAttribPointer(_vertexBufferIndex,
-				element.getComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.type),
-				element.normalized ? GL_TRUE : GL_FALSE,
-				layout.getStride(),
-				(const void*)(intptr_t)element.offset);
-
-			_vertexBufferIndex++;
+			switch (element.type)
+			{
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+				{
+					glEnableVertexAttribArray(_vertexBufferIndex);
+					glVertexAttribPointer(_vertexBufferIndex,
+						element.getComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.type),
+						element.normalized ? GL_TRUE : GL_FALSE,
+						layout.getStride(),
+						(const void*)element.offset);
+					_vertexBufferIndex++;
+					break;
+				}
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+				{
+					uint8_t count = element.getComponentCount();
+					for (uint8_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(_vertexBufferIndex);
+						glVertexAttribPointer(_vertexBufferIndex,
+							count,
+							ShaderDataTypeToOpenGLBaseType(element.type),
+							element.normalized ? GL_TRUE : GL_FALSE,
+							layout.getStride(),
+							(const void*)(sizeof(float) * count * i));
+						glVertexAttribDivisor(_vertexBufferIndex, 1);
+						_vertexBufferIndex++;
+					}
+					break;
+				}
+				default:
+					AZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
+			}
 		}
 
 		_vertexBuffers.push_back(vertexBuffer);

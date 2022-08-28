@@ -60,12 +60,26 @@
 //#endif // End of DLL support
 
 #ifdef AZ_DEBUG
+	#if defined(AZ_PLATFORM_WINDOWS)
+		#define AZ_DEBUGBREAK() __debugbreak()
+	#elif defined(AZ_PLATFORM_LINUX)
+		#include <signal.h>
+		#define AZ_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+	#endif
+	#define AZ_ENABLE_ASSERTS
+#else
+	#define AZ_DEBUGBREAK()
+#endif
+
+#ifdef AZ_DEBUG
 	#define AZ_ENABLE_ASSERTS
 #endif
 
 #ifdef AZ_ENABLE_ASSERTS
-	#define AZ_ASSERT(x, ...) { if(!(x)) { AZ_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define AZ_CORE_ASSERT(x, ...) { if(!(x)) { AZ_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define AZ_ASSERT(x, ...) { if(!(x)) { AZ_ERROR("Assertion Failed: {0}", __VA_ARGS__); AZ_DEBUGBREAK(); } }
+	#define AZ_CORE_ASSERT(x, ...) { if(!(x)) { AZ_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); AZ_DEBUGBREAK(); } }
 #else
 	#define AZ_ASSERT(x, ...)
 	#define AZ_CORE_ASSERT(x, ...)
