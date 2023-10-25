@@ -1,18 +1,18 @@
 #include "azpch.h"
-#include "WindowsInput.h"
+#include "Azteck/Core/Input.h"
 #include "Azteck/Core/Application.h"
 
 #include <GLFW/glfw3.h>
 
 namespace Azteck
 {
-	bool WindowsInput::isKeyPressedImpl(KeyCode keyCode)
+	bool Input::isKeyPressed(KeyCode keyCode)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
 		if (window == nullptr)
 		{
-			AZ_CORE_ERROR("WindowsInput::isKeyPressedImpl - Unable to get a native window");
+			AZ_CORE_ERROR("Input::isKeyPressedImpl - Unable to get a native window");
 			return false;
 		}
 
@@ -20,13 +20,13 @@ namespace Azteck
 		return state == GLFW_PRESS;
 	}
 
-	bool WindowsInput::isMouseButtonPressedImpl(MouseCode button)
+	bool Input::isMouseButtonPressed(MouseCode button)
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
 		if (window == nullptr)
 		{
-			AZ_CORE_ERROR("WindowsInput::isMouseButtonPressedImpl - Unable to get a native window");
+			AZ_CORE_ERROR("Input::isMouseButtonPressedImpl - Unable to get a native window");
 			return false;
 		}
 
@@ -34,13 +34,13 @@ namespace Azteck
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::getMousePossitionImpl()
+	std::pair<float, float> Input::getMousePosition()
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
 		if (window == nullptr)
 		{
-			AZ_CORE_ERROR("WindowsInput::getMouseXImpl - Unable to get a native window");
+			AZ_CORE_ERROR("Input::getMouseXImpl - Unable to get a native window");
 			return {0.0f, 0.0f};
 		}
 
@@ -50,16 +50,16 @@ namespace Azteck
 		return { static_cast<float>(xPos), static_cast<float>(yPos) };
 	}
 
-	float WindowsInput::getMouseXImpl()
+	float Input::getMouseX()
 	{
-		const auto [xPos, yPos] = getMousePossitionImpl();
+		const auto [xPos, yPos] = getMousePosition();
 
 		return xPos;
 	}
 
-	float WindowsInput::getMouseYImpl()
+	float Input::getMouseY()
 	{
-		const auto [xPos, yPos] = getMousePossitionImpl();
+		const auto [xPos, yPos] = getMousePosition();
 
 		return yPos;
 	}
