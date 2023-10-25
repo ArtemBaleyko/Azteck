@@ -37,6 +37,11 @@ namespace Azteck
 		Renderer::shutdown();
 	}
 
+	void Application::close()
+	{
+		_isRunning = false;
+	}
+
 	void Application::onEvent(Event& e)
 	{
 		AZ_PROFILE_FUNCTION();
@@ -75,7 +80,7 @@ namespace Azteck
 
 	bool Application::onWindowClose(WindowCloseEvent& e)
 	{
-		_isRunning = false;
+		close();
 		return true;
 	}
 

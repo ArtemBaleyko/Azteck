@@ -18,6 +18,7 @@ namespace Azteck
 
 		inline uint32_t getWidth() const override { return _width; };
 		inline uint32_t getHeight() const override { return _height; };
+		inline uint32_t getRendererID() const override { return _renderedId; };
 
 		void bind(uint32_t slot = 0) const override;
 

@@ -22,6 +22,8 @@ namespace Azteck
 		Application();
 		virtual ~Application();
 
+		void close();
+
 		void onEvent(Event& e);
 
 		void pushLayer(Layer* layer);

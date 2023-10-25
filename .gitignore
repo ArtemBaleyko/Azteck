@@ -10,3 +10,9 @@ bin-int/
 *.user
 
 *.bak
+*.ini
+
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters

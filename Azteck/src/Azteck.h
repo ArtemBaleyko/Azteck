@@ -25,6 +25,7 @@
 #include "Azteck/Renderer/VertexArray.h"
 #include "Azteck/Renderer/Shader.h"
 #include "Azteck/Renderer/Texture.h"
+#include "Azteck/Renderer/FrameBuffer.h"
 
 #include "Azteck/Renderer/OrthographicCamera.h"
 #include "Azteck/Renderer/OrthographicCameraController.h"
