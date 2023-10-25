@@ -13,7 +13,7 @@ namespace Azteck
 {
 	Application* Application::_instance = nullptr;
 
-	Application::Application()
+	Application::Application(const std::string& name)
 		: _isRunning(true)
 		, _isMinimised(false)
 		, _lastFrameTime(0.0f)
@@ -23,7 +23,7 @@ namespace Azteck
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
 
-		_window = Window::create();
+		_window = Window::create(WindowProps(name));
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();

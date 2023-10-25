@@ -9,16 +9,16 @@ namespace Azteck
 	struct WindowProps
 	{
 		WindowProps(const std::string& title = "Azteck Engine",
-			unsigned int width = 1280,
-			unsigned int height = 720)
+			uint32_t width = 1280,
+			uint32_t height = 720)
 			: title(title)
 			, width(width)
 			, height(height)
 		{}
 
 		std::string title;
-		unsigned int width;
-		unsigned int height;
+		uint32_t width;
+		uint32_t height;
 	};
 
 	class Window
@@ -30,8 +30,8 @@ namespace Azteck
 
 		virtual void onUpdate() = 0;
 
-		virtual unsigned int getWidth() const = 0;
-		virtual unsigned int getHeight() const = 0;
+		virtual uint32_t getWidth() const = 0;
+		virtual uint32_t getHeight() const = 0;
 
 		virtual void setEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void setVSync(bool enabled) = 0;

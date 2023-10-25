@@ -142,3 +142,50 @@ project "Sandbox"
 		defines "AZ_DIST"
 		runtime "Release"
 		optimize "on"
+
+project "Azteck-Editor"
+	location "Azteck-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs 
+	{
+		"Azteck/vendor/spdlog/include",
+		"Azteck/src",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}"
+	}
+
+	links
+	{
+		"Azteck"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+	filter "configurations:Debug"
+		defines "AZ_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "AZ_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "AZ_DIST"
+		runtime "Release"
+		optimize "on"

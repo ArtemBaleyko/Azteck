@@ -19,7 +19,7 @@ namespace Azteck
 	class  Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Azteck App");
 		virtual ~Application();
 
 		void close();

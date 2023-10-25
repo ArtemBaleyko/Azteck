@@ -20,6 +20,5 @@ private:
 
 	// Temporary
 	Azteck::Ref<Azteck::Texture2D> _texture;
-	Azteck::Ref<Azteck::FrameBuffer> _frameBuffer;
 	glm::vec4 _squareColor;
 };
