@@ -13,10 +13,16 @@ namespace Azteck
 		virtual void bind() override;
 		virtual void unbind() override;
 
+		virtual void resize(uint32_t width, uint32_t height) override;
+
 		virtual const FrameBufferSpecification& getSpecification() const override { return _spec; };
 		virtual uint32_t getColorAttachmentRendererId() const override { return _colorAttachment; };
 
 		void invalidate();
+
+	private:
+		void cleanup();
+
 	private:
 		uint32_t _rendererId;
 		uint32_t _colorAttachment;

@@ -15,6 +15,7 @@ namespace Azteck
 
 		void onUpdate(Timestep ts);
 		void onEvent(Event& e);
+		void onResize(float width, float height);
 
 		void setZoomLevel(float level);
 		float getZoomLevel() const;

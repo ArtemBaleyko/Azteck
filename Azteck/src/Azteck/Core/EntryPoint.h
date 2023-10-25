@@ -13,11 +13,11 @@ int main(int argc, char** argv)
 	auto app = Azteck::createApplication();
 	AZ_PROFILE_END_SESSION();
 
-	AZ_PROFILE_BEGIN_SESSION("Startup", "Runtime_Profile.json");
+	AZ_PROFILE_BEGIN_SESSION("Run", "Runtime_Profile.json");
 	app->run();
 	AZ_PROFILE_END_SESSION();
 
-	AZ_PROFILE_BEGIN_SESSION("Startup", "Shutdown_Profile.json");
+	AZ_PROFILE_BEGIN_SESSION("Shutdown", "Shutdown_Profile.json");
 	delete app;
 	AZ_PROFILE_END_SESSION();
 }

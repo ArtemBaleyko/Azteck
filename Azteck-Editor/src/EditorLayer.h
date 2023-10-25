@@ -19,6 +19,8 @@ namespace Azteck
 
 	private:
 		OrthographicCameraController _cameraController;
+		glm::vec2 _viewportSize;
+
 
 		// Temporary
 		Ref<Texture2D> _texture;

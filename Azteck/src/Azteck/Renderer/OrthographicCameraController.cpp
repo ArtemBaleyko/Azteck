@@ -76,6 +76,12 @@ namespace Azteck
 		dispatcher.dispatch<WindowResizedEvent>(AZ_BIND_EVENT_FN(OrthographicCameraController::onWindowResized));
 	}
 
+	void OrthographicCameraController::onResize(float width, float height)
+	{
+		_aspectRatio = width / height;
+		_camera.setProjection(-_aspectRatio * _zoomLevel, +_aspectRatio * _zoomLevel, -_zoomLevel, _zoomLevel);
+	}
+
 	void OrthographicCameraController::setZoomLevel(float level)
 	{
 		_zoomLevel = level;
@@ -100,8 +106,7 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_aspectRatio = e.getWidth() / (float)e.getHeight();
-		_camera.setProjection(-_aspectRatio * _zoomLevel, +_aspectRatio * _zoomLevel, -_zoomLevel, _zoomLevel);
+		onResize((float)e.getWidth(), (float)e.getHeight());
 		return false;
 	}
 

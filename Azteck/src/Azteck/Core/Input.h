@@ -12,6 +12,8 @@ namespace Azteck
 		Input(const Input&) = delete;
 		Input& operator=(const Input&) = delete;
 
+		virtual ~Input() = default;
+
 		inline static bool isKeyPressed(KeyCode keyCode) { return _instance->isKeyPressedImpl(keyCode); };
 
 		inline static bool isMouseButtonPressed(MouseCode button) { return _instance->isMouseButtonPressedImpl(button); };

@@ -6,19 +6,23 @@
 namespace Azteck
 {
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
-		: _spec(spec)
+		: _rendererId(0)
+		, _colorAttachment(0)
+		, _depthAttachment(0)
+		, _spec(spec)
 	{
 		invalidate();
 	}
 
 	OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	{
-		glDeleteFramebuffers(1, &_rendererId);
+		cleanup();
 	}
 
 	void OpenGLFrameBuffer::bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _rendererId);
+		glViewport(0, 0, _spec.width, _spec.height);
 	}
 
 	void OpenGLFrameBuffer::unbind()
@@ -26,8 +30,19 @@ namespace Azteck
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void OpenGLFrameBuffer::resize(uint32_t width, uint32_t height)
+	{
+		_spec.width = width;
+		_spec.height = height;
+
+		invalidate();
+	}
+
 	void OpenGLFrameBuffer::invalidate()
 	{
+		if (_rendererId)
+			cleanup();
+
 		glCreateFramebuffers(1, &_rendererId);
 		glBindFramebuffer(GL_FRAMEBUFFER, _rendererId);
 
@@ -49,5 +64,12 @@ namespace Azteck
 		AZ_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Frame buffer is not complete!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void OpenGLFrameBuffer::cleanup()
+	{
+		glDeleteFramebuffers(1, &_rendererId);
+		glDeleteTextures(1, &_colorAttachment);
+		glDeleteTextures(1, &_depthAttachment);
 	}
 }
