@@ -70,7 +70,16 @@ namespace Azteck
 
 	void ImGuiLayer::onImGuiRender()
 	{
+	}
 
+	void ImGuiLayer::onEvent(Event& e)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		bool isHandled = e.isHandled();
+		isHandled |= e.isInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		isHandled |= e.isInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+
+		e.setHandled(isHandled);
 	}
 
 	void ImGuiLayer::begin()

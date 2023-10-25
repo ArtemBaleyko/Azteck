@@ -49,7 +49,7 @@ void Sandbox2D::onUpdate(Azteck::Timestep timestep)
 	{
 		for (float x = -5.0f; x < 5.0f; x += 0.5f)
 		{
-			glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 1.0f};
+			glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f};
 			Azteck::Renderer2D::drawQuad({ x, y, 0.1f }, { 0.45f, 0.45f }, color);
 		}
 	}

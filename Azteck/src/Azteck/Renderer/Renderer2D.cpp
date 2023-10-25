@@ -137,7 +137,7 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase;
+		uint32_t dataSize = (uint32_t)((uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase);
 		_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
 
 		flush();
@@ -145,6 +145,9 @@ namespace Azteck
 
 	void Renderer2D::flush()
 	{
+		if (_data.quadIndexCount == 0)
+			return;
+
 		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
 			_data.textureSlots[i]->bind(i);
 

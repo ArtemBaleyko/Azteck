@@ -48,9 +48,10 @@ namespace Azteck
 
 		for (auto it = _layerStack.rbegin(); it != _layerStack.rend(); ++it)
 		{
-			(*it)->onEvent(e);
 			if (e.isHandled())
 				break;
+
+			(*it)->onEvent(e);
 		}
 	}
 

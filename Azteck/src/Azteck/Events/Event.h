@@ -43,6 +43,8 @@ namespace Azteck
 		inline bool isHandled() const { return _handled; }
 		inline bool isInCategory(EventCategory category) { return getCategoryFlags() & category; }
 
+		inline void setHandled(bool isHandled) { _handled = isHandled; }
+
 	protected:
 		bool _handled = false;
 	};
