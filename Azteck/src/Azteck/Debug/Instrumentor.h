@@ -21,7 +21,8 @@ namespace Azteck
 	class Instrumentor
 	{
 	public:
-		Instrumentor();
+		Instrumentor(const Instrumentor&) = delete;
+		Instrumentor(Instrumentor&&) = delete;
 
 		void beginSession(const std::string& name, const std::string& filepath = "results.json");
 		void endSession();
@@ -37,6 +38,10 @@ namespace Azteck
 		// Note: you must already own lock on _mutex before
 		// calling internalEndSession()
 		void internalEndSession();
+
+	private:
+		Instrumentor();
+		~Instrumentor();
 
 	private:
 		InstrumentationSession* _currentSession;

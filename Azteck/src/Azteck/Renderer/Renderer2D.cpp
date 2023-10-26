@@ -133,6 +133,20 @@ namespace Azteck
 		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
 	}
 
+	void Renderer2D::beginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.getProjection() * glm::inverse(transform);
+
+		_data.quadTextureShader->bind();
+		_data.quadTextureShader->setMat4("u_ViewProjection", viewProj);
+
+		_data.quadIndexCount = 0;
+		_data.textureSlotIndex = 1;
+		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
+	}
+
 	void Renderer2D::endScene()
 	{
 		AZ_PROFILE_FUNCTION();

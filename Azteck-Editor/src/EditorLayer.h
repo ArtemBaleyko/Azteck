@@ -30,5 +30,6 @@ namespace Azteck
 
 		Ref<Scene> _activeScene;
 		Entity _entity;
+		Entity _cameraEntity;
 	};
 }

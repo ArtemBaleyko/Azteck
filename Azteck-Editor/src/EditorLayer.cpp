@@ -32,6 +32,9 @@ namespace Azteck
 
 		_entity = _activeScene->createEntity("Square");
 		_entity.addComponent<SpriteRenderComponent>(glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
+
+		_cameraEntity = _activeScene->createEntity("Camera");
+		_cameraEntity.addComponent<CameraComponent>();
 	}
 
 	void EditorLayer::onDetach()
@@ -49,6 +52,8 @@ namespace Azteck
 		{
 			_frameBuffer->resize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 			_cameraController.onResize(_viewportSize.x, _viewportSize.y);
+
+			_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 		}
 
 		if (_isViewportFocused)
@@ -59,12 +64,7 @@ namespace Azteck
 		RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::clear();
 
-		Renderer2D::beginScene(_cameraController.getCamera());
-
 		_activeScene->onUpdate(timestep);
-
-		Renderer2D::endScene();
-
 		_frameBuffer->unbind();
 	}
 
@@ -147,6 +147,7 @@ namespace Azteck
 
 		auto& entityColor = _entity.getComponent<SpriteRenderComponent>().color;
 		ImGui::ColorEdit4("Square Color", glm::value_ptr(entityColor));
+
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });

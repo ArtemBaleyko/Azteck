@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Azteck/Scene/SceneCamera.h"
+
 namespace Azteck
 {
 	struct TagComponent
@@ -41,5 +43,15 @@ namespace Azteck
 		{}
 
 		glm::vec4 color{1.0f};
+	};
+
+	struct CameraComponent
+	{
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+
+		SceneCamera camera;
+		bool primary = true;
+		bool fixedAspectRatio = false;
 	};
 }

@@ -9,6 +9,11 @@ namespace Azteck
 	{
 	}
 
+	Instrumentor::~Instrumentor()
+	{
+		endSession();
+	}
+
 	void Instrumentor::beginSession(const std::string& name, const std::string& filepath)
 	{
 		std::lock_guard lock(_mutex);

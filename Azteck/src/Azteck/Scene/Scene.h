@@ -17,8 +17,12 @@ namespace Azteck
 		Entity createEntity(const std::string& name = {});
 
 		void onUpdate(Timestep ts);
+		void onViewportResize(uint32_t width, uint32_t height);
 
 	private:
 		entt::registry _registry;
+
+		uint32_t _viewportWidth;
+		uint32_t _viewportHeight;
 	};
 }
