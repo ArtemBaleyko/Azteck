@@ -5,6 +5,9 @@
 
 namespace Azteck
 {
+	// TODO: Use max value from GPU
+	static constexpr uint32_t MAX_FRAMEBUFFER_SIZE = 8192;
+
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
 		: _rendererId(0)
 		, _colorAttachment(0)
@@ -32,6 +35,12 @@ namespace Azteck
 
 	void OpenGLFrameBuffer::resize(uint32_t width, uint32_t height)
 	{
+		if (width == 0 || height == 0 || width > MAX_FRAMEBUFFER_SIZE || height > MAX_FRAMEBUFFER_SIZE)
+		{
+			AZ_CORE_WARN("Invalid params for framebuffer resizing: ({0}, {1})", width, height);
+			return;
+		}
+
 		_spec.width = width;
 		_spec.height = height;
 

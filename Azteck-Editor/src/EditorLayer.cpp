@@ -39,6 +39,14 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
+		const FrameBufferSpecification& spec = _frameBuffer->getSpecification();
+		if (_viewportSize.x > 0.0f && _viewportSize.y > 0.0f &&
+			(spec.width != _viewportSize.x || spec.height != _viewportSize.y))
+		{
+			_frameBuffer->resize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
+			_cameraController.onResize(_viewportSize.x, _viewportSize.y);
+		}
+
 		if (_isViewportFocused)
 			_cameraController.onUpdate(timestep);
 
@@ -156,15 +164,8 @@ namespace Azteck
 		_isViewportHovered = ImGui::IsWindowHovered();
 		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportFocused || !_isViewportHovered);
 		
-
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		// TODO: make it more safe
-		if (_viewportSize != *(glm::vec2*)&viewportSize)
-		{
-			_viewportSize = { viewportSize.x, viewportSize.y };
-			_frameBuffer->resize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
-			_cameraController.onResize(_viewportSize.x, _viewportSize.y);
-		}
+		_viewportSize = { viewportSize.x, viewportSize.y };
 
 		uint32_t textureID = _frameBuffer->getColorAttachmentRendererId();
 		ImGui::Image((void*)textureID, viewportSize, ImVec2{ 0,1 }, ImVec2{ 1,0 });
