@@ -17,6 +17,7 @@ IncludeDir["Glad"] = "Azteck/vendor/Glad/include"
 IncludeDir["ImGui"] = "Azteck/vendor/imgui"
 IncludeDir["glm"] = "Azteck/vendor/glm"
 IncludeDir["stb_image"] = "Azteck/vendor/stb_image"
+IncludeDir["entt"] = "Azteck/vendor/entt/include"
 
 group "Dependencies"
 	include "Azteck/vendor/GLFW"
@@ -61,7 +62,8 @@ project "Azteck"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -117,7 +119,8 @@ project "Sandbox"
 		"Azteck/vendor/spdlog/include",
 		"Azteck/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -164,7 +167,8 @@ project "Azteck-Editor"
 		"Azteck/vendor/spdlog/include",
 		"Azteck/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links

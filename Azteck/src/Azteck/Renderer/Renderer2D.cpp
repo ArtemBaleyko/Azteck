@@ -176,6 +176,16 @@ namespace Azteck
 		drawQuad(position, size, texture, tintColor, tilingFactor);
 	}
 
+	void Renderer2D::drawQuad(const glm::mat4& transform, const glm::vec4& color)
+	{
+		drawQuad(transform, _data.whiteTexture, color, 1.0f);
+	}
+
+	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	{
+		drawQuad(transform, texture, tintColor, tilingFactor);
+	}
+
 	void Renderer2D::drawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
 	{
 		drawRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, color);
@@ -196,9 +206,9 @@ namespace Azteck
 		drawRotatedQuad(position, size, rotation, texture, tintColor, tilingFactor);
 	}
 
-	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
+	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
 	{
-		AZ_PROFILE_FUNCTION();
+		constexpr size_t quadVertexCount = 4;
 
 		if (_data.quadIndexCount >= _data.maxIndices)
 			flushAndReset();
@@ -225,10 +235,7 @@ namespace Azteck
 			_data.textureSlotIndex++;
 		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
-		transform = glm::scale(transform, { size.x, size.y, 1.0f });
-
-		for (size_t i = 0; i < 4; i++)
+		for (size_t i = 0; i < quadVertexCount; i++)
 		{
 			_data.quadVertexBufferPtr->position = transform * _data.quadVertexPositions[i];
 			_data.quadVertexBufferPtr->color = color;
@@ -241,6 +248,14 @@ namespace Azteck
 		_data.quadIndexCount += 6;
 
 		_data.stats.quadCount++;
+	}
+
+	void Renderer2D::drawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
+	{
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position);
+		transform = glm::scale(transform, { size.x, size.y, 1.0f });
+
+		drawQuad(transform, texture, color, tilingFactor);
 	}
 
 	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)

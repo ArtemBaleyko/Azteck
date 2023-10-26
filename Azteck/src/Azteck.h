@@ -16,6 +16,10 @@
 
 #include "Azteck/ImGui/ImGuiLayer.h"
 
+#include "Azteck/Scene/Scene.h"
+#include "Azteck/Scene/Entity.h"
+#include "Azteck/Scene/Components.h"
+
 // -----Renderer-----------------
 #include "Azteck/Renderer/Renderer.h"
 #include "Azteck/Renderer/Renderer2D.h"

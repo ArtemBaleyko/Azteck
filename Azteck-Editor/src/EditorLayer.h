@@ -27,5 +27,8 @@ namespace Azteck
 		Ref<Texture2D> _texture;
 		Ref<FrameBuffer> _frameBuffer;
 		glm::vec4 _squareColor;
+
+		Ref<Scene> _activeScene;
+		Entity _entity;
 	};
 }

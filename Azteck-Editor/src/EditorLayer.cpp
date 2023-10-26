@@ -28,6 +28,10 @@ namespace Azteck
 		spec.height = 720;
 
 		_frameBuffer = FrameBuffer::create(spec);
+		_activeScene = createRef<Scene>();
+
+		_entity = _activeScene->createEntity("Square");
+		_entity.addComponent<SpriteRenderComponent>(glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
 	}
 
 	void EditorLayer::onDetach()
@@ -51,31 +55,16 @@ namespace Azteck
 			_cameraController.onUpdate(timestep);
 
 		Renderer2D::resetStats();
-
 		_frameBuffer->bind();
-
 		RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::clear();
 
 		Renderer2D::beginScene(_cameraController.getCamera());
-		Renderer2D::drawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, _squareColor);
-		Renderer2D::drawQuad({ 0.5f, -0.5f }, { 0.5f, 0.9f }, { 1.0f, 0.0f, 0.0f, 1.0f });
-		Renderer2D::drawQuad(glm::vec3(0.0f), { 10.0f, 10.0f }, _texture, 10.0f, glm::vec4(1.0f, 0.9f, 0.9f, 1.0f));
-		Renderer2D::drawRotatedQuad({ -2.0f, 0.0f, 0.0f }, { 6.0f, 6.0f }, 45.0f, { 0.0f, 1.0f, 0.0f, 1.0f });
-		Renderer2D::endScene();
 
-		Renderer2D::beginScene(_cameraController.getCamera());
-
-		for (float y = -5.0f; y < 5.0f; y += 0.5f)
-		{
-			for (float x = -5.0f; x < 5.0f; x += 0.5f)
-			{
-				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-				Renderer2D::drawQuad({ x, y, 0.1f }, { 0.45f, 0.45f }, color);
-			}
-		}
+		_activeScene->onUpdate(timestep);
 
 		Renderer2D::endScene();
+
 		_frameBuffer->unbind();
 	}
 
@@ -154,7 +143,10 @@ namespace Azteck
 		ImGui::Text("Vertices: %d", stats.getTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.getTotalIndexCount());
 
-		ImGui::ColorEdit4("Square Color", glm::value_ptr(_squareColor));
+		ImGui::Text("%s", _entity.getComponent<TagComponent>().tag.c_str());
+
+		auto& entityColor = _entity.getComponent<SpriteRenderComponent>().color;
+		ImGui::ColorEdit4("Square Color", glm::value_ptr(entityColor));
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
