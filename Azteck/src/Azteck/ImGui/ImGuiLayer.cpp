@@ -10,12 +10,12 @@
 #include "Azteck/Core/Application.h"
 
 #include <GLFW/glfw3.h>
-//#include <glad/glad.h>
 
 namespace Azteck
 {
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
+		, _blockEvents(true)
 		, _time(0.0f)
 	{
 	}
@@ -74,12 +74,15 @@ namespace Azteck
 
 	void ImGuiLayer::onEvent(Event& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		bool isHandled = e.isHandled();
-		isHandled |= e.isInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-		isHandled |= e.isInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		if (_blockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			bool isHandled = e.isHandled();
+			isHandled |= e.isInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			isHandled |= e.isInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 
-		e.setHandled(isHandled);
+			e.setHandled(isHandled);
+		}
 	}
 
 	void ImGuiLayer::begin()

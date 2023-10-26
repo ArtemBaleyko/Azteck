@@ -20,7 +20,8 @@ namespace Azteck
 	private:
 		OrthographicCameraController _cameraController;
 		glm::vec2 _viewportSize;
-
+		bool _isViewportFocused;
+		bool _isViewportHovered;
 
 		// Temporary
 		Ref<Texture2D> _texture;

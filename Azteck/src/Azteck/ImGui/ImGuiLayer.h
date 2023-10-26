@@ -21,7 +21,10 @@ namespace Azteck
 		void begin();
 		void end();
 
+		inline void setBlockEvents(bool block) { _blockEvents = block; }
+
 	private:
+		bool _blockEvents;
 		float _time;
 	};
 }

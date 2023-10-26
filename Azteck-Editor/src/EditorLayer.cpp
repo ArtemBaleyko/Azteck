@@ -10,6 +10,8 @@ namespace Azteck
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 		, _squareColor(0.2f, 0.3f, 0.8f, 1.0f)
+		, _isViewportFocused(false)
+		, _isViewportHovered(false)
 		, _cameraController(1280.0f / 720.0f, true)
 	{
 
@@ -37,7 +39,8 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_cameraController.onUpdate(timestep);
+		if (_isViewportFocused)
+			_cameraController.onUpdate(timestep);
 
 		Renderer2D::resetStats();
 
@@ -148,6 +151,11 @@ namespace Azteck
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 		ImGui::Begin("Viewport");
+
+		_isViewportFocused = ImGui::IsWindowFocused();
+		_isViewportHovered = ImGui::IsWindowHovered();
+		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportFocused || !_isViewportHovered);
+		
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		// TODO: make it more safe

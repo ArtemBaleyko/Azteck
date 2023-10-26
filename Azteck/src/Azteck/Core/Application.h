@@ -29,6 +29,7 @@ namespace Azteck
 		void pushLayer(Layer* layer);
 		void pushOverlay(Layer* layer);
 
+		inline ImGuiLayer* getImGuiLayer() const { return _imGuiLayer; }
 		inline Window& getWindow() const { return *_window; }
 
 		inline static Application& getInstance() { return *_instance; }
