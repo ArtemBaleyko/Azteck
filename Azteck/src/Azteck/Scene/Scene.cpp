@@ -30,13 +30,28 @@ namespace Azteck
 
 	void Scene::onUpdate(Timestep ts)
 	{
+		_registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
+		{
+			if (!nsc.instance)
+			{
+				nsc.instance = nsc.instantiateScript();
+				AZ_CORE_ASSERT(nsc.instance, "Native script components is nto initialized!");
+
+				nsc.instance->_entity = Entity{ entity, this };
+				nsc.instance->onCreate();
+			}
+
+			nsc.instance->onUpdate(ts);
+		});
+
+
 		Camera* primaryCamera = nullptr;
 		glm::mat4* cameraTransform = nullptr;
 
 		auto view = _registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : view)
 		{
-			auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 
 			if (camera.primary)
 			{
@@ -53,7 +68,7 @@ namespace Azteck
 			auto group = _registry.group<TransformComponent>(entt::get<SpriteRenderComponent>);
 			for (auto entity : group)
 			{
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteRenderComponent>(entity);
+				auto [transform, sprite] = group.get<TransformComponent, SpriteRenderComponent>(entity);
 				Renderer2D::drawQuad(transform, sprite.color);
 			}
 

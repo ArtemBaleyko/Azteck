@@ -18,6 +18,7 @@
 
 #include "Azteck/Scene/Scene.h"
 #include "Azteck/Scene/Entity.h"
+#include "Azteck/Scene/ScriptableEntity.h"
 #include "Azteck/Scene/Components.h"
 
 // -----Renderer-----------------

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Azteck/Scene/SceneCamera.h"
+#include "Azteck/Scene/ScriptableEntity.h"
 
 namespace Azteck
 {
@@ -53,5 +54,20 @@ namespace Azteck
 		SceneCamera camera;
 		bool primary = true;
 		bool fixedAspectRatio = false;
+	};
+
+	struct NativeScriptComponent
+	{
+		ScriptableEntity* instance = nullptr;
+
+		ScriptableEntity* (*instantiateScript)();
+		void (*destroyScript)(NativeScriptComponent*);
+
+		template<typename T>
+		void bind()
+		{
+			instantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			destroyScript = [](NativeScriptComponent* nsc) { delete nsc->instance; nsc->instance = nullptr; };
+		}
 	};
 }
