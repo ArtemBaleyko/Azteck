@@ -9,6 +9,7 @@ namespace Azteck
 	class Scene
 	{
 		friend class Entity;
+		friend class SceneHierarchyPanel;
 
 	public:
 		Scene();

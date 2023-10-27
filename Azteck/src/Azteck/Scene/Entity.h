@@ -40,6 +40,10 @@ namespace Azteck
 		}
 
 		operator bool() const { return _handle != entt::null; }
+		operator uint32_t() const { return static_cast<uint32_t>(_handle); }
+
+		bool operator==(const Entity& other) const { return _handle == other._handle && _scene == other._scene; }
+		bool operator!=(const Entity& other) const { return !(*this == other); }
 
 	private:
 		entt::entity _handle;
