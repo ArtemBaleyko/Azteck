@@ -7,8 +7,11 @@ namespace Azteck
 {
 	SceneCamera::SceneCamera()
 		: _orthoSize(10.0f)
-		, _orthoNear(-1.0f)
-		, _orthoFar(1.0f)
+		, _orthoNearClip(-1.0f)
+		, _orthoFarClip(1.0f)
+		, _perspectiveFOV(glm::radians(45.0f))
+		, _perspectiveNearClip(0.01f)
+		, _perspectiveFarClip(1000.0f)
 		, _aspectRatio(1.0f)
 	{
 		recalculateProjection();
@@ -16,9 +19,19 @@ namespace Azteck
 
 	void SceneCamera::setOrthographic(float size, float nearClip, float farClip)
 	{
+		_projectionType = ProjectionType::Orthographic;
 		_orthoSize = size;
-		_orthoNear = nearClip;
-		_orthoFar = farClip;
+		_orthoNearClip = nearClip;
+		_orthoFarClip = farClip;
+		recalculateProjection();
+	}
+
+	void SceneCamera::setPerspective(float fov, float nearClip, float farClip)
+	{
+		_projectionType = ProjectionType::Perspective;
+		_perspectiveFOV = fov;
+		_perspectiveNearClip = nearClip;
+		_perspectiveFarClip = farClip;
 		recalculateProjection();
 	}
 
@@ -28,20 +41,64 @@ namespace Azteck
 		recalculateProjection();
 	}
 
+	void SceneCamera::setVerticalFOV(float fov)
+	{
+		_perspectiveFOV = fov;
+		recalculateProjection();
+	}
+
+	void SceneCamera::setPerspectiveNearClip(float nearClip)
+	{
+		_perspectiveNearClip = nearClip;
+		recalculateProjection();
+	}
+
+	void SceneCamera::setPerspectiveFarClip(float farClip)
+	{
+		_perspectiveFarClip = farClip;
+		recalculateProjection();
+	}
+
 	void SceneCamera::setOrthographicSize(float size)
 	{
 		_orthoSize = size;
 		recalculateProjection();
 	}
 
+	void SceneCamera::setOrthographicNearClip(float nearClip)
+	{
+		_orthoNearClip = nearClip;
+		recalculateProjection();
+	}
+
+	void SceneCamera::setOrthographicFarClip(float farClip)
+	{
+		_orthoFarClip = farClip;
+		recalculateProjection();
+	}
+
+	void SceneCamera::setProjectionType(ProjectionType type)
+	{
+		_projectionType = type;
+		recalculateProjection();
+	}
+
 	void SceneCamera::recalculateProjection()
 	{
-		const float orthoLeft = -_orthoSize * _aspectRatio * 0.5f;
-		const float orthoRight = _orthoSize * _aspectRatio * 0.5f;
-		const float orthoBottom = -_orthoSize * 0.5f;
-		const float orthoTop = _orthoSize * 0.5f;
+		if (_projectionType == ProjectionType::Orthographic)
+		{
+			const float orthoLeft = -_orthoSize * _aspectRatio * 0.5f;
+			const float orthoRight = _orthoSize * _aspectRatio * 0.5f;
+			const float orthoBottom = -_orthoSize * 0.5f;
+			const float orthoTop = _orthoSize * 0.5f;
 
-		_projection = glm::ortho(orthoLeft, orthoRight, orthoBottom,
-			orthoTop, _orthoNear, _orthoFar);
+			_projection = glm::ortho(orthoLeft, orthoRight, orthoBottom,
+				orthoTop, _orthoNearClip, _orthoFarClip);
+		}
+		else
+		{
+			_projection = glm::perspective(_perspectiveFOV, _aspectRatio, 
+				_perspectiveNearClip, _perspectiveFarClip);
+		}
 	}
 }
