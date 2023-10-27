@@ -1,6 +1,6 @@
 # Directories
 .vs/
-bin/
+**/bin/
 bin-int/
 
 # Log files
@@ -12,7 +12,9 @@ bin-int/
 *.bak
 *.ini
 
-*.sln
-*.vcxproj
-*.vcxproj.user
-*.vcxproj.filters
+**.sln
+**.vcxproj
+**.vcxproj.user
+**.vcxproj.filters
+
+!vendor/premake/bin
