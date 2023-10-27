@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Azteck/Events/Event.h"
-#include "Azteck/Core/Input.h"
+#include "Azteck/Core/MouseCodes.h"
 
 namespace Azteck
 {

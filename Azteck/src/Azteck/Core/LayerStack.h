@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Azteck/Core/Core.h"
 #include "Azteck/Core/Layer.h"
 

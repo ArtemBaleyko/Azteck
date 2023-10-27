@@ -34,7 +34,7 @@ namespace Azteck
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> Input::getMousePosition()
+	glm::vec2 Input::getMousePosition()
 	{
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
 
@@ -52,15 +52,11 @@ namespace Azteck
 
 	float Input::getMouseX()
 	{
-		const auto [xPos, yPos] = getMousePosition();
-
-		return xPos;
+		return getMousePosition().x;
 	}
 
 	float Input::getMouseY()
 	{
-		const auto [xPos, yPos] = getMousePosition();
-
-		return yPos;
+		return getMousePosition().y;
 	}
 }

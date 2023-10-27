@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 #include "Azteck/Events/Event.h"
 
 namespace Azteck

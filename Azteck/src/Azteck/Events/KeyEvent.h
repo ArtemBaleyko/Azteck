@@ -1,7 +1,9 @@
 #pragma once
 
+#include <sstream>
+
 #include "Azteck/Events/Event.h"
-#include "Azteck/Core/Input.h"
+#include "Azteck/Core/KeyCodes.h"
 
 namespace Azteck
 {
@@ -23,12 +25,12 @@ namespace Azteck
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(KeyCode keyCode, int repeatCount)
+		KeyPressedEvent(KeyCode keyCode, uint16_t repeatCount)
 			: KeyEvent(keyCode)
 			, _repeatCount(repeatCount)
 		{}
 
-		inline int getRepeatCount() const { return _repeatCount; }
+		inline uint16_t getRepeatCount() const { return _repeatCount; }
 
 		std::string toString() const override
 		{
@@ -39,7 +41,7 @@ namespace Azteck
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		int _repeatCount;
+		uint16_t _repeatCount;
 	};
 
 	//---------------------------------------------------------------------------------------------

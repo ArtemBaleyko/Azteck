@@ -1,5 +1,8 @@
 #pragma once
 
+#include <mutex>
+#include <fstream>
+
 namespace Azteck
 {
 	using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
@@ -86,7 +89,7 @@ namespace Azteck
 	#elif defined(__cplusplus) && (__cplusplus >= 201103)
 		#define AZ_FUNC_SIG __func__
 	#else
-		#define AZ_FUNC_SIG "HZ_FUNC_SIG unknown!"
+		#define AZ_FUNC_SIG "AZ_FUNC_SIG unknown!"
 	#endif
 
 	#define AZ_PROFILE_BEGIN_SESSION(name, filepath) ::Azteck::Instrumentor::get().beginSession(name, filepath)

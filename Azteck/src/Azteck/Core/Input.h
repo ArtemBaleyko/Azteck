@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "Azteck/Core/Core.h"
 #include "Azteck/Core/KeyCodes.h"
 #include "Azteck/Core/MouseCodes.h"
@@ -12,7 +14,7 @@ namespace Azteck
 		static bool isKeyPressed(KeyCode keyCode);
 
 		static bool isMouseButtonPressed(MouseCode button);
-		static std::pair<float, float> getMousePosition();
+		static glm::vec2 getMousePosition();
 		static float getMouseX();
 		static float getMouseY();
 	};

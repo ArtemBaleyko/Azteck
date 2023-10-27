@@ -52,13 +52,13 @@ namespace Azteck
 			{
 				auto& transform = getComponent<TransformComponent>().transform;
 				float speed = 5.0f;
-				if (Input::isKeyPressed(KeyCode::A))
+				if (Input::isKeyPressed(Key::A))
 					transform[3][0] -= speed * ts;
-				if (Input::isKeyPressed(KeyCode::D))
+				if (Input::isKeyPressed(Key::D))
 					transform[3][0] += speed * ts;
-				if (Input::isKeyPressed(KeyCode::W))
+				if (Input::isKeyPressed(Key::W))
 					transform[3][1] += speed * ts;
-				if (Input::isKeyPressed(KeyCode::S))
+				if (Input::isKeyPressed(Key::S))
 					transform[3][1] -= speed * ts;
 			}
 		};
@@ -190,8 +190,8 @@ namespace Azteck
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		_viewportSize = { viewportSize.x, viewportSize.y };
 
-		uint32_t textureID = _frameBuffer->getColorAttachmentRendererId();
-		ImGui::Image((void*)textureID, viewportSize, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		uint64_t textureID = _frameBuffer->getColorAttachmentRendererId();
+		ImGui::Image(reinterpret_cast<void*>(textureID), viewportSize, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 		ImGui::End();
 		ImGui::PopStyleVar();
 

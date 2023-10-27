@@ -24,23 +24,23 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		if (Input::isKeyPressed(AZ_KEY_A))
+		if (Input::isKeyPressed(Key::A))
 		{
 			_cameraPosition.x -= cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 			_cameraPosition.y -= sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 		}
-		else if (Input::isKeyPressed(AZ_KEY_D))
+		else if (Input::isKeyPressed(Key::D))
 		{
 			_cameraPosition.x += cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 			_cameraPosition.y += sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 		}
 
-		if (Input::isKeyPressed(AZ_KEY_W))
+		if (Input::isKeyPressed(Key::W))
 		{
 			_cameraPosition.x += -sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 			_cameraPosition.y += cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 		}
-		else if (Input::isKeyPressed(AZ_KEY_S))
+		else if (Input::isKeyPressed(Key::S))
 		{
 			_cameraPosition.x -= -sin(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
 			_cameraPosition.y -= cos(glm::radians(_cameraRotation)) * _cameraTranslationSpeed * ts;
@@ -48,9 +48,9 @@ namespace Azteck
 
 		if (_doRotation)
 		{
-			if (Input::isKeyPressed(AZ_KEY_Q))
+			if (Input::isKeyPressed(Key::Q))
 				_cameraRotation += _cameraRotationSpeed * ts;
-			else if (Input::isKeyPressed(AZ_KEY_E))
+			else if (Input::isKeyPressed(Key::E))
 				_cameraRotation -= _cameraRotationSpeed * ts;
 
 			if (_cameraRotation > 180.0f)
