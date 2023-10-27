@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Azteck/Core/Core.h"
+
+#pragma warning(push, 0)
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+#pragma warning(pop)
 
 namespace Azteck
 {

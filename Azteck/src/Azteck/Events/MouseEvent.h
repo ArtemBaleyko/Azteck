@@ -62,7 +62,7 @@ namespace Azteck
 	public:
 		inline MouseCode getMouseButton() const { return _buttonCode; }
 
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
 
 	protected:
 		MouseButtonEvent(MouseCode buttonCode)
