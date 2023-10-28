@@ -5,6 +5,8 @@
 #include <imgui.h>
 #include "glm/gtc/type_ptr.hpp"
 
+#include "Azteck/Scene/SceneSerializer.h"
+
 namespace Azteck
 {
 	EditorLayer::EditorLayer()
