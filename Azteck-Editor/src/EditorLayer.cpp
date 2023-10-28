@@ -50,16 +50,16 @@ namespace Azteck
 
 			void onUpdate(Timestep ts)
 			{
-				auto& transform = getComponent<TransformComponent>().transform;
+				auto& translation = getComponent<TransformComponent>().translation;
 				float speed = 5.0f;
 				if (Input::isKeyPressed(Key::A))
-					transform[3][0] -= speed * ts;
+					translation.x -= speed * ts;
 				if (Input::isKeyPressed(Key::D))
-					transform[3][0] += speed * ts;
+					translation.x += speed * ts;
 				if (Input::isKeyPressed(Key::W))
-					transform[3][1] += speed * ts;
+					translation.y += speed * ts;
 				if (Input::isKeyPressed(Key::S))
-					transform[3][1] -= speed * ts;
+					translation.y -= speed * ts;
 			}
 		};
 

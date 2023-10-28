@@ -46,7 +46,7 @@ namespace Azteck
 
 
 		Camera* primaryCamera = nullptr;
-		glm::mat4* cameraTransform = nullptr;
+		glm::mat4 cameraTransform(1.0f);
 
 		auto view = _registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : view)
@@ -56,20 +56,20 @@ namespace Azteck
 			if (camera.primary)
 			{
 				primaryCamera = &camera.camera;
-				cameraTransform = &transform.transform;
+				cameraTransform = transform.getTransform();
 				break;
 			}
 		}
 
 		if (primaryCamera)
 		{
-			Renderer2D::beginScene(*primaryCamera, *cameraTransform);
+			Renderer2D::beginScene(*primaryCamera, cameraTransform);
 
 			auto group = _registry.group<TransformComponent>(entt::get<SpriteRenderComponent>);
 			for (auto entity : group)
 			{
 				auto [transform, sprite] = group.get<TransformComponent, SpriteRenderComponent>(entity);
-				Renderer2D::drawQuad(transform, sprite.color);
+				Renderer2D::drawQuad(transform.getTransform(), sprite.color);
 			}
 
 			Renderer2D::endScene();
