@@ -18,6 +18,7 @@ namespace YAML
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 
@@ -43,6 +44,7 @@ namespace YAML
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
 			node.push_back(rhs.w);
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 
@@ -116,11 +118,7 @@ namespace Azteck
 
 	bool SceneSerializer::deserialize(const std::string& filepath)
 	{
-		std::ifstream file(filepath);
-		std::stringstream ss;
-		ss << file.rdbuf();
-
-		YAML::Node data = YAML::Load(ss.str());
+		YAML::Node data = YAML::LoadFile(filepath);
 		if (!data["Scene"])
 			return false;
 
@@ -175,9 +173,9 @@ namespace Azteck
 				cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
 
-			if (auto spriteRenderComponent = entity["SpriteRenderComponent"])
+			if (auto spriteRenderComponent = entity["SpriteRendererComponent"])
 			{
-				auto& src = deserializedEntity.addComponent<SpriteRenderComponent>();
+				auto& src = deserializedEntity.addComponent<SpriteRendererComponent>();
 				src.color = spriteRenderComponent["Color"].as<glm::vec4>();
 			}
 		}
@@ -244,12 +242,12 @@ namespace Azteck
 			out << YAML::EndMap;
 		}
 
-		if (entity.hasComponent<SpriteRenderComponent>())
+		if (entity.hasComponent<SpriteRendererComponent>())
 		{
-			out << YAML::Key << "SpriteRenderComponent";
+			out << YAML::Key << "SpriteRendererComponent";
 			out << YAML::BeginMap;
 
-			auto& spriteRendererComponent = entity.getComponent<SpriteRenderComponent>();
+			auto& spriteRendererComponent = entity.getComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.color;
 
 			out << YAML::EndMap;

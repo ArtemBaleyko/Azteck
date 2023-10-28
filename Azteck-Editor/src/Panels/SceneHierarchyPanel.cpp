@@ -111,14 +111,22 @@ namespace Azteck
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			if (ImGui::MenuItem("Camera"))
-			{
-				_selectedEntity.addComponent<CameraComponent>();
+			{	
+				if (!_selectedEntity.hasComponent<CameraComponent>())
+					_selectedEntity.addComponent<CameraComponent>();
+				else
+					AZ_CORE_WARN("This entity already has the Camera Component!");
+
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Sprite Renderer"))
 			{
-				_selectedEntity.addComponent<SpriteRenderComponent>();
+				if (!_selectedEntity.hasComponent<SpriteRendererComponent>())
+					_selectedEntity.addComponent<SpriteRendererComponent>();
+				else
+					AZ_CORE_WARN("This entity already has the Sprite Renderer Component!");
+
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -197,7 +205,7 @@ namespace Azteck
 			}
 		});
 
-		drawComponent<SpriteRenderComponent>("Sprite Renderer", entity, [](auto& component) 
+		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) 
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});

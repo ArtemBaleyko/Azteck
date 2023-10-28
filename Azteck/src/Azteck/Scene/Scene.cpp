@@ -70,10 +70,10 @@ namespace Azteck
 		{
 			Renderer2D::beginScene(*primaryCamera, cameraTransform);
 
-			auto group = _registry.group<TransformComponent>(entt::get<SpriteRenderComponent>);
+			auto group = _registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
 			{
-				auto [transform, sprite] = group.get<TransformComponent, SpriteRenderComponent>(entity);
+				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 				Renderer2D::drawQuad(transform.getTransform(), sprite.color);
 			}
 
@@ -114,7 +114,7 @@ namespace Azteck
 	}
 
 	template<>
-	void Scene::onComponentAdded<SpriteRenderComponent>(Entity entity, SpriteRenderComponent& component)
+	void Scene::onComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
 	{
 	}
 

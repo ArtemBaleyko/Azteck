@@ -34,7 +34,7 @@ namespace Azteck
 		_activeScene = createRef<Scene>();
 
 		_entity = _activeScene->createEntity("Square");
-		_entity.addComponent<SpriteRenderComponent>(glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
+		_entity.addComponent<SpriteRendererComponent>(glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
 
 		_cameraEntity = _activeScene->createEntity("Camera");
 		_cameraEntity.addComponent<CameraComponent>();
@@ -255,25 +255,25 @@ namespace Azteck
 
 	void EditorLayer::openScene()
 	{
-		std::string filepath = FileDialogs::openFile("Azteck Scene (*.yaml)\0*.yaml\0");
-		if (!filepath.empty())
+		std::optional<std::string> filepath = FileDialogs::openFile("Azteck Scene (*.yaml)\0*.yaml\0");
+		if (filepath.has_value())
 		{
 			_activeScene = createRef<Scene>();
 			_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
 			_sceneHierarchyPanel.setContext(_activeScene);
 
 			SceneSerializer serializer(_activeScene);
-			serializer.deserialize(filepath);
+			serializer.deserialize(filepath.value());
 		}
 	}
 
 	void EditorLayer::saveSceneAs()
 	{
-		std::string filepath = FileDialogs::saveFile("Azteck Scene (*.yaml)\0*.yaml\0");
-		if (!filepath.empty())
+		std::optional<std::string> filepath = FileDialogs::saveFile("Azteck Scene (*.yaml)\0*.yaml\0");
+		if (filepath.has_value())
 		{
 			SceneSerializer serializer(_activeScene);
-			serializer.serialize(filepath);
+			serializer.serialize(filepath.value());
 		}
 	}
 }

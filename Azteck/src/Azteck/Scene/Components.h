@@ -45,12 +45,12 @@ namespace Azteck
 		glm::vec3 scale{ 1.0f };
 	};
 
-	struct SpriteRenderComponent
+	struct SpriteRendererComponent
 	{
-		SpriteRenderComponent() = default;
-		SpriteRenderComponent(const SpriteRenderComponent&) = default;
+		SpriteRendererComponent() = default;
+		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 
-		SpriteRenderComponent(const glm::vec4& color)
+		SpriteRendererComponent(const glm::vec4& color)
 			: color(color)
 		{}
 

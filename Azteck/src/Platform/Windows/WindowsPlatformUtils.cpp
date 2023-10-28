@@ -11,7 +11,7 @@
 
 namespace Azteck
 {
-	std::string FileDialogs::openFile(const char* filter)
+	std::optional<std::string> FileDialogs::openFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -29,10 +29,10 @@ namespace Azteck
 			return ofn.lpstrFile;
 		}
 
-		return {};
+		return std::nullopt;
 	}
 
-	std::string FileDialogs::saveFile(const char* filter)
+	std::optional<std::string> FileDialogs::saveFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -51,6 +51,6 @@ namespace Azteck
 			return ofn.lpstrFile;
 		}
 
-		return {};
+		return std::nullopt;
 	}
 }
