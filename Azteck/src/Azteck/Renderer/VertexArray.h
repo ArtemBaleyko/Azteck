@@ -7,7 +7,7 @@ namespace Azteck
 	class VertexArray
 	{
 	public:
-		virtual ~VertexArray() {};
+		virtual ~VertexArray() = default;
 
 		virtual void bind() const = 0;
 		virtual void unbind() const = 0;

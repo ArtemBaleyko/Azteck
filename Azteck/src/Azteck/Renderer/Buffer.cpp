@@ -78,7 +78,7 @@ namespace Azteck
 	/////////////////////////////////////////////////////////////////////////////
 	//-----------BufferLayout----------------------------------------------------
 	/////////////////////////////////////////////////////////////////////////////
-	BufferLayout::BufferLayout(const std::initializer_list<BufferElement>& elements)
+	BufferLayout::BufferLayout(std::initializer_list<BufferElement> elements)
 		: _elements(elements)
 	{
 		calculateOffsetsAndStride();

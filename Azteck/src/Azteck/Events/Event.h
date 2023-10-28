@@ -63,7 +63,7 @@ namespace Azteck
 		{
 			if (_event.getEventType() == T::getStaticType())
 			{
-				_event._handled = func(static_cast<T&>(_event));
+				_event._handled |= func(static_cast<T&>(_event));
 				return true;
 			}
 

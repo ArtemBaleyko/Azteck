@@ -89,7 +89,7 @@ namespace Azteck
 	{
 	public:
 		BufferLayout();
-		BufferLayout(const std::initializer_list<BufferElement>& elements);
+		BufferLayout(std::initializer_list<BufferElement> elements);
 
 		inline const std::vector<BufferElement>& getElements() const { return _elements; }
 		inline const uint32_t getStride() const { return _stride; }

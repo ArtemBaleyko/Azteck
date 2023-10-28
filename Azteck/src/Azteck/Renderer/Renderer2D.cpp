@@ -128,9 +128,7 @@ namespace Azteck
 		_data.quadTextureShader->bind();
 		_data.quadTextureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 
-		_data.quadIndexCount = 0;
-		_data.textureSlotIndex = 1;
-		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
+		startBatch();
 	}
 
 	void Renderer2D::beginScene(const Camera& camera, const glm::mat4& transform)
@@ -142,17 +140,12 @@ namespace Azteck
 		_data.quadTextureShader->bind();
 		_data.quadTextureShader->setMat4("u_ViewProjection", viewProj);
 
-		_data.quadIndexCount = 0;
-		_data.textureSlotIndex = 1;
-		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
+		startBatch();
 	}
 
 	void Renderer2D::endScene()
 	{
 		AZ_PROFILE_FUNCTION();
-
-		uint32_t dataSize = (uint32_t)((uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase);
-		_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
 
 		flush();
 	}
@@ -161,6 +154,9 @@ namespace Azteck
 	{
 		if (_data.quadIndexCount == 0)
 			return;
+
+		uint32_t dataSize = (uint32_t)((uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase);
+		_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
 
 		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
 			_data.textureSlots[i]->bind(i);
@@ -225,7 +221,7 @@ namespace Azteck
 		constexpr size_t quadVertexCount = 4;
 
 		if (_data.quadIndexCount >= _data.maxIndices)
-			flushAndReset();
+			nextBatch();
 
 		float textureIndex = -1.0f;
 
@@ -241,7 +237,7 @@ namespace Azteck
 		if (textureIndex == -1.0f)
 		{
 			if (_data.textureSlotIndex >= Renderer2DData::maxTextureSlots)
-				flushAndReset();
+				nextBatch();
 
 			textureIndex = (float)_data.textureSlotIndex;
 			_data.textureSlots[_data.textureSlotIndex] = texture;
@@ -277,7 +273,7 @@ namespace Azteck
 		AZ_PROFILE_FUNCTION();
 
 		if (_data.quadIndexCount >= _data.maxIndices)
-			flushAndReset();
+			nextBatch();
 
 		float textureIndex = -1.0f;
 
@@ -293,7 +289,7 @@ namespace Azteck
 		if (textureIndex == -1.0f)
 		{
 			if (_data.textureSlotIndex >= Renderer2DData::maxTextureSlots)
-				flushAndReset();
+				nextBatch();
 
 			textureIndex = (float)_data.textureSlotIndex;
 			_data.textureSlots[_data.textureSlotIndex] = texture;
@@ -320,13 +316,17 @@ namespace Azteck
 		_data.stats.quadCount++;
 	}
 
-	void Renderer2D::flushAndReset()
+	void Renderer2D::startBatch()
 	{
-		endScene();
-
 		_data.quadIndexCount = 0;
 		_data.textureSlotIndex = 1;
 		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
+	}
+
+	void Renderer2D::nextBatch()
+	{
+		flush();
+		startBatch();
 	}
 
 	void Renderer2D::resetStats()
