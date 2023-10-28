@@ -6,6 +6,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Azteck/Scene/SceneSerializer.h"
+#include "Azteck/Utils/PlatformUtils.h"
 
 namespace Azteck
 {
@@ -104,6 +105,9 @@ namespace Azteck
 	void EditorLayer::onEvent(Event& e)
 	{
 		_cameraController.onEvent(e);
+
+		EventDispatcher dispatcher(e);
+		dispatcher.dispatch<KeyPressedEvent>(AZ_BIND_EVENT_FN(EditorLayer::onKeyPressed));
 	}
 
 	void EditorLayer::onImGuiRender()
@@ -162,9 +166,14 @@ namespace Azteck
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				// Disabling fullscreen would allow the window to be moved to the front of other windows, 
-				// which we can't undo at the moment without finer window depth/z control.
-				//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+				if (ImGui::MenuItem("New", "Ctrl+N"))
+					newScene();
+
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					openScene();
+
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					saveSceneAs();
 
 				if (ImGui::MenuItem("Exit")) Application::getInstance().close();
 				ImGui::EndMenu();
@@ -202,5 +211,69 @@ namespace Azteck
 		ImGui::PopStyleVar();
 
 		ImGui::End();
+	}
+
+	bool EditorLayer::onKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.getRepeatCount() > 0)
+			return false;
+
+		bool isControl = Input::isKeyPressed(Key::LeftControl) || Input::isKeyPressed(Key::RightControl);
+		bool isShift = Input::isKeyPressed(Key::LeftShift) || Input::isKeyPressed(Key::RightShift);
+
+		switch (e.getKeyCode())
+		{
+			case Key::S:
+			{
+				if (isControl && isShift)
+					saveSceneAs();
+				break;
+			}
+			case Key::N:
+			{
+				if (isControl)
+					newScene();
+				break;
+			}
+			case Key::O:
+			{
+				if (isControl)
+					openScene();
+				break;
+			}
+			default:
+				break;
+		}
+	}
+
+	void EditorLayer::newScene()
+	{
+		_activeScene = createRef<Scene>();
+		_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+		_sceneHierarchyPanel.setContext(_activeScene);
+	}
+
+	void EditorLayer::openScene()
+	{
+		std::string filepath = FileDialogs::openFile("Azteck Scene (*.yaml)\0*.yaml\0");
+		if (!filepath.empty())
+		{
+			_activeScene = createRef<Scene>();
+			_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+			_sceneHierarchyPanel.setContext(_activeScene);
+
+			SceneSerializer serializer(_activeScene);
+			serializer.deserialize(filepath);
+		}
+	}
+
+	void EditorLayer::saveSceneAs()
+	{
+		std::string filepath = FileDialogs::saveFile("Azteck Scene (*.yaml)\0*.yaml\0");
+		if (!filepath.empty())
+		{
+			SceneSerializer serializer(_activeScene);
+			serializer.serialize(filepath);
+		}
 	}
 }

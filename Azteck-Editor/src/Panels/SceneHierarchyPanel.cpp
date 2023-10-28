@@ -18,6 +18,7 @@ namespace Azteck
 	void SceneHierarchyPanel::setContext(const Ref<Scene>& context)
 	{
 		_context = context;
+		_selectedEntity = {};
 	}
 
 	void SceneHierarchyPanel::onImGuiRender()

@@ -20,6 +20,13 @@ namespace Azteck
 		void onImGuiRender() override;
 
 	private:
+		bool onKeyPressed(KeyPressedEvent& e);
+
+		void newScene();
+		void openScene();
+		void saveSceneAs();
+
+	private:
 		OrthographicCameraController _cameraController;
 		glm::vec2 _viewportSize;
 		bool _isViewportFocused;
