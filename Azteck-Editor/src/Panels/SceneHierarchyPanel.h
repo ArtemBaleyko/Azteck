@@ -23,6 +23,8 @@ namespace Azteck
 		void drawEntityNode(Entity entity);
 		void drawComponents(Entity entity);
 
+		template<typename T, typename UIFunction>
+		static void drawComponent(const std::string& label, Entity entity, UIFunction func);
 		static void drawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 
 	private:

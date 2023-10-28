@@ -16,7 +16,10 @@ namespace Azteck
 		T& addComponent(Args&&... args)
 		{
 			AZ_CORE_ASSERT(!hasComponent<T>(), "Entity already has the component");
-			return _scene->_registry.emplace<T>(_handle, std::forward<Args>(args)...);
+			T& component = _scene->_registry.emplace<T>(_handle, std::forward<Args>(args)...);
+			_scene->onComponentAdded<T>(*this, component);
+
+			return component;
 		}
 
 		template<typename T>
@@ -41,6 +44,7 @@ namespace Azteck
 
 		operator bool() const { return _handle != entt::null; }
 		operator uint32_t() const { return static_cast<uint32_t>(_handle); }
+		operator entt::entity() const { return _handle; }
 
 		bool operator==(const Entity& other) const { return _handle == other._handle && _scene == other._scene; }
 		bool operator!=(const Entity& other) const { return !(*this == other); }

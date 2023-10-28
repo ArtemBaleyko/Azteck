@@ -28,6 +28,11 @@ namespace Azteck
 		return entity;
 	}
 
+	void Scene::destroyEntity(Entity entity)
+	{
+		_registry.destroy(entity);
+	}
+
 	void Scene::onUpdate(Timestep ts)
 	{
 		_registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
@@ -89,5 +94,37 @@ namespace Azteck
 			if (!cameraComponent.fixedAspectRatio)
 				cameraComponent.camera.setViewportSize(width, height);
 		}
+	}
+
+	template<typename T>
+	void Scene::onComponentAdded(Entity entity, T& component)
+	{
+		static_assert(false);
+	}
+
+	template<>
+	void Scene::onComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+	{
+		component.camera.setViewportSize(_viewportWidth, _viewportHeight);
+	}
+
+	template<>
+	void Scene::onComponentAdded<SpriteRenderComponent>(Entity entity, SpriteRenderComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	{
 	}
 }

@@ -23,6 +23,8 @@ namespace Azteck
 
 		inline void setBlockEvents(bool block) { _blockEvents = block; }
 
+		void setDarkThemeColors();
+
 	private:
 		bool _blockEvents;
 		float _time;

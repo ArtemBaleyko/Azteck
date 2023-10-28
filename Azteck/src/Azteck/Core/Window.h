@@ -9,8 +9,8 @@ namespace Azteck
 	struct WindowProps
 	{
 		WindowProps(const std::string& title = "Azteck Engine",
-			uint32_t width = 1280,
-			uint32_t height = 720)
+			uint32_t width = 1600,
+			uint32_t height = 900)
 			: title(title)
 			, width(width)
 			, height(height)
