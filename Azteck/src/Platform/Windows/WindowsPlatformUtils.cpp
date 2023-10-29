@@ -45,7 +45,7 @@ namespace Azteck
 		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
 		ofn.lpstrDefExt = ".yaml";
-		ofn.Flags = OFN_NOCHANGEDIR;
+		ofn.Flags = OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT;
 		if (GetSaveFileNameA(&ofn) == TRUE)
 		{
 			return ofn.lpstrFile;
