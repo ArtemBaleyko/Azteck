@@ -143,6 +143,18 @@ namespace Azteck
 		startBatch();
 	}
 
+	void Renderer2D::beginScene(const EditorCamera& camera)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		const glm::mat4& viewProj = camera.getViewProjection();
+
+		_data.quadTextureShader->bind();
+		_data.quadTextureShader->setMat4("u_ViewProjection", viewProj);
+
+		startBatch();
+	}
+
 	void Renderer2D::endScene()
 	{
 		AZ_PROFILE_FUNCTION();

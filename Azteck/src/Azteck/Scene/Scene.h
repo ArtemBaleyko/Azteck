@@ -3,6 +3,7 @@
 #include <entt.hpp>
 
 #include "Azteck/Core/Timestep.h"
+#include "Azteck/Renderer/EditorCamera.h"
 
 namespace Azteck
 {
@@ -19,7 +20,8 @@ namespace Azteck
 		Entity createEntity(const std::string& name = {});
 		void destroyEntity(Entity entity);
 
-		void onUpdate(Timestep ts);
+		void onUpdateRuntime(Timestep ts);
+		void onUpdateEditor(Timestep ts, EditorCamera& camera);
 		void onViewportResize(uint32_t width, uint32_t height);
 
 		Entity getPrimaryCamera();

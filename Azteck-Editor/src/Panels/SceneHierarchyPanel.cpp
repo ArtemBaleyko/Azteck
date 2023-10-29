@@ -193,7 +193,7 @@ namespace Azteck
 			{
 				float fov = glm::degrees(camera.getVerticalFOV());
 				if (ImGui::DragFloat("FOV", &fov, 0.1f))
-					camera.setVerticalFOV(fov);
+					camera.setVerticalFOV(glm::radians(fov));
 
 				float nearClip = camera.getPerspectiveNearClip();
 				if (ImGui::DragFloat("Near Clip", &nearClip, 0.1f))

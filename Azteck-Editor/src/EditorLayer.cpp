@@ -72,6 +72,8 @@ namespace Azteck
 		_cameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
 
 		_sceneHierarchyPanel.setContext(_activeScene);
+
+		_editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 	}
 
 	void EditorLayer::onDetach()
@@ -89,25 +91,29 @@ namespace Azteck
 		{
 			_frameBuffer->resize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 			_cameraController.onResize(_viewportSize.x, _viewportSize.y);
-
+			_editorCamera.setViewportSize(_viewportSize.x, _viewportSize.y);
 			_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 		}
 
 		if (_isViewportFocused)
+		{
 			_cameraController.onUpdate(timestep);
+		}
+		_editorCamera.onUpdate(timestep);
 
 		Renderer2D::resetStats();
 		_frameBuffer->bind();
 		RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::clear();
 
-		_activeScene->onUpdate(timestep);
+		_activeScene->onUpdateEditor(timestep, _editorCamera);
 		_frameBuffer->unbind();
 	}
 
 	void EditorLayer::onEvent(Event& e)
 	{
 		_cameraController.onEvent(e);
+		_editorCamera.onEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(AZ_BIND_EVENT_FN(EditorLayer::onKeyPressed));
@@ -222,11 +228,15 @@ namespace Azteck
 			const float windowHeight = ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			auto cameraEntity = _activeScene->getPrimaryCamera();
-			const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+			// Runtime camera fro entity
+			//auto cameraEntity = _activeScene->getPrimaryCamera();
+			//const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+			//const glm::mat4& cameraProjection = camera.getProjection();
+			//glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
 
-			const glm::mat4& cameraProjection = camera.getProjection();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+			// Editor camera
+			const glm::mat4& cameraProjection = _editorCamera.getProjection();
+			glm::mat4 cameraView = _editorCamera.getViewMatrix();
 
 			auto& transformComponent = selectedEntity.getComponent<TransformComponent>();
 			glm::mat4 transform = transformComponent.getTransform();

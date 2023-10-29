@@ -3,6 +3,7 @@
 #include <Azteck.h>
 
 #include "Panels/SceneHierarchyPanel.h"
+#include "Azteck/Renderer/EditorCamera.h"
 
 namespace Azteck
 {
@@ -32,6 +33,8 @@ namespace Azteck
 		bool _isViewportFocused;
 		bool _isViewportHovered;
 		int _gizmoType;
+
+		EditorCamera _editorCamera;
 
 		// Temporary
 		Ref<Texture2D> _texture;

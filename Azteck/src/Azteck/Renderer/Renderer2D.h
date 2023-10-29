@@ -3,6 +3,7 @@
 #include "OrthographicCamera.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "EditorCamera.h"
 
 namespace Azteck
 {
@@ -14,6 +15,7 @@ namespace Azteck
 
 		static void beginScene(const OrthographicCamera& camera); // TODO: remove
 		static void beginScene(const Camera& camera, const glm::mat4& transform);
+		static void beginScene(const EditorCamera& camera);
 		static void endScene();
 		static void flush();
 
