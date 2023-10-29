@@ -3,10 +3,12 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 
 #include <imgui.h>
+#include "ImGuizmo.h"
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Azteck/Scene/SceneSerializer.h"
 #include "Azteck/Utils/PlatformUtils.h"
+#include "Azteck/Math/Math.h"
 
 namespace Azteck
 {
@@ -15,6 +17,7 @@ namespace Azteck
 		, _squareColor(0.2f, 0.3f, 0.8f, 1.0f)
 		, _isViewportFocused(false)
 		, _isViewportHovered(false)
+		, _gizmoType(-1)
 		, _cameraController(1280.0f / 720.0f, true)
 	{
 
@@ -200,13 +203,63 @@ namespace Azteck
 
 		_isViewportFocused = ImGui::IsWindowFocused();
 		_isViewportHovered = ImGui::IsWindowHovered();
-		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportFocused || !_isViewportHovered);
+		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportFocused && !_isViewportHovered);
 		
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		_viewportSize = { viewportSize.x, viewportSize.y };
 
 		uint64_t textureID = _frameBuffer->getColorAttachmentRendererId();
 		ImGui::Image(reinterpret_cast<void*>(textureID), viewportSize, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+
+		// Gizmos
+		Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity();
+		if (selectedEntity && _gizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			const float windowWidth = ImGui::GetWindowWidth();
+			const float windowHeight = ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+			auto cameraEntity = _activeScene->getPrimaryCamera();
+			const auto& camera = cameraEntity.getComponent<CameraComponent>().camera;
+
+			const glm::mat4& cameraProjection = camera.getProjection();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.getComponent<TransformComponent>().getTransform());
+
+			auto& transformComponent = selectedEntity.getComponent<TransformComponent>();
+			glm::mat4 transform = transformComponent.getTransform();
+
+			// Snapping
+			bool snap = Input::isKeyPressed(Key::LeftControl);
+			float snapValue = 0.5f;
+
+			if (_gizmoType == ImGuizmo::OPERATION::ROTATE)
+				snapValue = 45.0f;
+
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				static_cast<ImGuizmo::OPERATION>(_gizmoType), ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation;
+				glm::vec3 rotation;
+				glm::vec3 scale;
+				if (Math::decomposeTransform(transform, translation, rotation, scale))
+				{
+					transformComponent.translation = translation;
+					transformComponent.rotation = rotation;
+					transformComponent.scale = scale;
+				}
+
+			}
+		}
+
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -239,6 +292,26 @@ namespace Azteck
 			{
 				if (isControl)
 					openScene();
+				break;
+			}
+			case Key::Q:
+			{
+				_gizmoType = -1;
+				break;
+			}
+			case Key::W:
+			{
+				_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			}
+			case Key::E:
+			{
+				_gizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			}
+			case Key::R:
+			{
+				_gizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
 			default:

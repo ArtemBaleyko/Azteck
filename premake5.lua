@@ -31,6 +31,7 @@ IncludeDir["glm"] = "%{wks.location}/Azteck/vendor/glm"
 IncludeDir["stb_image"] = "%{wks.location}/Azteck/vendor/stb_image"
 IncludeDir["entt"] = "%{wks.location}/Azteck/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "%{wks.location}/Azteck/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] = "%{wks.location}/Azteck/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "vendor/premake"

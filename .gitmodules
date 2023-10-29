@@ -17,3 +17,6 @@
 [submodule "Azteck/vendor/yaml-cpp"]
 	path = Azteck/vendor/yaml-cpp
 	url = https://github.com/ArtemBaleyko/yaml-cpp.git
+[submodule "Azteck/vendor/ImGuizmo"]
+	path = Azteck/vendor/ImGuizmo
+	url = https://github.com/ArtemBaleyko/ImGuizmo.git

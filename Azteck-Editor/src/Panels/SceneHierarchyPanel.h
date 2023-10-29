@@ -19,6 +19,8 @@ namespace Azteck
 
 		void onImGuiRender();
 
+		Entity getSelectedEntity() const { return _selectedEntity; }
+
 	private:
 		void drawEntityNode(Entity entity);
 		void drawComponents(Entity entity);

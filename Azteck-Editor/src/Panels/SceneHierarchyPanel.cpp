@@ -297,7 +297,7 @@ namespace Azteck
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.2f, 0.7f, 0.2f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize))
-			values.x = resetValue;
+			values.y = resetValue;
 		ImGui::PopFont();
 		ImGui::PopStyleColor(3);
 

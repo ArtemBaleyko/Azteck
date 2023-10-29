@@ -31,6 +31,7 @@ namespace Azteck
 		glm::vec2 _viewportSize;
 		bool _isViewportFocused;
 		bool _isViewportHovered;
+		int _gizmoType;
 
 		// Temporary
 		Ref<Texture2D> _texture;

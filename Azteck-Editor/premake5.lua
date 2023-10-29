@@ -20,7 +20,8 @@ project "Azteck-Editor"
 		"%{wks.location}/Azteck/vendor",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
