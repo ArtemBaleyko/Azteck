@@ -16,10 +16,22 @@ int main(int argc, char** argv);
 
 namespace Azteck
 {
+	struct ApplicationCommandLineArgs
+	{
+		int count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			AZ_CORE_ASSERT(index < count, "Invalid index");
+			return Args[index];
+		}
+	};
+
 	class  Application
 	{
 	public:
-		Application(const std::string& name = "Azteck App");
+		Application(const std::string& name = "Azteck App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void close();
@@ -33,6 +45,7 @@ namespace Azteck
 		inline Window& getWindow() const { return *_window; }
 
 		inline static Application& getInstance() { return *_instance; }
+		inline ApplicationCommandLineArgs getCommandLineArgs() const { return _commandLineArgs; }
 
 	private:
 		void run();
@@ -41,6 +54,7 @@ namespace Azteck
 		bool onWindowResized(WindowResizedEvent& e);
 
 	private:
+		ApplicationCommandLineArgs _commandLineArgs;
 		Scope<Window> _window;
 
 		ImGuiLayer* _imGuiLayer;
@@ -57,6 +71,6 @@ namespace Azteck
 	};
 
 	// To be defined in client
-	Application* createApplication();
+	Application* createApplication(ApplicationCommandLineArgs args);
 }
 

@@ -138,7 +138,8 @@ namespace Azteck
 	template<>
 	void Scene::onComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
 	{
-		component.camera.setViewportSize(_viewportWidth, _viewportHeight);
+		if (_viewportWidth > 0 && _viewportHeight > 0)
+			component.camera.setViewportSize(_viewportWidth, _viewportHeight);
 	}
 
 	template<>

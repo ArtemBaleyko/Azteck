@@ -43,11 +43,20 @@ namespace Azteck
 	private:
 		std::string readFile(const std::string& filepath);
 		std::unordered_map<GLenum, std::string> preProcess(const std::string& source);
-		void compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+		
+		void compileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
+		void compileOrGetOpenGLBinaries();
+		void createProgram();
+		void reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 
 	private:
 		uint32_t _rendererId;
+		std::string _filepath;
 		std::string _name;
-	};
 
+		std::unordered_map<GLenum, std::vector<uint32_t>> _vulkanSPIRV;
+		std::unordered_map<GLenum, std::vector<uint32_t>> _openGLSPIRV;
+
+		std::unordered_map<GLenum, std::string> _openGLSourceCode;
+	};
 }

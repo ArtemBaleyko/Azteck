@@ -17,3 +17,7 @@ bin-int/
 **.vcxproj.filters
 
 !vendor/premake/bin
+
+Azteck/vendor/VulkanSDK
+Azteck-Editor/assets/cache
+scripts/__pycache__

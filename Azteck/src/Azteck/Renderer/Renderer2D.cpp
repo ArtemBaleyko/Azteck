@@ -2,10 +2,12 @@
 #include "Renderer2D.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "UniformBuffer.h"
 
 #include "RenderCommand.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Azteck
 {
@@ -56,6 +58,14 @@ namespace Azteck
 		};
 
 		Renderer2D::Statistics stats;
+
+		struct CameraData
+		{
+			glm::mat4 viewProjection;
+		};
+
+		CameraData cameraBuffer;
+		Ref<UniformBuffer> cameraUniformBuffer;
 	};
 
 	static Renderer2DData _data;
@@ -112,10 +122,9 @@ namespace Azteck
 			samplers[i] = i;
 
 		_data.quadTextureShader = Shader::create("assets/shaders/Texture.glsl");
-		_data.quadTextureShader->bind();
-		_data.quadTextureShader->setIntArray("u_Textures", samplers, _data.maxTextureSlots);
-
 		_data.textureSlots[0] = _data.whiteTexture;
+
+		_data.cameraUniformBuffer = UniformBuffer::create(sizeof(Renderer2DData::CameraData), 0);
 	}
 
 	void Renderer2D::shutdown()
@@ -125,6 +134,7 @@ namespace Azteck
 		delete[] _data.quadVertexBufferBase;
 	}
 
+	// TODO: Remove
 	void Renderer2D::beginScene(const OrthographicCamera& camera)
 	{
 		AZ_PROFILE_FUNCTION();
@@ -139,10 +149,8 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		glm::mat4 viewProj = camera.getProjection() * glm::inverse(transform);
-
-		_data.quadTextureShader->bind();
-		_data.quadTextureShader->setMat4("u_ViewProjection", viewProj);
+		_data.cameraBuffer.viewProjection = camera.getProjection() * glm::inverse(transform);
+		_data.cameraUniformBuffer->setData(&_data.cameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		startBatch();
 	}
@@ -151,10 +159,8 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		const glm::mat4& viewProj = camera.getViewProjection();
-
-		_data.quadTextureShader->bind();
-		_data.quadTextureShader->setMat4("u_ViewProjection", viewProj);
+		_data.cameraBuffer.viewProjection = camera.getViewProjection();
+		_data.cameraUniformBuffer->setData(&_data.cameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		startBatch();
 	}
@@ -177,6 +183,7 @@ namespace Azteck
 		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
 			_data.textureSlots[i]->bind(i);
 
+		_data.quadTextureShader->bind();
 		RenderCommand::drawIndexed(_data.quadVertexArray, _data.quadIndexCount);
 
 		_data.stats.drawCalls++;

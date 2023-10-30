@@ -1,4 +1,5 @@
 include "./vendor/premake/premake_customization/solution_items.lua"
+include "dependencies.lua"
 
 workspace "Azteck"
 	architecture "x86_64"
@@ -22,16 +23,6 @@ workspace "Azteck"
 	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
-IncludeDir = {}
-IncludeDir["GLFW"] = "%{wks.location}/Azteck/vendor/GLFW/include"
-IncludeDir["Glad"] = "%{wks.location}/Azteck/vendor/Glad/include"
-IncludeDir["ImGui"] = "%{wks.location}/Azteck/vendor/imgui"
-IncludeDir["glm"] = "%{wks.location}/Azteck/vendor/glm"
-IncludeDir["stb_image"] = "%{wks.location}/Azteck/vendor/stb_image"
-IncludeDir["entt"] = "%{wks.location}/Azteck/vendor/entt/include"
-IncludeDir["yaml_cpp"] = "%{wks.location}/Azteck/vendor/yaml-cpp/include"
-IncludeDir["ImGuizmo"] = "%{wks.location}/Azteck/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "vendor/premake"

@@ -37,6 +37,8 @@ namespace Azteck
 
 	void SceneCamera::setViewportSize(uint32_t width, uint32_t height)
 	{
+		AZ_CORE_ASSERT(width > 0 && height > 0, "Invalid viewport size");
+
 		_aspectRatio = (float)width / (float)height;
 		recalculateProjection();
 	}

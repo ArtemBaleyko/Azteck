@@ -13,10 +13,11 @@ namespace Azteck
 {
 	Application* Application::_instance = nullptr;
 
-	Application::Application(const std::string& name)
+	Application::Application(const std::string& name, ApplicationCommandLineArgs args)
 		: _isRunning(true)
 		, _isMinimised(false)
 		, _lastFrameTime(0.0f)
+		, _commandLineArgs(args)
 	{
 		AZ_PROFILE_FUNCTION();
 

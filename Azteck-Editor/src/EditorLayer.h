@@ -31,7 +31,6 @@ namespace Azteck
 		bool canSelectEntity();
 
 	private:
-		OrthographicCameraController _cameraController;
 		glm::vec2 _viewportSize;
 		glm::vec2 _viewportBounds[2];
 		bool _isViewportFocused;
@@ -40,14 +39,8 @@ namespace Azteck
 
 		EditorCamera _editorCamera;
 
-		// Temporary
-		Ref<Texture2D> _texture;
 		Ref<FrameBuffer> _frameBuffer;
-		glm::vec4 _squareColor;
-
 		Ref<Scene> _activeScene;
-		Entity _entity;
-		Entity _cameraEntity;
 		Entity _hoveredEntity;
 
 		//Panels

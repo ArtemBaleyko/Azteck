@@ -14,11 +14,9 @@ namespace Azteck
 {
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
-		, _squareColor(0.2f, 0.3f, 0.8f, 1.0f)
 		, _isViewportFocused(false)
 		, _isViewportHovered(false)
 		, _gizmoType(-1)
-		, _cameraController(1280.0f / 720.0f, true)
 	{
 
 	}
@@ -27,54 +25,24 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_texture = Texture2D::create("assets/textures/checkerboard.png");
-
 		FrameBufferSpecification spec;
 		spec.width = 1280;
 		spec.height = 720;
 		spec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 
 		_frameBuffer = FrameBuffer::create(spec);
+
 		_activeScene = createRef<Scene>();
-
-		_entity = _activeScene->createEntity("Square");
-		_entity.addComponent<SpriteRendererComponent>(glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
-
-		_cameraEntity = _activeScene->createEntity("Camera");
-		_cameraEntity.addComponent<CameraComponent>();
-
-		class CameraController : public ScriptableEntity
-		{
-		public:
-			void onCreate()
-			{
-			}
-
-			void onDestroy()
-			{
-
-			}
-
-			void onUpdate(Timestep ts)
-			{
-				auto& translation = getComponent<TransformComponent>().translation;
-				float speed = 5.0f;
-				if (Input::isKeyPressed(Key::A))
-					translation.x -= speed * ts;
-				if (Input::isKeyPressed(Key::D))
-					translation.x += speed * ts;
-				if (Input::isKeyPressed(Key::W))
-					translation.y += speed * ts;
-				if (Input::isKeyPressed(Key::S))
-					translation.y -= speed * ts;
-			}
-		};
-
-		_cameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>();
-
 		_sceneHierarchyPanel.setContext(_activeScene);
-
 		_editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+		auto commandLineArgs = Application::getInstance().getCommandLineArgs();
+		if (commandLineArgs.count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(_activeScene);
+			serializer.deserialize(sceneFilePath);
+		}
 	}
 
 	void EditorLayer::onDetach()
@@ -91,15 +59,10 @@ namespace Azteck
 			(spec.width != _viewportSize.x || spec.height != _viewportSize.y))
 		{
 			_frameBuffer->resize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
-			_cameraController.onResize(_viewportSize.x, _viewportSize.y);
 			_editorCamera.setViewportSize(_viewportSize.x, _viewportSize.y);
 			_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 		}
 
-		if (_isViewportFocused)
-		{
-			_cameraController.onUpdate(timestep);
-		}
 		_editorCamera.onUpdate(timestep);
 
 		Renderer2D::resetStats();
@@ -131,7 +94,6 @@ namespace Azteck
 
 	void EditorLayer::onEvent(Event& e)
 	{
-		_cameraController.onEvent(e);
 		_editorCamera.onEvent(e);
 
 		EventDispatcher dispatcher(e);
@@ -229,9 +191,7 @@ namespace Azteck
 		ImGui::Text("Indices: %d", stats.getTotalIndexCount());
 
 		ImGui::End();
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-
 
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
