@@ -16,7 +16,10 @@ namespace Azteck
 		virtual void resize(uint32_t width, uint32_t height) override;
 
 		virtual const FrameBufferSpecification& getSpecification() const override { return _spec; };
-		virtual uint32_t getColorAttachmentRendererId() const override { return _colorAttachment; };
+		virtual uint32_t getColorAttachmentRendererId(uint32_t index = 0) const override { 
+			AZ_CORE_ASSERT(index < _colorAttachments.size(), "Invalid color attachment index");
+			return _colorAttachments[index]; 
+		};
 
 		void invalidate();
 
@@ -25,8 +28,12 @@ namespace Azteck
 
 	private:
 		uint32_t _rendererId;
-		uint32_t _colorAttachment;
-		uint32_t _depthAttachment;
 		FrameBufferSpecification _spec;
+
+		uint32_t _depthAttachment;
+		FramebufferTextureSpecification _depthAttachmentSpec;
+
+		std::vector<uint32_t> _colorAttachments;
+		std::vector<FramebufferTextureSpecification> _colorAttachmentSpecs;
 	};
 }

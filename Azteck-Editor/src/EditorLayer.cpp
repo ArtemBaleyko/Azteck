@@ -32,6 +32,7 @@ namespace Azteck
 		FrameBufferSpecification spec;
 		spec.width = 1280;
 		spec.height = 720;
+		spec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
 
 		_frameBuffer = FrameBuffer::create(spec);
 		_activeScene = createRef<Scene>();
