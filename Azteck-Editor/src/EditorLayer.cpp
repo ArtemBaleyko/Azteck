@@ -32,7 +32,7 @@ namespace Azteck
 		FrameBufferSpecification spec;
 		spec.width = 1280;
 		spec.height = 720;
-		spec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
+		spec.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 
 		_frameBuffer = FrameBuffer::create(spec);
 		_activeScene = createRef<Scene>();
@@ -107,7 +107,25 @@ namespace Azteck
 		RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 		RenderCommand::clear();
 
+		_frameBuffer->clearAttachment(1, -1);
+
 		_activeScene->onUpdateEditor(timestep, _editorCamera);
+
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= _viewportBounds[0].x;
+		my -= _viewportBounds[0].y;
+		my = _viewportSize.y - my;
+		glm::vec2 viewportSize = _viewportBounds[1] - _viewportBounds[0];
+
+		int mouseX = static_cast<int>(mx);
+		int mouseY = static_cast<int>(my);
+
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(_viewportSize.x) && mouseY < static_cast<int>(_viewportSize.y))
+		{
+			int pixelData = _frameBuffer->readPixel(1, mouseX, mouseY);
+			_hoveredEntity = pixelData == -1 ? Entity() : Entity(static_cast<entt::entity>(pixelData), _activeScene.get());
+		}
+
 		_frameBuffer->unbind();
 	}
 
@@ -118,6 +136,7 @@ namespace Azteck
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(AZ_BIND_EVENT_FN(EditorLayer::onKeyPressed));
+		dispatcher.dispatch<MouseButtonPressedEvent>(AZ_BIND_EVENT_FN(EditorLayer::onMouseButtonPressed));
 	}
 
 	void EditorLayer::onImGuiRender()
@@ -196,6 +215,12 @@ namespace Azteck
 
 		ImGui::Begin("Settings");
 
+		std::string name = "None";
+		if (_hoveredEntity)
+			name = _hoveredEntity.getComponent<TagComponent>().tag;
+
+		ImGui::Text("Hovered Entity: %s", name.c_str());
+
 		auto stats = Renderer2D::getStats();
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.drawCalls);
@@ -206,7 +231,14 @@ namespace Azteck
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+
 		ImGui::Begin("Viewport");
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+		_viewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		_viewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
 		_isViewportFocused = ImGui::IsWindowFocused();
 		_isViewportHovered = ImGui::IsWindowHovered();
@@ -227,7 +259,7 @@ namespace Azteck
 
 			const float windowWidth = ImGui::GetWindowWidth();
 			const float windowHeight = ImGui::GetWindowHeight();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+			ImGuizmo::SetRect(_viewportBounds[0].x, _viewportBounds[0].y, _viewportBounds[1].x - _viewportBounds[0].x, _viewportBounds[1].y - _viewportBounds[0].y);
 
 			// Runtime camera fro entity
 			//auto cameraEntity = _activeScene->getPrimaryCamera();
@@ -307,27 +339,41 @@ namespace Azteck
 			}
 			case Key::Q:
 			{
-				_gizmoType = -1;
+				if (!ImGuizmo::IsUsing())
+					_gizmoType = -1;
 				break;
 			}
 			case Key::W:
 			{
-				_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				if (!ImGuizmo::IsUsing())
+					_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 			}
 			case Key::E:
 			{
-				_gizmoType = ImGuizmo::OPERATION::ROTATE;
+				if (!ImGuizmo::IsUsing())	
+					_gizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 			}
 			case Key::R:
 			{
-				_gizmoType = ImGuizmo::OPERATION::SCALE;
+				if (!ImGuizmo::IsUsing())
+					_gizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
 			default:
 				break;
 		}
+	}
+
+	bool EditorLayer::onMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.getMouseButton() == Mouse::ButtonLeft && canSelectEntity())
+		{
+			_sceneHierarchyPanel.setSelectedEntity(_hoveredEntity);
+		}
+
+		return false;
 	}
 
 	void EditorLayer::newScene()
@@ -359,5 +405,10 @@ namespace Azteck
 			SceneSerializer serializer(_activeScene);
 			serializer.serialize(filepath.value());
 		}
+	}
+
+	bool EditorLayer::canSelectEntity()
+	{
+		return _isViewportHovered && !ImGuizmo::IsOver() && !Input::isKeyPressed(Key::LeftAlt);
 	}
 }

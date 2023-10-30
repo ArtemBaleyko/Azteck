@@ -55,6 +55,11 @@ namespace Azteck
 		ImGui::End();
 	}
 
+	void SceneHierarchyPanel::setSelectedEntity(Entity entity)
+	{
+		_selectedEntity = entity;
+	}
+
 	void SceneHierarchyPanel::drawEntityNode(Entity entity)
 	{
 		auto& tag = entity.getComponent<TagComponent>().tag;

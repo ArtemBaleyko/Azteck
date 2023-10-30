@@ -38,16 +38,16 @@ namespace Azteck
 			glBindTexture(textureTarget(multisampled), id);
 		}
 
-		static void attachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void attachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 			if (multisampled)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -80,6 +80,18 @@ namespace Azteck
 			}
 
 			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget(multisampled), id, 0);
+		}
+
+		static GLenum toGLTextureFormat(FrameBufferTextureFormat format)
+		{
+			switch(format)
+			{
+				case FrameBufferTextureFormat::RGBA8: return GL_RGBA8;
+				case FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			}
+
+			AZ_CORE_ASSERT(false, "Unsupported texture format");
+			return 0;
 		}
 	}
 
@@ -130,6 +142,26 @@ namespace Azteck
 		invalidate();
 	}
 
+	int OpenGLFrameBuffer::readPixel(uint32_t attachmentIndex, int x, int y)
+	{
+		AZ_CORE_ASSERT(attachmentIndex < _colorAttachmentSpecs.size(), "Invalid attachment index");
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+
+		return pixelData;
+	}
+
+	void OpenGLFrameBuffer::clearAttachment(uint32_t attachmentIndex, int value)
+	{
+		AZ_CORE_ASSERT(attachmentIndex < _colorAttachmentSpecs.size(), "Invalid attachment index");
+
+		const auto& spec = _colorAttachmentSpecs[attachmentIndex];
+		glClearTexImage(_colorAttachments[attachmentIndex], 0, Utils::toGLTextureFormat(spec.textureFormat), GL_INT, &value);
+	}
+
 	void OpenGLFrameBuffer::invalidate()
 	{
 		if (_rendererId)
@@ -155,7 +187,12 @@ namespace Azteck
 				{
 					case FrameBufferTextureFormat::RGBA8:
 					{
-						Utils::attachColorTexture(_colorAttachments[i], _spec.samples, GL_RGBA8, _spec.width, _spec.height, i);
+						Utils::attachColorTexture(_colorAttachments[i], _spec.samples, GL_RGBA8, GL_RGBA, _spec.width, _spec.height, i);
+						break;
+					}
+					case FrameBufferTextureFormat::RED_INTEGER:
+					{
+						Utils::attachColorTexture(_colorAttachments[i], _spec.samples, GL_R32I, GL_RED_INTEGER, _spec.width, _spec.height, i);
 						break;
 					}
 					default:

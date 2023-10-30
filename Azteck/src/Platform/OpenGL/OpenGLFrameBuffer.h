@@ -14,6 +14,9 @@ namespace Azteck
 		virtual void unbind() override;
 
 		virtual void resize(uint32_t width, uint32_t height) override;
+		virtual int readPixel(uint32_t attachmentIndex, int x, int y) override;
+
+		virtual void clearAttachment(uint32_t attachmentIndex, int value) override;
 
 		virtual const FrameBufferSpecification& getSpecification() const override { return _spec; };
 		virtual uint32_t getColorAttachmentRendererId(uint32_t index = 0) const override { 

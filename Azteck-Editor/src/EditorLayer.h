@@ -22,14 +22,18 @@ namespace Azteck
 
 	private:
 		bool onKeyPressed(KeyPressedEvent& e);
+		bool onMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void newScene();
 		void openScene();
 		void saveSceneAs();
 
+		bool canSelectEntity();
+
 	private:
 		OrthographicCameraController _cameraController;
 		glm::vec2 _viewportSize;
+		glm::vec2 _viewportBounds[2];
 		bool _isViewportFocused;
 		bool _isViewportHovered;
 		int _gizmoType;
@@ -44,6 +48,7 @@ namespace Azteck
 		Ref<Scene> _activeScene;
 		Entity _entity;
 		Entity _cameraEntity;
+		Entity _hoveredEntity;
 
 		//Panels
 		SceneHierarchyPanel _sceneHierarchyPanel;

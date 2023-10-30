@@ -76,6 +76,17 @@ namespace Azteck
 				case ShaderDataType::Float2:
 				case ShaderDataType::Float3:
 				case ShaderDataType::Float4:
+				{
+					glEnableVertexAttribArray(_vertexBufferIndex);
+					glVertexAttribPointer(_vertexBufferIndex,
+						element.getComponentCount(),
+						ShaderDataTypeToOpenGLBaseType(element.type),
+						element.normalized ? GL_TRUE : GL_FALSE,
+						layout.getStride(),
+						(const void*)element.offset);
+					_vertexBufferIndex++;
+					break;
+				}
 				case ShaderDataType::Int:
 				case ShaderDataType::Int2:
 				case ShaderDataType::Int3:
@@ -83,10 +94,9 @@ namespace Azteck
 				case ShaderDataType::Bool:
 				{
 					glEnableVertexAttribArray(_vertexBufferIndex);
-					glVertexAttribPointer(_vertexBufferIndex,
+					glVertexAttribIPointer(_vertexBufferIndex,
 						element.getComponentCount(),
 						ShaderDataTypeToOpenGLBaseType(element.type),
-						element.normalized ? GL_TRUE : GL_FALSE,
 						layout.getStride(),
 						(const void*)element.offset);
 					_vertexBufferIndex++;

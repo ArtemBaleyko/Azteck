@@ -16,6 +16,9 @@ namespace Azteck
 		glm::vec2 texCoord;
 		float texIndex;
 		float tilingFactor;
+
+		// Editor only
+		int entityID = -1;
 	};
 
 	struct Renderer2DData
@@ -71,6 +74,7 @@ namespace Azteck
 			{ShaderDataType::Float2, "a_TexCoord"},
 			{ShaderDataType::Float, "a_TexIndex"},
 			{ShaderDataType::Float, "a_TilingFactor"},
+			{ShaderDataType::Int, "a_EntityID"}
 		};
 
 		_data.quadVertexBuffer->setLayout(layout);
@@ -198,14 +202,14 @@ namespace Azteck
 		drawQuad(position, size, texture, tintColor, tilingFactor);
 	}
 
-	void Renderer2D::drawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::drawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
-		drawQuad(transform, _data.whiteTexture, color, 1.0f);
+		drawQuad(transform, _data.whiteTexture, color, 1.0f, entityID);
 	}
 
-	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID)
 	{
-		drawQuad(transform, texture, tintColor, tilingFactor);
+		drawQuad(transform, texture, tintColor, tilingFactor, entityID);
 	}
 
 	void Renderer2D::drawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
@@ -228,7 +232,12 @@ namespace Azteck
 		drawRotatedQuad(position, size, rotation, texture, tintColor, tilingFactor);
 	}
 
-	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor)
+	void Renderer2D::drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID)
+	{
+		drawQuad(transform, src.color, entityID);
+	}
+
+	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor, int entityID)
 	{
 		constexpr size_t quadVertexCount = 4;
 
@@ -264,6 +273,7 @@ namespace Azteck
 			_data.quadVertexBufferPtr->texCoord = _data.quadTexCoords[i];
 			_data.quadVertexBufferPtr->texIndex = textureIndex;
 			_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+			_data.quadVertexBufferPtr->entityID = entityID;
 			_data.quadVertexBufferPtr++;
 		}
 
