@@ -16,7 +16,7 @@ namespace Azteck
 		: Layer("EditorLayer")
 		, _isViewportFocused(false)
 		, _isViewportHovered(false)
-		, _gizmoType(-1)
+		, _gizmoType(ImGuizmo::OPERATION::TRANSLATE)
 	{
 
 	}
@@ -174,6 +174,7 @@ namespace Azteck
 		}
 
 		_sceneHierarchyPanel.onImGuiRender();
+		_contentBrowserPanel.onImGuiRender();
 
 		ImGui::Begin("Settings");
 
@@ -209,6 +210,16 @@ namespace Azteck
 
 		uint64_t textureID = _frameBuffer->getColorAttachmentRendererId();
 		ImGui::Image(reinterpret_cast<void*>(textureID), viewportSize, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				openScene(std::filesystem::path("assets") / path);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		// Gizmos
 		Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity();
@@ -347,14 +358,17 @@ namespace Azteck
 	{
 		std::optional<std::string> filepath = FileDialogs::openFile("Azteck Scene (*.yaml)\0*.yaml\0");
 		if (filepath.has_value())
-		{
-			_activeScene = createRef<Scene>();
-			_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
-			_sceneHierarchyPanel.setContext(_activeScene);
+			openScene(filepath.value());
+	}
 
-			SceneSerializer serializer(_activeScene);
-			serializer.deserialize(filepath.value());
-		}
+	void EditorLayer::openScene(const std::filesystem::path& filepath)
+	{
+		_activeScene = createRef<Scene>();
+		_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+		_sceneHierarchyPanel.setContext(_activeScene);
+
+		SceneSerializer serializer(_activeScene);
+		serializer.deserialize(filepath.string());
 	}
 
 	void EditorLayer::saveSceneAs()

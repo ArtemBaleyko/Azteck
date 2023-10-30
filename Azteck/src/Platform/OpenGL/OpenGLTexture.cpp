@@ -39,7 +39,7 @@ namespace Azteck
 		glTextureStorage2D(_renderedId, 1, _internalFormat, _width, _height);
 
 		glTextureParameteri(_renderedId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -61,7 +61,7 @@ namespace Azteck
 		glTextureStorage2D(_renderedId, 1, _internalFormat, _width, _height);
 
 		glTextureParameteri(_renderedId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_T, GL_REPEAT);

@@ -18,7 +18,6 @@ namespace Azteck
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
 		, _blockEvents(true)
-		, _time(0.0f)
 	{
 	}
 

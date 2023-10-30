@@ -27,6 +27,5 @@ namespace Azteck
 
 	private:
 		bool _blockEvents;
-		float _time;
 	};
 }

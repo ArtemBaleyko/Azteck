@@ -8,6 +8,7 @@
 
 #include "Azteck/Scene/SceneCamera.h"
 #include "Azteck/Scene/ScriptableEntity.h"
+#include "Azteck/Renderer/Texture.h"
 
 namespace Azteck
 {
@@ -53,9 +54,12 @@ namespace Azteck
 
 		SpriteRendererComponent(const glm::vec4& color)
 			: color(color)
+			, tilingFactor(1.0f)
 		{}
 
 		glm::vec4 color{1.0f};
+		Ref<Texture2D> texture;
+		float tilingFactor;
 	};
 
 	struct CameraComponent

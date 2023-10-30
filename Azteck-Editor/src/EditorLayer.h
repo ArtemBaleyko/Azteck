@@ -3,6 +3,7 @@
 #include <Azteck.h>
 
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Azteck/Renderer/EditorCamera.h"
 
 namespace Azteck
@@ -26,6 +27,7 @@ namespace Azteck
 
 		void newScene();
 		void openScene();
+		void openScene(const std::filesystem::path& filepath);
 		void saveSceneAs();
 
 		bool canSelectEntity();
@@ -45,5 +47,6 @@ namespace Azteck
 
 		//Panels
 		SceneHierarchyPanel _sceneHierarchyPanel;
+		ContentBrowserPanel _contentBrowserPanel;
 	};
 }

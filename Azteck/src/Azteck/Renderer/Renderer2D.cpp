@@ -241,7 +241,10 @@ namespace Azteck
 
 	void Renderer2D::drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID)
 	{
-		drawQuad(transform, src.color, entityID);
+		if (src.texture)
+			drawQuad(transform, src.texture, src.color, src.tilingFactor, entityID);
+		else
+			drawQuad(transform, src.color, entityID);
 	}
 
 	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor, int entityID)
