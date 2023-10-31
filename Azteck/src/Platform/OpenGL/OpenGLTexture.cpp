@@ -13,40 +13,50 @@ namespace Azteck
 		AZ_PROFILE_FUNCTION();
 
 		int width, height, channels;
-
 		stbi_set_flip_vertically_on_load(1);
-		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-
-		AZ_CORE_ASSERT(data, "Failed to load image!");
-
-		_width = static_cast<uint32_t>(width);
-		_height = static_cast<uint32_t>(height);
-
-		if (channels == 4)
+		stbi_uc* data = nullptr;
 		{
-			_internalFormat = GL_RGBA8;
-			_dataFormat = GL_RGBA;
-		}
-		else if (channels == 3)
-		{
-			_internalFormat = GL_RGB8;
-			_dataFormat = GL_RGB;
+			AZ_PROFILE_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
+			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
 
-		AZ_CORE_ASSERT(_internalFormat & _dataFormat, "Image format is not supported");
+		if (data)
+		{
+			_isLoaded = true;
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &_renderedId);
-		glTextureStorage2D(_renderedId, 1, _internalFormat, _width, _height);
+			_width = width;
+			_height = height;
 
-		glTextureParameteri(_renderedId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			GLenum internalFormat = 0, dataFormat = 0;
+			if (channels == 4)
+			{
+				internalFormat = GL_RGBA8;
+				dataFormat = GL_RGBA;
+			}
+			else if (channels == 3)
+			{
+				internalFormat = GL_RGB8;
+				dataFormat = GL_RGB;
+			}
 
-		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			_internalFormat = internalFormat;
+			_dataFormat = dataFormat;
 
-		glTextureSubImage2D(_renderedId, 0, 0, 0, _width, _height, _dataFormat, GL_UNSIGNED_BYTE, data);
+			AZ_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
 
-		stbi_image_free(data);
+			glCreateTextures(GL_TEXTURE_2D, 1, &_renderedId);
+			glTextureStorage2D(_renderedId, 1, internalFormat, _width, _height);
+
+			glTextureParameteri(_renderedId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTextureParameteri(_renderedId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(_renderedId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glTextureSubImage2D(_renderedId, 0, 0, 0, _width, _height, dataFormat, GL_UNSIGNED_BYTE, data);
+
+			stbi_image_free(data);
+		}
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)

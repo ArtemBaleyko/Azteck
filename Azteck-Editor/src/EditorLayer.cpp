@@ -389,6 +389,12 @@ namespace Azteck
 
 	void EditorLayer::openScene(const std::filesystem::path& filepath)
 	{
+		if (filepath.extension().string() != ".yaml")
+		{
+			AZ_WARN("Could not load {0} - not a scene file", filepath.filename().string());
+			return;
+		}
+
 		_activeScene = createRef<Scene>();
 		_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
 		_sceneHierarchyPanel.setContext(_activeScene);

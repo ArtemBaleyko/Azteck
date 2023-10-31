@@ -20,6 +20,8 @@ namespace Azteck
 		inline uint32_t getHeight() const override { return _height; };
 		inline uint32_t getRendererID() const override { return _renderedId; };
 
+		virtual bool isLoaded() const override { return _isLoaded; }
+
 		void bind(uint32_t slot = 0) const override;
 
 		bool operator==(const Texture& other) const override;
@@ -33,5 +35,6 @@ namespace Azteck
 		GLenum _internalFormat;
 		GLenum _dataFormat;
 
+		bool _isLoaded;
 	};
 }

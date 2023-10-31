@@ -221,7 +221,12 @@ namespace Azteck
 				{
 					const wchar_t* path = (const wchar_t*)payload->Data;
 					std::filesystem::path texturePath = std::filesystem::path("assets") / path;
-					component.texture = Texture2D::create(texturePath.string());
+					
+					Ref<Texture2D> texture = Texture2D::create(texturePath.string());
+					if (texture->isLoaded())
+						component.texture = texture;
+					else
+						AZ_WARN("Could not load texture {0}", texturePath.filename().string());
 				}
 				ImGui::EndDragDropTarget();
 			}
