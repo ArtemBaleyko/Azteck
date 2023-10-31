@@ -30,6 +30,7 @@ group "Dependencies"
 	include "Azteck/vendor/Glad"
 	include "Azteck/vendor/imgui"
 	include "Azteck/vendor/yaml-cpp"
+	include "Azteck/vendor/Box2D"
 group ""
 
 include "Azteck"

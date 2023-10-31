@@ -43,6 +43,7 @@ namespace Azteck
 		bool _isViewportFocused;
 		bool _isViewportHovered;
 		int _gizmoType;
+		int _lastGizmoType;
 
 		EditorCamera _editorCamera;
 

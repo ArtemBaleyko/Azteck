@@ -5,8 +5,28 @@
 #include "Components.h"
 #include "Entity.h"
 
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+
 namespace Azteck
 {
+	static b2BodyType toBox2DBodyType(Rigidbody2DComponent::BodyType type)
+	{
+		switch (type)
+		{
+			case Azteck::Rigidbody2DComponent::BodyType::Static: return b2BodyType::b2_staticBody;
+			case Azteck::Rigidbody2DComponent::BodyType::Dynamic: return b2BodyType::b2_dynamicBody;
+			case Azteck::Rigidbody2DComponent::BodyType::Kinematic: return b2BodyType::b2_kinematicBody;
+			default:
+				break;
+		}
+
+		AZ_CORE_ASSERT(false, "Box2D doesn`t support provided body type - {0}", (int)type);
+		return b2BodyType::b2_staticBody;
+	}
+
 	Scene::Scene()
 		: _viewportWidth(0)
 		, _viewportHeight(0)
@@ -33,6 +53,51 @@ namespace Azteck
 		_registry.destroy(entity);
 	}
 
+	void Scene::onRuntimeStart()
+	{
+		_physicsWorld = new b2World({ 0.0f, -9.8f });
+
+		auto view = _registry.view<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+
+			auto& transform = entity.getComponent<TransformComponent>();
+			auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+
+			b2BodyDef bodyDef;
+			bodyDef.type = toBox2DBodyType(rb2d.type);
+			bodyDef.fixedRotation = rb2d.fixedRotation;
+			bodyDef.position.Set(transform.translation.x, transform.translation.y);
+			bodyDef.angle = transform.rotation.z;
+
+			b2Body* body = _physicsWorld->CreateBody(&bodyDef);
+			rb2d.runtimeBody = body;
+
+			if (entity.hasComponent<BoxCollider2DComponent>())
+			{
+				auto& bc2d = entity.getComponent<BoxCollider2DComponent>();
+
+				b2PolygonShape shape;
+				shape.SetAsBox(bc2d.size.x * transform.scale.x, bc2d.size.y * transform.scale.y);
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &shape;
+				fixtureDef.density = bc2d.density;
+				fixtureDef.friction = bc2d.friction;
+				fixtureDef.restitution = bc2d.restitution;
+				fixtureDef.restitutionThreshold = bc2d.restitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
+		}
+	}
+
+	void Scene::onRuntimeStop()
+	{
+		delete _physicsWorld;
+		_physicsWorld = nullptr;
+	}
+
 	void Scene::onUpdateRuntime(Timestep ts)
 	{
 		_registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
@@ -49,6 +114,32 @@ namespace Azteck
 			nsc.instance->onUpdate(ts);
 		});
 
+		// Physics
+		if (_physicsWorld)
+		{
+			const int32_t velocityIterations = 6;
+			const int32_t positionsIterations = 2;
+
+			_physicsWorld->Step(ts, velocityIterations, positionsIterations);
+
+			// Get transform from Box2D
+			auto view = _registry.view<Rigidbody2DComponent>();
+			for (auto e : view)
+			{
+				Entity entity = { e, this };
+
+				auto& transform = entity.getComponent<TransformComponent>();
+				auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+
+				b2Body* body = (b2Body*)rb2d.runtimeBody;
+				AZ_CORE_ASSERT(body != nullptr, "Box2D body is not valid");
+
+				const auto& position = body->GetPosition();
+				transform.translation.x = position.x;
+				transform.translation.y = position.y;
+				transform.rotation.z = body->GetAngle();
+			}
+		}
 
 		Camera* primaryCamera = nullptr;
 		glm::mat4 cameraTransform(1.0f);
@@ -154,6 +245,16 @@ namespace Azteck
 
 	template<>
 	void Scene::onComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
 	{
 	}
 }

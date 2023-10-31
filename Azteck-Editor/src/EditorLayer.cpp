@@ -17,6 +17,7 @@ namespace Azteck
 		, _isViewportFocused(false)
 		, _isViewportHovered(false)
 		, _gizmoType(ImGuizmo::OPERATION::TRANSLATE)
+		, _lastGizmoType(ImGuizmo::OPERATION::TRANSLATE)
 	{
 
 	}
@@ -366,11 +367,16 @@ namespace Azteck
 	void EditorLayer::onScenePlay()
 	{
 		_sceneState = SceneState::Play;
+		_lastGizmoType = _gizmoType;
+		_gizmoType = -1;
+		_activeScene->onRuntimeStart();
 	}
 
 	void EditorLayer::onSceneStop()
 	{
 		_sceneState = SceneState::Edit;
+		_gizmoType = _lastGizmoType;
+		_activeScene->onRuntimeStop();
 	}
 
 	void EditorLayer::newScene()

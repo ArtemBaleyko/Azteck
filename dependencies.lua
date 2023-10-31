@@ -12,6 +12,7 @@ IncludeDir["entt"] = "%{wks.location}/Azteck/vendor/entt/include"
 IncludeDir["shaderc"] = "%{wks.location}/Azteck/vendor/shaderc/include"
 IncludeDir["SPIRV_Cross"] = "%{wks.location}/Azteck/vendor/SPIRV-Cross"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+IncludeDir["Box2D"] = "%{wks.location}/Azteck/vendor/Box2D/include"
 
 LibraryDir = {}
 

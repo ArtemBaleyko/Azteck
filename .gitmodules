@@ -20,3 +20,6 @@
 [submodule "Azteck/vendor/ImGuizmo"]
 	path = Azteck/vendor/ImGuizmo
 	url = https://github.com/ArtemBaleyko/ImGuizmo.git
+[submodule "Azteck/vendor/Box2d"]
+	path = Azteck/vendor/Box2d
+	url = https://github.com/ArtemBaleyko/box2d.git
