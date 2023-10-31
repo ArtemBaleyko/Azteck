@@ -25,12 +25,17 @@ namespace Azteck
 		bool onKeyPressed(KeyPressedEvent& e);
 		bool onMouseButtonPressed(MouseButtonPressedEvent& e);
 
+		void onScenePlay();
+		void onSceneStop();
+
 		void newScene();
 		void openScene();
 		void openScene(const std::filesystem::path& filepath);
 		void saveSceneAs();
 
 		bool canSelectEntity();
+
+		void uiToolbar();
 
 	private:
 		glm::vec2 _viewportSize;
@@ -48,5 +53,15 @@ namespace Azteck
 		//Panels
 		SceneHierarchyPanel _sceneHierarchyPanel;
 		ContentBrowserPanel _contentBrowserPanel;
+
+		enum class SceneState
+		{
+			Edit = 0,
+			Play
+		};
+
+		SceneState _sceneState = SceneState::Edit;
+		Ref<Texture2D> _iconPlay;
+		Ref<Texture2D> _iconStop;
 	};
 }

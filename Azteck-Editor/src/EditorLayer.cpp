@@ -25,6 +25,9 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
+		_iconPlay = Texture2D::create("resources/icons/PlayButton.png");
+		_iconStop = Texture2D::create("resources/icons/StopButton.png");
+
 		FrameBufferSpecification spec;
 		spec.width = 1280;
 		spec.height = 720;
@@ -63,8 +66,6 @@ namespace Azteck
 			_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 		}
 
-		_editorCamera.onUpdate(timestep);
-
 		Renderer2D::resetStats();
 		_frameBuffer->bind();
 		RenderCommand::setClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -72,7 +73,20 @@ namespace Azteck
 
 		_frameBuffer->clearAttachment(1, -1);
 
-		_activeScene->onUpdateEditor(timestep, _editorCamera);
+		switch (_sceneState)
+		{
+			case SceneState::Edit:
+			{
+				_editorCamera.onUpdate(timestep);
+				_activeScene->onUpdateEditor(timestep, _editorCamera);
+				break;
+			}
+			case SceneState::Play:
+			{
+				_activeScene->onUpdateRuntime(timestep);
+				break;
+			}
+		}
 
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= _viewportBounds[0].x;
@@ -277,6 +291,8 @@ namespace Azteck
 		ImGui::End();
 		ImGui::PopStyleVar();
 
+		uiToolbar();
+
 		ImGui::End();
 	}
 
@@ -347,6 +363,16 @@ namespace Azteck
 		return false;
 	}
 
+	void EditorLayer::onScenePlay()
+	{
+		_sceneState = SceneState::Play;
+	}
+
+	void EditorLayer::onSceneStop()
+	{
+		_sceneState = SceneState::Edit;
+	}
+
 	void EditorLayer::newScene()
 	{
 		_activeScene = createRef<Scene>();
@@ -384,5 +410,39 @@ namespace Azteck
 	bool EditorLayer::canSelectEntity()
 	{
 		return _isViewportHovered && !ImGuizmo::IsOver() && !Input::isKeyPressed(Key::LeftAlt);
+	}
+
+	void EditorLayer::uiToolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+		const auto& colors = ImGui::GetStyle().Colors;
+		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		const float size = ImGui::GetWindowHeight() - 4.0f;
+		const bool isEditState = _sceneState == SceneState::Edit;
+		const Ref<Texture2D>& icon = isEditState ? _iconPlay : _iconStop;
+
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+		if (ImGui::ImageButton((ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+		{
+			if (isEditState)
+				onScenePlay();
+			else if (_sceneState == SceneState::Play)
+				onSceneStop();
+		}
+
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
 	}
 }
