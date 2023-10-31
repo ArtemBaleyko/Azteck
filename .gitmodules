@@ -16,10 +16,10 @@
 	branch = docking
 [submodule "Azteck/vendor/yaml-cpp"]
 	path = Azteck/vendor/yaml-cpp
-	url = https://github.com/ArtemBaleyko/yaml-cpp.git
+	url = ../../ArtemBaleyko/yaml-cpp.git
 [submodule "Azteck/vendor/ImGuizmo"]
 	path = Azteck/vendor/ImGuizmo
-	url = https://github.com/ArtemBaleyko/ImGuizmo.git
+	url = ../../ArtemBaleyko/ImGuizmo.git
 [submodule "Azteck/vendor/Box2d"]
 	path = Azteck/vendor/Box2d
-	url = https://github.com/ArtemBaleyko/box2d.git
+	url = ../../ArtemBaleyko/box2d.git
