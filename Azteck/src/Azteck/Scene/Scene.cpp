@@ -4,6 +4,7 @@
 #include "Azteck/Renderer/Renderer2D.h"
 #include "Components.h"
 #include "Entity.h"
+#include "ScriptableEntity.h"
 
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
@@ -39,7 +40,13 @@ namespace Azteck
 
 	Entity Scene::createEntity(const std::string& name)
 	{
+		return createEntityWithUUID(UUID(), name);
+	}
+
+	Entity Scene::createEntityWithUUID(UUID uuid, const std::string& name)
+	{
 		Entity entity{ _registry.create(), this };
+		entity.addComponent<IDComponent>(uuid);
 		entity.addComponent<TransformComponent>();
 
 		auto& tag = entity.addComponent<TagComponent>();
@@ -218,7 +225,7 @@ namespace Azteck
 	template<typename T>
 	void Scene::onComponentAdded(Entity entity, T& component)
 	{
-		static_assert(false);
+		//static_assert(false);
 	}
 
 	template<>

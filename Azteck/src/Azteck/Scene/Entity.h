@@ -2,7 +2,9 @@
 
 #include <entt.hpp>
 
+#include "Azteck/Core/UUID.h"
 #include "Scene.h"
+#include "Components.h"
 
 namespace Azteck
 {
@@ -41,6 +43,8 @@ namespace Azteck
 		{
 			return _scene->_registry.any_of<T>(_handle);
 		}
+
+		UUID getUUID() { return getComponent<IDComponent>().id; }
 
 		operator bool() const { return _handle != entt::null; }
 		operator uint32_t() const { return static_cast<uint32_t>(_handle); }

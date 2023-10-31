@@ -7,11 +7,19 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "Azteck/Scene/SceneCamera.h"
-#include "Azteck/Scene/ScriptableEntity.h"
 #include "Azteck/Renderer/Texture.h"
+#include "Azteck/Core/UUID.h"
 
 namespace Azteck
 {
+	struct IDComponent
+	{
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+
+		UUID id;
+	};
+
 	struct TagComponent
 	{
 		TagComponent() = default;
@@ -71,6 +79,8 @@ namespace Azteck
 		bool primary = true;
 		bool fixedAspectRatio = false;
 	};
+
+	class ScriptableEntity;
 
 	struct NativeScriptComponent
 	{

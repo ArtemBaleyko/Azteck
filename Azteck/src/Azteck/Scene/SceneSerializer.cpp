@@ -207,7 +207,7 @@ namespace Azteck
 				AZ_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 			}
 
-			Entity deserializedEntity = _scene->createEntity(name);
+			Entity deserializedEntity = _scene->createEntityWithUUID(uuid, name);
 
 			if (auto transformComponent = entity["TransformComponent"])
 			{
@@ -272,8 +272,10 @@ namespace Azteck
 
 	static void serializeEntity(YAML::Emitter& out, Entity entity)
 	{
+		AZ_CORE_ASSERT(entity.hasComponent<IDComponent>(), "Entity must have a UUID");
+
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << "4325647"; // ID
+		out << YAML::Key << "Entity" << YAML::Value << entity.getUUID(); // ID
 
 		if (entity.hasComponent<TagComponent>())
 		{

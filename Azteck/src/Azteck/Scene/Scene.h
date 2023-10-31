@@ -3,6 +3,7 @@
 #include <entt.hpp>
 
 #include "Azteck/Core/Timestep.h"
+#include "Azteck/Core/UUID.h"
 #include "Azteck/Renderer/EditorCamera.h"
 
 class b2World;
@@ -20,6 +21,7 @@ namespace Azteck
 		~Scene();
 
 		Entity createEntity(const std::string& name = {});
+		Entity createEntityWithUUID(UUID uuid, const std::string& name = {});
 		void destroyEntity(Entity entity);
 
 		void onRuntimeStart();
