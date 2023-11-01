@@ -14,5 +14,8 @@ namespace Azteck
 		void clear() override;
 
 		void drawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) override;
+		void drawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount) override;
+
+		void setLineWidth(float width) override;
 	};
 }

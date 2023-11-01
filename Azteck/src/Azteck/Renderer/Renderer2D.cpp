@@ -35,6 +35,15 @@ namespace Azteck
 		int entityID = -1;
 	};
 
+	struct LineVertex
+	{
+		glm::vec3 position;
+		glm::vec4 color;
+
+		// Editor only
+		int entityID = -1;
+	};
+
 	struct Renderer2DData
 	{
 		static const uint32_t maxQuads = 10000;
@@ -55,6 +64,15 @@ namespace Azteck
 		uint32_t circleIndexCount = 0;
 		CircleVertex* circleVertexBufferBase = nullptr;
 		CircleVertex* circleVertexBufferPtr = nullptr;
+
+		Ref<VertexArray> lineVertexArray;
+		Ref<VertexBuffer> lineVertexBuffer;
+		Ref<Shader> lineShader;
+		uint32_t lineVertexCount = 0;
+		LineVertex* lineVertexBufferBase = nullptr;
+		LineVertex* lineVertexBufferPtr = nullptr;
+
+		float lineWidth = 2.0f;
 
 		Ref<Texture2D> whiteTexture;
 
@@ -94,6 +112,7 @@ namespace Azteck
 
 		initQuads();
 		initCircles();
+		initLines();
 
 		_data.whiteTexture = Texture2D::create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -102,9 +121,6 @@ namespace Azteck
 		int32_t samplers[_data.maxTextureSlots];
 		for (int32_t i = 0; i < _data.maxTextureSlots; i++)
 			samplers[i] = i;
-
-		_data.quadShader = Shader::create("assets/shaders/Renderer2D_Quad.glsl");
-		_data.circleShader = Shader::create("assets/shaders/Renderer2D_Circle.glsl");
 
 		_data.textureSlots[0] = _data.whiteTexture;
 
@@ -182,6 +198,21 @@ namespace Azteck
 
 			_data.circleShader->bind();
 			RenderCommand::drawIndexed(_data.circleVertexArray, _data.circleIndexCount);
+
+			_data.stats.drawCalls++;
+		}
+
+		if (_data.lineVertexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)_data.lineVertexBufferPtr - (uint8_t*)_data.lineVertexBufferBase);
+			_data.lineVertexBuffer->setData(_data.lineVertexBufferBase, dataSize);
+
+			for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
+				_data.textureSlots[i]->bind(i);
+
+			_data.lineShader->bind();
+			RenderCommand::setLineWidth(_data.lineWidth);
+			RenderCommand::drawLines(_data.lineVertexArray, _data.lineVertexCount);
 
 			_data.stats.drawCalls++;
 		}
@@ -263,12 +294,62 @@ namespace Azteck
 		_data.stats.quadCount++;
 	}
 
+	void Renderer2D::drawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, int entityID)
+	{
+		_data.lineVertexBufferPtr->position = start;
+		_data.lineVertexBufferPtr->color = color;
+		_data.lineVertexBufferPtr->entityID = entityID;
+		_data.lineVertexBufferPtr++;
+
+		_data.lineVertexBufferPtr->position = end;
+		_data.lineVertexBufferPtr->color = color;
+		_data.lineVertexBufferPtr->entityID = entityID;
+		_data.lineVertexBufferPtr++;
+
+		_data.lineVertexCount += 2;
+	}
+
+	void Renderer2D::drawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
+	{
+		glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+		drawLine(p0, p1, color);
+		drawLine(p1, p2, color);
+		drawLine(p2, p3, color);
+		drawLine(p3, p0, color);
+	}
+
+	void Renderer2D::drawRect(const glm::mat4& transform, const glm::vec4& color, int entityID)
+	{
+		glm::vec3 lineVertices[4];
+		for (size_t i = 0; i < 4; i++)
+			lineVertices[i] = transform * _data.quadVertexPositions[i];
+
+		drawLine(lineVertices[0], lineVertices[1], color);
+		drawLine(lineVertices[1], lineVertices[2], color);
+		drawLine(lineVertices[2], lineVertices[3], color);
+		drawLine(lineVertices[3], lineVertices[0], color);
+	}
+
 	void Renderer2D::drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID)
 	{
 		if (src.texture)
 			drawQuad(transform, src.texture, src.color, src.tilingFactor, entityID);
 		else
 			drawQuad(transform, src.color, entityID);
+	}
+
+	float Renderer2D::getLineWidth()
+	{
+		return _data.lineWidth;
+	}
+
+	void Renderer2D::setLineWidth(float width)
+	{
+		_data.lineWidth = width;
 	}
 
 	void Renderer2D::drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor, int entityID)
@@ -380,6 +461,9 @@ namespace Azteck
 		_data.circleIndexCount = 0;
 		_data.circleVertexBufferPtr = _data.circleVertexBufferBase;
 
+		_data.lineVertexCount = 0;
+		_data.lineVertexBufferPtr = _data.lineVertexBufferBase;
+
 		_data.textureSlotIndex = 1;
 	}
 
@@ -437,6 +521,8 @@ namespace Azteck
 		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
 		_data.quadVertexArray->setIndexBuffer(indexBuffer);
 		delete[] indices;
+
+		_data.quadShader = Shader::create("assets/shaders/Renderer2D_Quad.glsl");
 	}
 
 	void Renderer2D::initCircles()
@@ -476,5 +562,25 @@ namespace Azteck
 		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
 		_data.circleVertexArray->setIndexBuffer(indexBuffer);
 		delete[] indices;
+
+		_data.circleShader = Shader::create("assets/shaders/Renderer2D_Circle.glsl");
+	}
+
+	void Renderer2D::initLines()
+	{
+		_data.lineVertexArray = VertexArray::create();
+		_data.lineVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(LineVertex));
+
+		BufferLayout layout = {
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Int, "a_EntityID"}
+		};
+
+		_data.lineVertexBuffer->setLayout(layout);
+		_data.lineVertexArray->addVertexBuffer(_data.lineVertexBuffer);
+		_data.lineVertexBufferBase = new LineVertex[_data.maxVertices];
+
+		_data.lineShader = Shader::create("assets/shaders/Renderer2D_Line.glsl");
 	}
 }

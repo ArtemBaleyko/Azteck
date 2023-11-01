@@ -38,7 +38,15 @@ namespace Azteck
 
 		static void drawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityID = -1);
 
+		static void drawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color, int entityID = -1);
+
+		static void drawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID = -1);
+		static void drawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
+
 		static void drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID);
+
+		static float getLineWidth();
+		static void setLineWidth(float width);
 
 		// Stats
 		struct Statistics
@@ -56,6 +64,7 @@ namespace Azteck
 	private:
 		static void initQuads();
 		static void initCircles();
+		static void initLines();
 
 		static void drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor, int entityID = -1);
 
