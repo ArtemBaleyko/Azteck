@@ -28,10 +28,15 @@ namespace Azteck
 		void onScenePlay();
 		void onSceneStop();
 
+		void onDuplicateEntity();
+
 		void newScene();
 		void openScene();
 		void openScene(const std::filesystem::path& filepath);
 		void saveSceneAs();
+		void saveScene();
+
+		void serializeScene(const Ref<Scene>& scene, const std::filesystem::path& filepath);
 
 		bool canSelectEntity();
 
@@ -49,6 +54,8 @@ namespace Azteck
 
 		Ref<FrameBuffer> _frameBuffer;
 		Ref<Scene> _activeScene;
+		Ref<Scene> _editorScene;
+		std::filesystem::path _editorScenePath;
 		Entity _hoveredEntity;
 
 		//Panels

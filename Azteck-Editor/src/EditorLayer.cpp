@@ -309,8 +309,8 @@ namespace Azteck
 		{
 			case Key::S:
 			{
-				if (isControl && isShift)
-					saveSceneAs();
+				if (isControl)
+					isShift ? saveSceneAs() : saveScene();
 				break;
 			}
 			case Key::N:
@@ -329,6 +329,12 @@ namespace Azteck
 			{
 				if (!ImGuizmo::IsUsing())
 					_gizmoType = -1;
+				break;
+			}
+			case Key::D:
+			{
+				if (isControl)
+					onDuplicateEntity();
 				break;
 			}
 			case Key::W:
@@ -367,23 +373,45 @@ namespace Azteck
 	void EditorLayer::onScenePlay()
 	{
 		_sceneState = SceneState::Play;
+
 		_lastGizmoType = _gizmoType;
 		_gizmoType = -1;
+
+		_activeScene = Scene::copy(_editorScene);
 		_activeScene->onRuntimeStart();
+
+		_sceneHierarchyPanel.setContext(_activeScene);
 	}
 
 	void EditorLayer::onSceneStop()
 	{
 		_sceneState = SceneState::Edit;
+
 		_gizmoType = _lastGizmoType;
+
 		_activeScene->onRuntimeStop();
+		_activeScene = _editorScene;
+
+		_sceneHierarchyPanel.setContext(_activeScene);
+	}
+
+	void EditorLayer::onDuplicateEntity()
+	{
+		if (_sceneState != SceneState::Edit)
+			return;
+
+		if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
+			_editorScene->duplicateEntity(selectedEntity);
 	}
 
 	void EditorLayer::newScene()
 	{
-		_activeScene = createRef<Scene>();
-		_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
-		_sceneHierarchyPanel.setContext(_activeScene);
+		_editorScene = createRef<Scene>();
+		_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+		_sceneHierarchyPanel.setContext(_editorScene);
+
+		_activeScene = _editorScene;
+		_editorScenePath.clear();
 	}
 
 	void EditorLayer::openScene()
@@ -395,18 +423,26 @@ namespace Azteck
 
 	void EditorLayer::openScene(const std::filesystem::path& filepath)
 	{
+		if (_sceneState != SceneState::Edit)
+			onSceneStop();
+
 		if (filepath.extension().string() != ".yaml")
 		{
 			AZ_WARN("Could not load {0} - not a scene file", filepath.filename().string());
 			return;
 		}
 
-		_activeScene = createRef<Scene>();
-		_activeScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
-		_sceneHierarchyPanel.setContext(_activeScene);
+		Ref<Scene> newScene = createRef<Scene>();
+		SceneSerializer serializer(newScene);	
+		if (serializer.deserialize(filepath.string()))
+		{
+			_editorScene = newScene;
+			_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+			_sceneHierarchyPanel.setContext(_editorScene);
 
-		SceneSerializer serializer(_activeScene);
-		serializer.deserialize(filepath.string());
+			_activeScene = _editorScene;
+			_editorScenePath = filepath;
+		}
 	}
 
 	void EditorLayer::saveSceneAs()
@@ -414,9 +450,23 @@ namespace Azteck
 		std::optional<std::string> filepath = FileDialogs::saveFile("Azteck Scene (*.yaml)\0*.yaml\0");
 		if (filepath.has_value())
 		{
-			SceneSerializer serializer(_activeScene);
-			serializer.serialize(filepath.value());
+			serializeScene(_activeScene, filepath.value());
+			_editorScenePath = filepath.value();
 		}
+	}
+
+	void EditorLayer::saveScene()
+	{
+		if (!_editorScenePath.empty())
+			serializeScene(_activeScene, _editorScenePath);
+		else
+			saveSceneAs();
+	}
+
+	void EditorLayer::serializeScene(const Ref<Scene>& scene,  const std::filesystem::path& filepath)
+	{
+		SceneSerializer serializer(scene);
+		serializer.serialize(filepath.string());
 	}
 
 	bool EditorLayer::canSelectEntity()

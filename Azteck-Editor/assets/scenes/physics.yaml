@@ -4,7 +4,7 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 9.23880386]
+      Translation: [0, 0, 17.4050884]
       Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -54,5 +54,5 @@ Entities:
       Size: [0.5, 0.5]
       Density: 1
       Friction: 0.5
-      Restitution: 0
+      Restitution: 0.610000014
       RestitutionThreshold: 0.5

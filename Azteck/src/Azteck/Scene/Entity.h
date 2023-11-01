@@ -24,6 +24,14 @@ namespace Azteck
 			return component;
 		}
 
+		template<typename T, typename... Args>
+		T& addOrReplaceComponent(Args&&... args)
+		{
+			T& component = _scene->_registry.emplace_or_replace<T>(_handle, std::forward<Args>(args)...);
+			_scene->onComponentAdded<T>(*this, component);
+			return component;
+		}
+
 		template<typename T>
 		T& getComponent()
 		{
@@ -45,6 +53,7 @@ namespace Azteck
 		}
 
 		UUID getUUID() { return getComponent<IDComponent>().id; }
+		const std::string& getName() { return getComponent<TagComponent>().tag; }
 
 		operator bool() const { return _handle != entt::null; }
 		operator uint32_t() const { return static_cast<uint32_t>(_handle); }

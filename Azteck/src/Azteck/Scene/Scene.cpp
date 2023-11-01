@@ -222,6 +222,71 @@ namespace Azteck
 		return {};
 	}
 
+	template<typename Component>
+	static void copyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+	{
+		auto view = src.view<Component>();
+		for (auto e : view)
+		{
+			UUID uuid = src.get<IDComponent>(e).id;
+			AZ_CORE_ASSERT(enttMap.find(uuid) != enttMap.end(), "Unknown entity");
+			entt::entity dstEnttID = enttMap.at(uuid);
+
+			auto& component = src.get<Component>(e);
+			dst.emplace_or_replace<Component>(dstEnttID, component);
+		}
+	}
+
+	template<typename Component>
+	static void copyComponentIfExists(Entity dst, Entity src)
+	{
+		if (src.hasComponent<Component>())
+			dst.addOrReplaceComponent<Component>(src.getComponent<Component>());
+	}
+
+	void Scene::duplicateEntity(Entity entity)
+	{
+		const std::string& name = entity.getName();
+		Entity newEntity = createEntity(name);
+
+		copyComponentIfExists<TransformComponent>(newEntity, entity);
+		copyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+		copyComponentIfExists<CameraComponent>(newEntity, entity);
+		copyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+		copyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+		copyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+	}
+
+	Ref<Scene> Scene::copy(const Ref<Scene>& other)
+	{
+		Ref<Scene> newScene = createRef<Scene>();
+
+		newScene->_viewportWidth = other->_viewportWidth;
+		newScene->_viewportHeight = other->_viewportHeight;
+
+		auto& srcSceneRegistry = other->_registry;
+		auto& dstSceneRegistry = newScene->_registry;
+		std::unordered_map<UUID, entt::entity> enttMap;
+
+		auto idView = srcSceneRegistry.view<IDComponent>();
+		for (auto e : idView)
+		{
+			UUID uuid = srcSceneRegistry.get<IDComponent>(e).id;
+			const auto& name = srcSceneRegistry.get<TagComponent>(e).tag;
+			Entity newEntity = newScene->createEntityWithUUID(uuid, name);
+			enttMap[uuid] = (entt::entity)newEntity;
+		}
+
+		copyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+
+		return newScene;
+	}
+
 	template<typename T>
 	void Scene::onComponentAdded(Entity entity, T& component)
 	{

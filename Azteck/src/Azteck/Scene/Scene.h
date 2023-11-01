@@ -32,6 +32,11 @@ namespace Azteck
 		void onViewportResize(uint32_t width, uint32_t height);
 
 		Entity getPrimaryCamera();
+
+		void duplicateEntity(Entity entity);
+
+		static Ref<Scene> copy(const Ref<Scene>& other);
+
 	private:
 		template<typename T>
 		void onComponentAdded(Entity entity, T& component);
