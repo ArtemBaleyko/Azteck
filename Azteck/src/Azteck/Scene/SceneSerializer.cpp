@@ -267,6 +267,17 @@ namespace Azteck
 				bc2d.restitution = boxCollider2DComponent["Restitution"].as<float>();
 				bc2d.restitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
 			}
+
+			if (auto circleCollider2DComponent = entity["CircleCollider2DComponent"])
+			{
+				auto& cc2d = deserializedEntity.addComponent<CircleCollider2DComponent>();
+				cc2d.offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
+				cc2d.radius = circleCollider2DComponent["Radius"].as<float>();
+				cc2d.density = circleCollider2DComponent["Density"].as<float>();
+				cc2d.friction = circleCollider2DComponent["Friction"].as<float>();
+				cc2d.restitution = circleCollider2DComponent["Restitution"].as<float>();
+				cc2d.restitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+			}
 		}
 
 		return true;
@@ -381,6 +392,22 @@ namespace Azteck
 			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.friction;
 			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.restitution;
 			out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2dComponent.restitutionThreshold;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.hasComponent<CircleCollider2DComponent>())
+		{
+			out << YAML::Key << "CircleCollider2DComponent";
+			out << YAML::BeginMap;
+
+			auto& cc2dComponent = entity.getComponent<CircleCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.offset;
+			out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.radius;
+			out << YAML::Key << "Density" << YAML::Value << cc2dComponent.density;
+			out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.friction;
+			out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2dComponent.restitutionThreshold;
 
 			out << YAML::EndMap;
 		}

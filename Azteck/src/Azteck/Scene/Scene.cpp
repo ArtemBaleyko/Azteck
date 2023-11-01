@@ -10,6 +10,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Azteck
 {
@@ -94,6 +95,23 @@ namespace Azteck
 				fixtureDef.friction = bc2d.friction;
 				fixtureDef.restitution = bc2d.restitution;
 				fixtureDef.restitutionThreshold = bc2d.restitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
+
+			if (entity.hasComponent<CircleCollider2DComponent>())
+			{
+				auto& cc2d = entity.getComponent<CircleCollider2DComponent>();
+
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
+				circleShape.m_radius = cc2d.radius;
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &circleShape;
+				fixtureDef.density = cc2d.density;
+				fixtureDef.friction = cc2d.friction;
+				fixtureDef.restitution = cc2d.restitution;
+				fixtureDef.restitutionThreshold = cc2d.restitutionThreshold;
 				body->CreateFixture(&fixtureDef);
 			}
 		}
@@ -204,9 +222,6 @@ namespace Azteck
 			Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
 		}
 
-		Renderer2D::drawLine(glm::vec3(0.0f), glm::vec3(5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-		Renderer2D::drawRect(glm::vec3(0.0f), glm::vec3(1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
 		Renderer2D::endScene();
 	}
 
@@ -273,6 +288,7 @@ namespace Azteck
 		copyComponentIfExists<NativeScriptComponent>(newEntity, entity);
 		copyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
 		copyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+		copyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
 	}
 
 	Ref<Scene> Scene::copy(const Ref<Scene>& other)
@@ -302,6 +318,7 @@ namespace Azteck
 		copyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
 		return newScene;
 	}
@@ -351,6 +368,11 @@ namespace Azteck
 
 	template<>
 	void Scene::onComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
 	{
 	}
 }
