@@ -104,7 +104,7 @@ namespace Azteck
 
 				b2CircleShape circleShape;
 				circleShape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
-				circleShape.m_radius = cc2d.radius;
+				circleShape.m_radius = transform.scale.x * cc2d.radius;
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &circleShape;
@@ -169,7 +169,7 @@ namespace Azteck
 		Camera* primaryCamera = nullptr;
 		glm::mat4 cameraTransform(1.0f);
 
-		auto view = _registry.view<TransformComponent, CameraComponent>();
+		auto view = getAllEntitiesWith<TransformComponent, CameraComponent>();
 		for (auto entity : view)
 		{
 			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
@@ -186,18 +186,22 @@ namespace Azteck
 		{
 			Renderer2D::beginScene(*primaryCamera, cameraTransform);
 
-			auto group = _registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : group)
 			{
-				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-				Renderer2D::drawQuad(transform.getTransform(), sprite.color);
+				auto view = getAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+					Renderer2D::drawQuad(transform.getTransform(), sprite.color);
+				}
 			}
 
-			auto view = _registry.view<TransformComponent, CircleRendererComponent>();
-			for (auto entity : view)
 			{
-				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-				Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+				auto view = getAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+					Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+				}
 			}
 
 			Renderer2D::endScene();
@@ -208,18 +212,22 @@ namespace Azteck
 	{
 		Renderer2D::beginScene(camera);
 
-		auto group = _registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : group)
 		{
-			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
+			auto view = getAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+				Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
+			}
 		}
 
-		auto view = _registry.view<TransformComponent, CircleRendererComponent>();
-		for (auto entity : view)
 		{
-			auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-			Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+			auto view = getAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+			}
 		}
 
 		Renderer2D::endScene();
@@ -230,7 +238,7 @@ namespace Azteck
 		_viewportWidth = width;
 		_viewportHeight = height;
 
-		auto view = _registry.view<CameraComponent>();
+		auto view = getAllEntitiesWith<CameraComponent>();
 		for (auto entity : view)
 		{
 			auto& cameraComponent = view.get<CameraComponent>(entity);
@@ -242,7 +250,7 @@ namespace Azteck
 
 	Entity Scene::getPrimaryCamera()
 	{
-		auto view = _registry.view<CameraComponent>();
+		auto view = getAllEntitiesWith<CameraComponent>();
 
 		for (auto entity : view)
 		{

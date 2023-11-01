@@ -18,6 +18,7 @@ namespace Azteck
 		, _isViewportHovered(false)
 		, _gizmoType(ImGuizmo::OPERATION::TRANSLATE)
 		, _lastGizmoType(ImGuizmo::OPERATION::TRANSLATE)
+		, _showPhysicsColliders(false)
 	{
 
 	}
@@ -103,6 +104,8 @@ namespace Azteck
 			int pixelData = _frameBuffer->readPixel(1, mouseX, mouseY);
 			_hoveredEntity = pixelData == -1 ? Entity() : Entity(static_cast<entt::entity>(pixelData), _activeScene.get());
 		}
+
+		onOverlayRender();
 
 		_frameBuffer->unbind();
 	}
@@ -214,8 +217,12 @@ namespace Azteck
 		ImGui::Text("Indices: %d", stats.getTotalIndexCount());
 
 		ImGui::End();
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 
+		ImGui::Begin("Settings");
+		ImGui::Checkbox("Show physics colliders", &_showPhysicsColliders);
+		ImGui::End();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 		ImGui::Begin("Viewport");
 		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
 		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -409,6 +416,59 @@ namespace Azteck
 
 		if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
 			_editorScene->duplicateEntity(selectedEntity);
+	}
+
+	void EditorLayer::onOverlayRender()
+	{
+		if (_sceneState == SceneState::Play)
+		{
+			Entity camera = _activeScene->getPrimaryCamera();
+			Renderer2D::beginScene(camera.getComponent<CameraComponent>().camera, camera.getComponent<TransformComponent>().getTransform());
+		}
+		else
+		{
+			Renderer2D::beginScene(_editorCamera);
+		}
+
+		if (_showPhysicsColliders)
+		{
+			// Box Colliders
+			{
+				auto view = _activeScene->getAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+					glm::vec3 translation = tc.translation + glm::vec3(bc2d.offset, 0.001f);
+					glm::vec3 scale = tc.scale * glm::vec3(bc2d.size * 2.0f, 1.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::rotate(glm::mat4(1.0f), tc.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::drawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+			}
+
+			// Circle Colliders
+			{
+				auto view = _activeScene->getAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+					glm::vec3 translation = tc.translation + glm::vec3(cc2d.offset, 0.001f);
+					glm::vec3 scale = tc.scale * glm::vec3(cc2d.radius * 2.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::drawCircle(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.05f, 0.005f);
+				}
+			}
+		}
+
+		Renderer2D::endScene();
 	}
 
 	void EditorLayer::newScene()

@@ -35,6 +35,12 @@ namespace Azteck
 
 		void duplicateEntity(Entity entity);
 
+		template<typename... Components>
+		auto getAllEntitiesWith()
+		{
+			return _registry.view<Components...>();
+		}
+
 		static Ref<Scene> copy(const Ref<Scene>& other);
 
 	private:

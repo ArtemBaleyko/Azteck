@@ -30,6 +30,8 @@ namespace Azteck
 
 		void onDuplicateEntity();
 
+		void onOverlayRender();
+
 		void newScene();
 		void openScene();
 		void openScene(const std::filesystem::path& filepath);
@@ -49,6 +51,7 @@ namespace Azteck
 		bool _isViewportHovered;
 		int _gizmoType;
 		int _lastGizmoType;
+		bool _showPhysicsColliders;
 
 		EditorCamera _editorCamera;
 
