@@ -23,6 +23,18 @@ namespace Azteck
 		int entityID = -1;
 	};
 
+	struct CircleVertex
+	{
+		glm::vec3 worldPosition;
+		glm::vec3 localPosition;
+		glm::vec4 color;
+		float thickness;
+		float fade;
+
+		// Editor only
+		int entityID = -1;
+	};
+
 	struct Renderer2DData
 	{
 		static const uint32_t maxQuads = 10000;
@@ -32,13 +44,19 @@ namespace Azteck
 
 		Ref<VertexArray> quadVertexArray;
 		Ref<VertexBuffer> quadVertexBuffer;
-		Ref<Shader> quadTextureShader;
-		Ref<Texture2D> whiteTexture;
-
+		Ref<Shader> quadShader;
 		uint32_t quadIndexCount = 0;
-
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		Ref<VertexArray> circleVertexArray;
+		Ref<VertexBuffer> circleVertexBuffer;
+		Ref<Shader> circleShader;
+		uint32_t circleIndexCount = 0;
+		CircleVertex* circleVertexBufferBase = nullptr;
+		CircleVertex* circleVertexBufferPtr = nullptr;
+
+		Ref<Texture2D> whiteTexture;
 
 		std::array<Ref<Texture2D>, maxTextureSlots> textureSlots;
 		uint32_t textureSlotIndex = 1;
@@ -74,44 +92,8 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_data.quadVertexArray = VertexArray::create();
-
-		_data.quadVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(QuadVertex));
-
-		BufferLayout layout = {
-			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"},
-			{ShaderDataType::Float2, "a_TexCoord"},
-			{ShaderDataType::Float, "a_TexIndex"},
-			{ShaderDataType::Float, "a_TilingFactor"},
-			{ShaderDataType::Int, "a_EntityID"}
-		};
-
-		_data.quadVertexBuffer->setLayout(layout);
-		_data.quadVertexArray->addVertexBuffer(_data.quadVertexBuffer);
-
-		_data.quadVertexBufferBase = new QuadVertex[_data.maxVertices];
-
-		uint32_t* indices = new uint32_t[_data.maxIndices];
-
-		uint32_t offset = 0;
-		for (uint32_t i = 0; i < _data.maxIndices; i += 6)
-		{
-			indices[i + 0] = offset + 0;
-			indices[i + 1] = offset + 1;
-			indices[i + 2] = offset + 2;
-
-			indices[i + 3] = offset + 2;
-			indices[i + 4] = offset + 3;
-			indices[i + 5] = offset + 0;
-
-			offset += 4;
-		}
-
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
-		_data.quadVertexArray->setIndexBuffer(indexBuffer);
-
-		delete[] indices;
+		initQuads();
+		initCircles();
 
 		_data.whiteTexture = Texture2D::create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -121,7 +103,9 @@ namespace Azteck
 		for (int32_t i = 0; i < _data.maxTextureSlots; i++)
 			samplers[i] = i;
 
-		_data.quadTextureShader = Shader::create("assets/shaders/Texture.glsl");
+		_data.quadShader = Shader::create("assets/shaders/Renderer2D_Quad.glsl");
+		_data.circleShader = Shader::create("assets/shaders/Renderer2D_Circle.glsl");
+
 		_data.textureSlots[0] = _data.whiteTexture;
 
 		_data.cameraUniformBuffer = UniformBuffer::create(sizeof(Renderer2DData::CameraData), 0);
@@ -139,8 +123,8 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		_data.quadTextureShader->bind();
-		_data.quadTextureShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
+		_data.quadShader->bind();
+		_data.quadShader->setMat4("u_ViewProjection", camera.getViewProjectionMatrix());
 
 		startBatch();
 	}
@@ -174,19 +158,33 @@ namespace Azteck
 
 	void Renderer2D::flush()
 	{
-		if (_data.quadIndexCount == 0)
-			return;
+		if (_data.quadIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase);
+			_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
 
-		uint32_t dataSize = (uint32_t)((uint8_t*)_data.quadVertexBufferPtr - (uint8_t*)_data.quadVertexBufferBase);
-		_data.quadVertexBuffer->setData(_data.quadVertexBufferBase, dataSize);
+			for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
+				_data.textureSlots[i]->bind(i);
 
-		for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
-			_data.textureSlots[i]->bind(i);
+			_data.quadShader->bind();
+			RenderCommand::drawIndexed(_data.quadVertexArray, _data.quadIndexCount);
 
-		_data.quadTextureShader->bind();
-		RenderCommand::drawIndexed(_data.quadVertexArray, _data.quadIndexCount);
+			_data.stats.drawCalls++;
+		}
 
-		_data.stats.drawCalls++;
+		if (_data.circleIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)_data.circleVertexBufferPtr - (uint8_t*)_data.circleVertexBufferBase);
+			_data.circleVertexBuffer->setData(_data.circleVertexBufferBase, dataSize);
+
+			for (uint32_t i = 0; i < _data.textureSlotIndex; i++)
+				_data.textureSlots[i]->bind(i);
+
+			_data.circleShader->bind();
+			RenderCommand::drawIndexed(_data.circleVertexArray, _data.circleIndexCount);
+
+			_data.stats.drawCalls++;
+		}
 	}
 
 	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -237,6 +235,32 @@ namespace Azteck
 	void Renderer2D::drawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
 		drawRotatedQuad(position, size, rotation, texture, tintColor, tilingFactor);
+	}
+
+	void Renderer2D::drawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityID)
+	{
+		AZ_PROFILE_FUNCTION();
+
+		// TODO: implement for circles
+		// if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+		// 	NextBatch();
+
+		constexpr size_t circleVertexCount = 4;
+
+		for (size_t i = 0; i < circleVertexCount; i++)
+		{
+			_data.circleVertexBufferPtr->worldPosition = transform * _data.quadVertexPositions[i];
+			_data.circleVertexBufferPtr->localPosition = _data.quadVertexPositions[i] * 2.0f;
+			_data.circleVertexBufferPtr->color = color;
+			_data.circleVertexBufferPtr->thickness = thickness;
+			_data.circleVertexBufferPtr->fade = fade;
+			_data.circleVertexBufferPtr->entityID = entityID;
+			_data.circleVertexBufferPtr++;
+		}
+
+		_data.circleIndexCount += 6;
+
+		_data.stats.quadCount++;
 	}
 
 	void Renderer2D::drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID)
@@ -351,8 +375,12 @@ namespace Azteck
 	void Renderer2D::startBatch()
 	{
 		_data.quadIndexCount = 0;
-		_data.textureSlotIndex = 1;
 		_data.quadVertexBufferPtr = _data.quadVertexBufferBase;
+
+		_data.circleIndexCount = 0;
+		_data.circleVertexBufferPtr = _data.circleVertexBufferBase;
+
+		_data.textureSlotIndex = 1;
 	}
 
 	void Renderer2D::nextBatch()
@@ -370,5 +398,83 @@ namespace Azteck
 	Renderer2D::Statistics Renderer2D::getStats()
 	{
 		return _data.stats;
+	}
+
+	void Renderer2D::initQuads()
+	{
+		_data.quadVertexArray = VertexArray::create();
+		_data.quadVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(QuadVertex));
+
+		BufferLayout layout = {
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float2, "a_TexCoord"},
+			{ShaderDataType::Float, "a_TexIndex"},
+			{ShaderDataType::Float, "a_TilingFactor"},
+			{ShaderDataType::Int, "a_EntityID"}
+		};
+
+		_data.quadVertexBuffer->setLayout(layout);
+		_data.quadVertexArray->addVertexBuffer(_data.quadVertexBuffer);
+		_data.quadVertexBufferBase = new QuadVertex[_data.maxVertices];
+
+		uint32_t* indices = new uint32_t[_data.maxIndices];
+		uint32_t offset = 0;
+
+		for (uint32_t i = 0; i < _data.maxIndices; i += 6)
+		{
+			indices[i + 0] = offset + 0;
+			indices[i + 1] = offset + 1;
+			indices[i + 2] = offset + 2;
+
+			indices[i + 3] = offset + 2;
+			indices[i + 4] = offset + 3;
+			indices[i + 5] = offset + 0;
+
+			offset += 4;
+		}
+
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
+		_data.quadVertexArray->setIndexBuffer(indexBuffer);
+		delete[] indices;
+	}
+
+	void Renderer2D::initCircles()
+	{
+		_data.circleVertexArray = VertexArray::create();
+		_data.circleVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(CircleVertex));
+
+		BufferLayout layout = {
+			{ShaderDataType::Float3, "a_WorldPosition"},
+			{ShaderDataType::Float3, "a_LocalPosition"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float, "a_Thickness"},
+			{ShaderDataType::Float, "a_Fade"},
+			{ShaderDataType::Int, "a_EntityID"}
+		};
+
+		_data.circleVertexBuffer->setLayout(layout);
+		_data.circleVertexArray->addVertexBuffer(_data.circleVertexBuffer);
+		_data.circleVertexBufferBase = new CircleVertex[_data.maxVertices];
+
+		uint32_t* indices = new uint32_t[_data.maxIndices];
+		uint32_t offset = 0;
+
+		for (uint32_t i = 0; i < _data.maxIndices; i += 6)
+		{
+			indices[i + 0] = offset + 0;
+			indices[i + 1] = offset + 1;
+			indices[i + 2] = offset + 2;
+
+			indices[i + 3] = offset + 2;
+			indices[i + 4] = offset + 3;
+			indices[i + 5] = offset + 0;
+
+			offset += 4;
+		}
+
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
+		_data.circleVertexArray->setIndexBuffer(indexBuffer);
+		delete[] indices;
 	}
 }

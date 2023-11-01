@@ -62,12 +62,21 @@ namespace Azteck
 
 		SpriteRendererComponent(const glm::vec4& color)
 			: color(color)
-			, tilingFactor(1.0f)
 		{}
 
 		glm::vec4 color{1.0f};
 		Ref<Texture2D> texture;
-		float tilingFactor;
+		float tilingFactor = 1.0f;
+	};
+
+	struct CircleRendererComponent
+	{
+		CircleRendererComponent() = default;
+		CircleRendererComponent(const CircleRendererComponent&) = default;
+
+		glm::vec4 color{ 1.0f };
+		float thickness = 1.0f;
+		float fade = 0.005f;
 	};
 
 	struct CameraComponent
@@ -98,7 +107,6 @@ namespace Azteck
 	};
 
 	//Physics
-
 	struct Rigidbody2DComponent
 	{
 		enum class BodyType

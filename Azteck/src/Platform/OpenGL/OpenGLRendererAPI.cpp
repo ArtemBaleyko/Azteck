@@ -60,6 +60,8 @@ namespace Azteck
 
 	void OpenGLRendererAPI::drawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
 	{
+		vertexArray->bind();
+
 		uint32_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}

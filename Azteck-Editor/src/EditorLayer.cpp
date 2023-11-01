@@ -178,8 +178,15 @@ namespace Azteck
 				if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					openScene();
 
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Save", "Ctrl+S"))
+					saveScene();
+
 				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					saveSceneAs();
+
+				ImGui::Separator();
 
 				if (ImGui::MenuItem("Exit")) Application::getInstance().close();
 				ImGui::EndMenu();

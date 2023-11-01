@@ -242,6 +242,14 @@ namespace Azteck
 				src.color = spriteRenderComponent["Color"].as<glm::vec4>();
 			}
 
+			if (auto circleRenderComponent = entity["CircleRendererComponent"])
+			{
+				auto& src = deserializedEntity.addComponent<CircleRendererComponent>();
+				src.color = circleRenderComponent["Color"].as<glm::vec4>();
+				src.thickness = circleRenderComponent["Thickness"].as<float>();
+				src.fade = circleRenderComponent["Fade"].as<float>();
+			}
+
 			if (auto rigidbody2DComponent = entity["Rigidbody2DComponent"])
 			{
 				auto& rb2d = deserializedEntity.addComponent<Rigidbody2DComponent>();
@@ -332,6 +340,19 @@ namespace Azteck
 
 			auto& spriteRendererComponent = entity.getComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.color;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.hasComponent<CircleRendererComponent>())
+		{
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap;
+
+			auto& circleRendererComponent = entity.getComponent<CircleRendererComponent>();
+			out << YAML::Key << "Color" << YAML::Value << circleRendererComponent.color;
+			out << YAML::Key << "Thickness" << YAML::Value << circleRendererComponent.thickness;
+			out << YAML::Key << "Fade" << YAML::Value << circleRendererComponent.fade;
 
 			out << YAML::EndMap;
 		}

@@ -175,6 +175,13 @@ namespace Azteck
 				Renderer2D::drawQuad(transform.getTransform(), sprite.color);
 			}
 
+			auto view = _registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+			}
+
 			Renderer2D::endScene();
 		}
 	}
@@ -188,6 +195,13 @@ namespace Azteck
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 			Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
+		}
+
+		auto view = _registry.view<TransformComponent, CircleRendererComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+			Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
 		}
 
 		Renderer2D::endScene();
@@ -251,6 +265,7 @@ namespace Azteck
 
 		copyComponentIfExists<TransformComponent>(newEntity, entity);
 		copyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+		copyComponentIfExists<CircleRendererComponent>(newEntity, entity);
 		copyComponentIfExists<CameraComponent>(newEntity, entity);
 		copyComponentIfExists<NativeScriptComponent>(newEntity, entity);
 		copyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -279,6 +294,7 @@ namespace Azteck
 
 		copyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 		copyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -307,6 +323,11 @@ namespace Azteck
 
 	template<>
 	void Scene::onComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
 	{
 	}
 
