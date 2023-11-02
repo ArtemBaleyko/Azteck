@@ -121,7 +121,7 @@ namespace Azteck
 
 	bool EditorLayer::onKeyPressed(KeyPressedEvent& e)
 	{
-		if (e.getRepeatCount() > 0)
+		if (e.isRepeat())
 			return false;
 
 		bool isControl = Input::isKeyPressed(Key::LeftControl) || Input::isKeyPressed(Key::RightControl);

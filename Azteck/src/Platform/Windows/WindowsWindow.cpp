@@ -130,7 +130,7 @@ namespace Azteck
 					}
 					case GLFW_REPEAT:
 					{
-						KeyPressedEvent event(key, 1);
+						KeyPressedEvent event(key, true);
 						data.eventCallback(event);
 						break;
 					}

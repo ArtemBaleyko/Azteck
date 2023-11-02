@@ -25,23 +25,23 @@ namespace Azteck
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(KeyCode keyCode, uint16_t repeatCount)
+		KeyPressedEvent(KeyCode keyCode, bool isRepeat = false)
 			: KeyEvent(keyCode)
-			, _repeatCount(repeatCount)
+			, _isRepeat(isRepeat)
 		{}
 
-		inline uint16_t getRepeatCount() const { return _repeatCount; }
+		inline bool isRepeat() const { return _isRepeat; }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << _keyCode << " (" << _repeatCount << " repeats)";
+			ss << "KeyPressedEvent: " << _keyCode << " (repeat = " << _isRepeat << ")";
 			return ss.str();
 		}
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		uint16_t _repeatCount;
+		bool _isRepeat;
 	};
 
 	//---------------------------------------------------------------------------------------------

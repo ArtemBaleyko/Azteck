@@ -30,6 +30,10 @@ namespace Azteck
 
 		template<typename T, typename UIFunction>
 		static void drawComponent(const std::string& label, Entity entity, UIFunction func);
+
+		template<typename T>
+		void displayAddComponentEntry(const std::string& entryName);
+
 		static void drawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 
 	private:

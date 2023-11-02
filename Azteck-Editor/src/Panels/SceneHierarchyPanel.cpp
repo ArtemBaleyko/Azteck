@@ -120,59 +120,12 @@ namespace Azteck
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
-			if (!_selectedEntity.hasComponent<CameraComponent>())
-			{
-				if (ImGui::MenuItem("Camera"))
-				{
-					_selectedEntity.addComponent<CameraComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!_selectedEntity.hasComponent<SpriteRendererComponent>())
-			{
-				if (ImGui::MenuItem("Sprite Renderer"))
-				{
-					_selectedEntity.addComponent<SpriteRendererComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!_selectedEntity.hasComponent<CircleRendererComponent>())
-			{
-				if (ImGui::MenuItem("Circle Renderer"))
-				{
-					_selectedEntity.addComponent<CircleRendererComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!_selectedEntity.hasComponent<Rigidbody2DComponent>())
-			{
-				if (ImGui::MenuItem("Rigidbody 2D"))
-				{
-					_selectedEntity.addComponent<Rigidbody2DComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!_selectedEntity.hasComponent<BoxCollider2DComponent>())
-			{
-				if (ImGui::MenuItem("Box Collider 2D"))
-				{
-					_selectedEntity.addComponent<BoxCollider2DComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-
-			if (!_selectedEntity.hasComponent<CircleCollider2DComponent>())
-			{
-				if (ImGui::MenuItem("Circle Collider 2D"))
-				{
-					_selectedEntity.addComponent<CircleCollider2DComponent>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
+			displayAddComponentEntry<CameraComponent>("Camera");
+			displayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
+			displayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
+			displayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
+			displayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
+			displayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
 
 			ImGui::EndPopup();
 		}
@@ -369,6 +322,19 @@ namespace Azteck
 
 			if (removeComponent)
 				entity.removeComponent<T>();
+		}
+	}
+
+	template<typename T>
+	void SceneHierarchyPanel::displayAddComponentEntry(const std::string& entryName)
+	{
+		if (!_selectedEntity.hasComponent<T>())
+		{
+			if (ImGui::MenuItem(entryName.c_str()))
+			{
+				_selectedEntity.addComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
 		}
 	}
 
