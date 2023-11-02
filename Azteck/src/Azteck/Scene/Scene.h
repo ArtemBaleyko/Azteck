@@ -27,7 +27,11 @@ namespace Azteck
 		void onRuntimeStart();
 		void onRuntimeStop();
 
+		void onSimulationStart();
+		void onSimulationStop();
+
 		void onUpdateRuntime(Timestep ts);
+		void onUpdateSimulation(Timestep ts, EditorCamera& camera);
 		void onUpdateEditor(Timestep ts, EditorCamera& camera);
 		void onViewportResize(uint32_t width, uint32_t height);
 
@@ -46,6 +50,14 @@ namespace Azteck
 	private:
 		template<typename T>
 		void onComponentAdded(Entity entity, T& component);
+
+		void onPhysics2DStart();
+		void onPhysics2DStop();
+
+		void onUpdatePhysics(Timestep ts);
+		void onUpdateNativeScriptComponents(Timestep ts);
+
+		void renderScene(EditorCamera& camera);
 
 	private:
 		entt::registry _registry;

@@ -26,7 +26,8 @@ namespace Azteck
 		bool onMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void onScenePlay();
-		void onSceneStop();
+		void onSceneSimulate();
+		void onSceneStop();		
 
 		void onDuplicateEntity();
 
@@ -42,7 +43,19 @@ namespace Azteck
 
 		bool canSelectEntity();
 
+		void uiDockspace();
 		void uiToolbar();
+		void uiMenubar();
+		void uiSettings();
+		void uiStats();
+		void uiViewport();
+		void uiGizmos();
+
+		void renderColliders();
+		void renderCircleColliders();
+		void renderBoxColliders();
+
+		Entity getHoveredEntity();
 
 	private:
 		glm::vec2 _viewportSize;
@@ -68,11 +81,13 @@ namespace Azteck
 		enum class SceneState
 		{
 			Edit = 0,
-			Play
+			Play,
+			Simulate
 		};
 
 		SceneState _sceneState = SceneState::Edit;
 		Ref<Texture2D> _iconPlay;
 		Ref<Texture2D> _iconStop;
+		Ref<Texture2D> _iconSimulate;
 	};
 }

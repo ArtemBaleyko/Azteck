@@ -37,6 +37,7 @@ namespace Azteck
 
 	Scene::~Scene()
 	{
+		delete _physicsWorld;
 	}
 
 	Entity Scene::createEntity(const std::string& name)
@@ -63,128 +64,37 @@ namespace Azteck
 
 	void Scene::onRuntimeStart()
 	{
-		_physicsWorld = new b2World({ 0.0f, -9.8f });
-
-		auto view = _registry.view<Rigidbody2DComponent>();
-		for (auto e : view)
-		{
-			Entity entity = { e, this };
-
-			auto& transform = entity.getComponent<TransformComponent>();
-			auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
-
-			b2BodyDef bodyDef;
-			bodyDef.type = toBox2DBodyType(rb2d.type);
-			bodyDef.fixedRotation = rb2d.fixedRotation;
-			bodyDef.position.Set(transform.translation.x, transform.translation.y);
-			bodyDef.angle = transform.rotation.z;
-
-			b2Body* body = _physicsWorld->CreateBody(&bodyDef);
-			rb2d.runtimeBody = body;
-
-			if (entity.hasComponent<BoxCollider2DComponent>())
-			{
-				auto& bc2d = entity.getComponent<BoxCollider2DComponent>();
-
-				b2PolygonShape shape;
-				shape.SetAsBox(bc2d.size.x * transform.scale.x, bc2d.size.y * transform.scale.y);
-
-				b2FixtureDef fixtureDef;
-				fixtureDef.shape = &shape;
-				fixtureDef.density = bc2d.density;
-				fixtureDef.friction = bc2d.friction;
-				fixtureDef.restitution = bc2d.restitution;
-				fixtureDef.restitutionThreshold = bc2d.restitutionThreshold;
-				body->CreateFixture(&fixtureDef);
-			}
-
-			if (entity.hasComponent<CircleCollider2DComponent>())
-			{
-				auto& cc2d = entity.getComponent<CircleCollider2DComponent>();
-
-				b2CircleShape circleShape;
-				circleShape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
-				circleShape.m_radius = transform.scale.x * cc2d.radius;
-
-				b2FixtureDef fixtureDef;
-				fixtureDef.shape = &circleShape;
-				fixtureDef.density = cc2d.density;
-				fixtureDef.friction = cc2d.friction;
-				fixtureDef.restitution = cc2d.restitution;
-				fixtureDef.restitutionThreshold = cc2d.restitutionThreshold;
-				body->CreateFixture(&fixtureDef);
-			}
-		}
+		onPhysics2DStart();
 	}
 
 	void Scene::onRuntimeStop()
 	{
-		delete _physicsWorld;
-		_physicsWorld = nullptr;
+		onPhysics2DStop();
+	}
+
+	void Scene::onSimulationStart()
+	{
+		onPhysics2DStart();
+	}
+
+	void Scene::onSimulationStop()
+	{
+		onPhysics2DStop();
 	}
 
 	void Scene::onUpdateRuntime(Timestep ts)
 	{
-		_registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
+		onUpdateNativeScriptComponents(ts);
+		onUpdatePhysics(ts);
+
+		Entity primaryCameraEntity = getPrimaryCamera();
+
+		if (primaryCameraEntity)
 		{
-			if (!nsc.instance)
-			{
-				nsc.instance = nsc.instantiateScript();
-				AZ_CORE_ASSERT(nsc.instance, "Native script components is nto initialized!");
+			auto& cameraComponent = primaryCameraEntity.getComponent<CameraComponent>();
+			auto& transformComponent = primaryCameraEntity.getComponent<TransformComponent>();
 
-				nsc.instance->_entity = Entity{ entity, this };
-				nsc.instance->onCreate();
-			}
-
-			nsc.instance->onUpdate(ts);
-		});
-
-		// Physics
-		if (_physicsWorld)
-		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionsIterations = 2;
-
-			_physicsWorld->Step(ts, velocityIterations, positionsIterations);
-
-			// Get transform from Box2D
-			auto view = _registry.view<Rigidbody2DComponent>();
-			for (auto e : view)
-			{
-				Entity entity = { e, this };
-
-				auto& transform = entity.getComponent<TransformComponent>();
-				auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
-
-				b2Body* body = (b2Body*)rb2d.runtimeBody;
-				AZ_CORE_ASSERT(body != nullptr, "Box2D body is not valid");
-
-				const auto& position = body->GetPosition();
-				transform.translation.x = position.x;
-				transform.translation.y = position.y;
-				transform.rotation.z = body->GetAngle();
-			}
-		}
-
-		Camera* primaryCamera = nullptr;
-		glm::mat4 cameraTransform(1.0f);
-
-		auto view = getAllEntitiesWith<TransformComponent, CameraComponent>();
-		for (auto entity : view)
-		{
-			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-
-			if (camera.primary)
-			{
-				primaryCamera = &camera.camera;
-				cameraTransform = transform.getTransform();
-				break;
-			}
-		}
-
-		if (primaryCamera)
-		{
-			Renderer2D::beginScene(*primaryCamera, cameraTransform);
+			Renderer2D::beginScene(cameraComponent.camera, transformComponent.getTransform());
 
 			{
 				auto view = getAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
@@ -208,29 +118,15 @@ namespace Azteck
 		}
 	}
 
+	void Scene::onUpdateSimulation(Timestep ts, EditorCamera& camera)
+	{
+		onUpdatePhysics(ts);
+		renderScene(camera);
+	}
+
 	void Scene::onUpdateEditor(Timestep ts, EditorCamera& camera)
 	{
-		Renderer2D::beginScene(camera);
-
-		{
-			auto view = getAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
-			for (auto entity : view)
-			{
-				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-				Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
-			}
-		}
-
-		{
-			auto view = getAllEntitiesWith<TransformComponent, CircleRendererComponent>();
-			for (auto entity : view)
-			{
-				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-				Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
-			}
-		}
-
-		Renderer2D::endScene();
+		renderScene(camera);
 	}
 
 	void Scene::onViewportResize(uint32_t width, uint32_t height)
@@ -329,6 +225,139 @@ namespace Azteck
 		copyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
 		return newScene;
+	}
+
+	void Scene::onPhysics2DStart()
+	{
+		_physicsWorld = new b2World({ 0.0f, -9.8f });
+
+		auto view = getAllEntitiesWith<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+
+			auto& transform = entity.getComponent<TransformComponent>();
+			auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+
+			b2BodyDef bodyDef;
+			bodyDef.type = toBox2DBodyType(rb2d.type);
+			bodyDef.fixedRotation = rb2d.fixedRotation;
+			bodyDef.position.Set(transform.translation.x, transform.translation.y);
+			bodyDef.angle = transform.rotation.z;
+
+			b2Body* body = _physicsWorld->CreateBody(&bodyDef);
+			rb2d.runtimeBody = body;
+
+			if (entity.hasComponent<BoxCollider2DComponent>())
+			{
+				auto& bc2d = entity.getComponent<BoxCollider2DComponent>();
+
+				b2PolygonShape shape;
+				shape.SetAsBox(bc2d.size.x * transform.scale.x, bc2d.size.y * transform.scale.y);
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &shape;
+				fixtureDef.density = bc2d.density;
+				fixtureDef.friction = bc2d.friction;
+				fixtureDef.restitution = bc2d.restitution;
+				fixtureDef.restitutionThreshold = bc2d.restitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
+
+			if (entity.hasComponent<CircleCollider2DComponent>())
+			{
+				auto& cc2d = entity.getComponent<CircleCollider2DComponent>();
+
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(cc2d.offset.x, cc2d.offset.y);
+				circleShape.m_radius = transform.scale.x * cc2d.radius;
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &circleShape;
+				fixtureDef.density = cc2d.density;
+				fixtureDef.friction = cc2d.friction;
+				fixtureDef.restitution = cc2d.restitution;
+				fixtureDef.restitutionThreshold = cc2d.restitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
+		}
+	}
+
+	void Scene::onPhysics2DStop()
+	{
+		delete _physicsWorld;
+		_physicsWorld = nullptr;
+	}
+
+	void Scene::onUpdatePhysics(Timestep ts)
+	{
+		if (_physicsWorld)
+		{
+			const int32_t velocityIterations = 6;
+			const int32_t positionsIterations = 2;
+
+			_physicsWorld->Step(ts, velocityIterations, positionsIterations);
+
+			// Get transform from Box2D
+			auto view = getAllEntitiesWith<Rigidbody2DComponent>();
+			for (auto e : view)
+			{
+				Entity entity = { e, this };
+
+				auto& transform = entity.getComponent<TransformComponent>();
+				auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+
+				b2Body* body = (b2Body*)rb2d.runtimeBody;
+				AZ_CORE_ASSERT(body != nullptr, "Box2D body is not valid");
+
+				const auto& position = body->GetPosition();
+				transform.translation.x = position.x;
+				transform.translation.y = position.y;
+				transform.rotation.z = body->GetAngle();
+			}
+		}
+	}
+
+	void Scene::onUpdateNativeScriptComponents(Timestep ts)
+	{
+		getAllEntitiesWith<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
+			{
+				if (!nsc.instance)
+				{
+					nsc.instance = nsc.instantiateScript();
+					AZ_CORE_ASSERT(nsc.instance, "Native script components is nto initialized!");
+
+					nsc.instance->_entity = Entity{ entity, this };
+					nsc.instance->onCreate();
+				}
+
+				nsc.instance->onUpdate(ts);
+			});
+	}
+
+	void Scene::renderScene(EditorCamera& camera)
+	{
+		Renderer2D::beginScene(camera);
+
+		{
+			auto view = getAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+				Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
+			}
+		}
+
+		{
+			auto view = getAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+				Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
+			}
+		}
+
+		Renderer2D::endScene();
 	}
 
 	template<typename T>
