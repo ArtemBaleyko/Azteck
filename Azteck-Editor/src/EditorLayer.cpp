@@ -177,6 +177,15 @@ namespace Azteck
 					_gizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
+			case Key::Delete:
+			{
+				if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
+				{
+					_activeScene->destroyEntity(selectedEntity);
+					_sceneHierarchyPanel.clearSelection();
+				}
+				break;
+			}
 			default:
 				break;
 		}

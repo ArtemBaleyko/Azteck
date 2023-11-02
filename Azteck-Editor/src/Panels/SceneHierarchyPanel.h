@@ -22,6 +22,8 @@ namespace Azteck
 		Entity getSelectedEntity() const { return _selectedEntity; }
 		void setSelectedEntity(Entity entity);
 
+		void clearSelection();
+
 	private:
 		void drawEntityNode(Entity entity);
 		void drawComponents(Entity entity);
