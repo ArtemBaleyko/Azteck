@@ -5,6 +5,8 @@
 #include "Azteck/Core/Input.h"
 #include "Azteck/Renderer/Renderer.h"
 
+#include "Azteck/Scripting/ScriptEngine.h"
+
 #include <glm/glm.hpp>
 
 #include <glfw/glfw3.h>
@@ -31,6 +33,7 @@ namespace Azteck
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();
+		ScriptEngine::init();
 
 		_imGuiLayer = new ImGuiLayer;
 		pushOverlay(_imGuiLayer);
@@ -38,6 +41,7 @@ namespace Azteck
 
 	Application::~Application()
 	{
+		ScriptEngine::shutdown();
 		Renderer::shutdown();
 	}
 

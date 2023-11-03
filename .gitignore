@@ -2,6 +2,7 @@
 .vs/
 **/bin/
 bin-int/
+intermediates/
 
 # Log files
 *.log
@@ -15,6 +16,8 @@ bin-int/
 **.vcxproj
 **.vcxproj.user
 **.vcxproj.filters
+
+**.csproj
 
 !vendor/premake/bin
 

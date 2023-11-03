@@ -33,6 +33,15 @@ group "Dependencies"
 	include "Azteck/vendor/Box2D"
 group ""
 
-include "Azteck"
-include "Azteck-Editor"
-include "Sandbox"
+group "Core"
+	include "Azteck"
+	include "Azteck-ScriptCore"
+group ""
+
+group "Tools"
+	include "Azteck-Editor"
+group ""
+
+group "Misc"
+	include "Sandbox"
+group ""
