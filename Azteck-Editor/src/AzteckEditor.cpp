@@ -14,7 +14,8 @@ namespace Azteck
 	class AzteckEditor : public Application
 	{
 	public:
-		AzteckEditor(ApplicationCommandLineArgs args) : Application("Editor", args)
+		AzteckEditor(ApplicationSpecification spec) 
+			: Application(spec)
 		{
 			pushLayer(new EditorLayer());
 		}
@@ -26,6 +27,10 @@ namespace Azteck
 
 	Application* createApplication(ApplicationCommandLineArgs args)
 	{
-		return new AzteckEditor(args);
+		ApplicationSpecification spec;
+		spec.name = "Editor";
+		spec.args = args;
+
+		return new AzteckEditor(spec);
 	}
 }

@@ -143,7 +143,8 @@ private:
 class Sandbox : public Azteck::Application
 {
 public:
-	Sandbox() 
+	Sandbox(Azteck::ApplicationSpecification spec)
+		: Application(spec)
 	{
 		//pushLayer(new ExampleLayer());
 		pushLayer(new Sandbox2D());
@@ -152,7 +153,12 @@ public:
 	~Sandbox() {}
 };
 
-Azteck::Application* Azteck::createApplication()
+Azteck::Application* Azteck::createApplication(Azteck::ApplicationCommandLineArgs args)
 {
-	return new Sandbox();
+	Azteck::ApplicationSpecification spec;
+	spec.name = "Sandbox";
+	spec.args = args;
+	spec.workingDirectory = "../Azteck-Editor";
+
+	return new Sandbox(spec);
 }

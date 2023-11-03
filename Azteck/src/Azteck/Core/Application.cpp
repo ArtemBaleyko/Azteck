@@ -13,18 +13,21 @@ namespace Azteck
 {
 	Application* Application::_instance = nullptr;
 
-	Application::Application(const std::string& name, ApplicationCommandLineArgs args)
+	Application::Application(const ApplicationSpecification& spec)
 		: _isRunning(true)
 		, _isMinimised(false)
 		, _lastFrameTime(0.0f)
-		, _commandLineArgs(args)
+		, _spec(spec)
 	{
 		AZ_PROFILE_FUNCTION();
 
 		AZ_CORE_ASSERT(!_instance, "Application already exists");
 		_instance = this;
 
-		_window = Window::create(WindowProps(name));
+		if (!_spec.workingDirectory.empty())
+			std::filesystem::current_path(_spec.workingDirectory);
+
+		_window = Window::create(WindowProps(_spec.name));
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();

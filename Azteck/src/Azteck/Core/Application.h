@@ -28,10 +28,18 @@ namespace Azteck
 		}
 	};
 
+	struct ApplicationSpecification
+	{
+		std::string name = "Azteck App";
+		std::string workingDirectory;
+
+		ApplicationCommandLineArgs args;
+	};
+
 	class  Application
 	{
 	public:
-		Application(const std::string& name = "Azteck App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+		Application(const ApplicationSpecification& spec);
 		virtual ~Application();
 
 		void close();
@@ -45,7 +53,7 @@ namespace Azteck
 		inline Window& getWindow() const { return *_window; }
 
 		inline static Application& getInstance() { return *_instance; }
-		inline ApplicationCommandLineArgs getCommandLineArgs() const { return _commandLineArgs; }
+		inline const ApplicationSpecification& getSpecification() const { return _spec; }
 
 	private:
 		void run();
@@ -54,7 +62,7 @@ namespace Azteck
 		bool onWindowResized(WindowResizedEvent& e);
 
 	private:
-		ApplicationCommandLineArgs _commandLineArgs;
+		ApplicationSpecification _spec;
 		Scope<Window> _window;
 
 		ImGuiLayer* _imGuiLayer;

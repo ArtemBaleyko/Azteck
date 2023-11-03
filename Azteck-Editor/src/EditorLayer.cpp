@@ -44,7 +44,7 @@ namespace Azteck
 		_sceneHierarchyPanel.setContext(_activeScene);
 		_editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
-		auto commandLineArgs = Application::getInstance().getCommandLineArgs();
+		auto commandLineArgs = Application::getInstance().getSpecification().args;
 		if (commandLineArgs.count > 1)
 		{
 			auto sceneFilePath = commandLineArgs[1];
