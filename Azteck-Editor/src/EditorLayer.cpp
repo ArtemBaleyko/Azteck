@@ -51,6 +51,8 @@ namespace Azteck
 			SceneSerializer serializer(_activeScene);
 			serializer.deserialize(sceneFilePath);
 		}
+
+		Renderer2D::setLineWidth(3.0f);
 	}
 
 	void EditorLayer::onDetach()
@@ -272,6 +274,8 @@ namespace Azteck
 
 		if (_showPhysicsColliders)
 			renderColliders();
+
+		renderSelectedEntityOutline();
 
 		Renderer2D::endScene();
 	}
@@ -656,6 +660,15 @@ namespace Azteck
 				* glm::scale(glm::mat4(1.0f), scale);
 
 			Renderer2D::drawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		}
+	}
+
+	void EditorLayer::renderSelectedEntityOutline()
+	{
+		if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity()) {
+			const TransformComponent& transform = selectedEntity.getComponent<TransformComponent>();
+
+			Renderer2D::drawRect(transform.getTransform(), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
 		}
 	}
 

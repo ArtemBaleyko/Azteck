@@ -54,6 +54,7 @@ namespace Azteck
 		void renderColliders();
 		void renderCircleColliders();
 		void renderBoxColliders();
+		void renderSelectedEntityOutline();
 
 		Entity getHoveredEntity();
 
