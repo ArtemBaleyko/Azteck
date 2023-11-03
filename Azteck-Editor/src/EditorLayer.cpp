@@ -107,7 +107,8 @@ namespace Azteck
 
 	void EditorLayer::onEvent(Event& e)
 	{
-		_editorCamera.onEvent(e);
+		if (_sceneState == SceneState::Edit)
+			_editorCamera.onEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.dispatch<KeyPressedEvent>(AZ_BIND_EVENT_FN(EditorLayer::onKeyPressed));

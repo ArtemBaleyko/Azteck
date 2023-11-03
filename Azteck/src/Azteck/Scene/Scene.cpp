@@ -363,7 +363,8 @@ namespace Azteck
 	template<typename T>
 	void Scene::onComponentAdded(Entity entity, T& component)
 	{
-		//static_assert(false);
+		// static_assert(false) compiles only with MSVC
+		//static_assert(sizeof(T) == 0);
 	}
 
 	template<>

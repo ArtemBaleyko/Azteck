@@ -1,7 +1,5 @@
 #pragma once
 
-#include <xhash>
-
 namespace Azteck
 {
 	class UUID
@@ -19,12 +17,14 @@ namespace Azteck
 
 namespace std {
 
+	template <typename T> struct hash;
+
 	template<>
 	struct hash<Azteck::UUID>
 	{
 		std::size_t operator()(const Azteck::UUID& uuid) const
 		{
-			return hash<uint64_t>()((uint64_t)uuid);
+			return (uint64_t)uuid;
 		}
 	};
 

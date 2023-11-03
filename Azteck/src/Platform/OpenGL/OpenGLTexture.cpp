@@ -102,9 +102,6 @@ namespace Azteck
 
 	bool OpenGLTexture2D::operator==(const Texture& other) const
 	{
-		if (const OpenGLTexture2D* openGLTexture = dynamic_cast<const OpenGLTexture2D*>(&other))
-			return openGLTexture->_renderedId == _renderedId;
-
-		return false;
+		return _renderedId == other.getRendererID();
 	}
 }
