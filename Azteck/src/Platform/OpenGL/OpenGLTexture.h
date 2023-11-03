@@ -19,6 +19,7 @@ namespace Azteck
 		inline uint32_t getWidth() const override { return _width; };
 		inline uint32_t getHeight() const override { return _height; };
 		inline uint32_t getRendererID() const override { return _renderedId; };
+		inline const std::string& getPath() const override { return _path; };
 
 		virtual bool isLoaded() const override { return _isLoaded; }
 

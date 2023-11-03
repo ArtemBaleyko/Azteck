@@ -9,6 +9,7 @@ Entities:
       Scale: [9.92527008, 0.422564298, 1]
     SpriteRendererComponent:
       Color: [0, 0.24615033, 0.99613899, 1]
+      TilingFactor: 1
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false
@@ -46,6 +47,8 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [0.99613899, 0.857679546, 0.0269226599, 1]
+      TilingFactor: 5.80000019
+      TexturePath: assets\textures\checkerboard.png
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false

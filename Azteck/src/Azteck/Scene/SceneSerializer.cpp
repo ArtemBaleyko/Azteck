@@ -241,6 +241,15 @@ namespace Azteck
 			{
 				auto& src = deserializedEntity.addComponent<SpriteRendererComponent>();
 				src.color = spriteRenderComponent["Color"].as<glm::vec4>();
+
+				if (spriteRenderComponent["TilingFactor"])
+					src.tilingFactor = spriteRenderComponent["TilingFactor"].as<float>();
+
+				if (spriteRenderComponent["TexturePath"])
+				{
+					std::string texturePath = spriteRenderComponent["TexturePath"].as<std::string>();
+					src.texture = Texture2D::create(texturePath);
+				}
 			}
 
 			if (auto circleRenderComponent = entity["CircleRendererComponent"])
@@ -352,6 +361,10 @@ namespace Azteck
 
 			auto& spriteRendererComponent = entity.getComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.color;
+			out << YAML::Key << "TilingFactor" << YAML::Value << spriteRendererComponent.tilingFactor;
+
+			if (spriteRendererComponent.texture)
+				out << YAML::Key << "TexturePath" << YAML::Value << spriteRendererComponent.texture->getPath();
 
 			out << YAML::EndMap;
 		}
