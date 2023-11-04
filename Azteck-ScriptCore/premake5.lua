@@ -3,8 +3,8 @@ project "Azteck-ScriptCore"
 	language "C#"
 	dotnetframework "4.7.2"
 
-	targetdir ("%{wks.location}/Azteck-Editor/resources/scripts")
-	objdir ("%{wks.location}/Azteck-Editor/resources/scripts/intermediates")
+	targetdir ("../Azteck-Editor/resources/scripts")
+	objdir ("../Azteck-Editor/resources/scripts/intermediates")
 
 	files 
 	{

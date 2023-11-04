@@ -19,7 +19,7 @@ namespace Sandbox
 
 		void OnUpdate(float ts)
 		{
-			float speed = 0.05f;
+			float speed = 0.1f;
 			Vector3 velocity = Vector3.Zero;
 
 			if (Input.IsKeyDown(KeyCode.W))
@@ -32,7 +32,7 @@ namespace Sandbox
 			else if (Input.IsKeyDown(KeyCode.D))
 				velocity.X = 1.0f;
 
-			velocity *= speed * ts;
+			velocity *= speed;
 
 			_rigidbody.ApplyLinearImpulse(velocity.XY, true);
 

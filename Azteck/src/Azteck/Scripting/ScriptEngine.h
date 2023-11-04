@@ -19,7 +19,7 @@ namespace Azteck
 	{
 	public:
 		ScriptClass() = default;
-		ScriptClass(const std::string& classNamespace, const std::string& className);
+		ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore = false);
 
 		MonoObject* instantiate();
 		MonoMethod* getMethod(const std::string& name, int parameterCount);
@@ -55,6 +55,7 @@ namespace Azteck
 		static void shutdown();
 
 		static void loadAssembly(const std::filesystem::path& filepath);
+		static void loadAppAssembly(const std::filesystem::path& filepath);
 
 		static void onRuntimeStart(Scene* scene);
 		static void onRuntimeStop();
@@ -74,7 +75,7 @@ namespace Azteck
 
 		static MonoObject* instantiateClass(MonoClass* monoClass);
 
-		static void loadAssemblyClasses(MonoAssembly* assembly);
+		static void loadAssemblyClasses();
 
 		friend class ScriptClass;
 		friend class ScriptInstance;

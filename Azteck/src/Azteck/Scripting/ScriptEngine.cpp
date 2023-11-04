@@ -94,6 +94,9 @@ namespace Azteck
 		MonoAssembly* coreAssembly = nullptr;
 		MonoImage* coreAssemblyImage = nullptr;
 
+		MonoAssembly* appAssembly = nullptr;
+		MonoImage* appAssemblyImage = nullptr;
+
 		ScriptClass entityClass;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> entityClasses;
@@ -111,14 +114,15 @@ namespace Azteck
 
 		initMono();
 		loadAssembly("resources/scripts/Azteck-ScriptCore.dll");
+		loadAppAssembly("SandboxProject/assets/scripts/binaries/Sandbox.dll");
 
-		loadAssemblyClasses(_data->coreAssembly);
+		loadAssemblyClasses();
 
 		ScriptGlue::registerComponents();
 		ScriptGlue::registerFunctions();
 
 		// Retrieve and instantiate class (with constructor)
-		_data->entityClass = ScriptClass("Azteck", "Entity");
+		_data->entityClass = ScriptClass("Azteck", "Entity", true);
 	}
 
 	void ScriptEngine::shutdown()
@@ -154,6 +158,14 @@ namespace Azteck
 
 		_data->coreAssembly = Utils::loadMonoAssembly(filepath);
 		_data->coreAssemblyImage = mono_assembly_get_image(_data->coreAssembly);
+	}
+
+	void ScriptEngine::loadAppAssembly(const std::filesystem::path& filepath)
+	{
+		_data->appAssembly = Utils::loadMonoAssembly(filepath);
+		auto a = _data->appAssembly;
+		_data->appAssemblyImage = mono_assembly_get_image(_data->appAssembly);
+		auto b = _data->appAssemblyImage;
 	}
 
 	void ScriptEngine::onRuntimeStart(Scene* scene)
@@ -203,29 +215,29 @@ namespace Azteck
 		return _data->entityClasses;
 	}
 
-	void ScriptEngine::loadAssemblyClasses(MonoAssembly* assembly)
+	void ScriptEngine::loadAssemblyClasses()
 	{
 		_data->entityClasses.clear();
 
-		MonoImage* image = mono_assembly_get_image(assembly);
-		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(_data->appAssemblyImage, MONO_TABLE_TYPEDEF);
+
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-		MonoClass* entityClass = mono_class_from_name(image, "Azteck", "Entity");
+		MonoClass* entityClass = mono_class_from_name(_data->coreAssemblyImage, "Azteck", "Entity");
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
 			uint32_t cols[MONO_TYPEDEF_SIZE];
 			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			const char* nameSpace = mono_metadata_string_heap(_data->appAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(_data->appAssemblyImage, cols[MONO_TYPEDEF_NAME]);
 			std::string fullName;
 			if (strlen(nameSpace) != 0)
 				fullName = fmt::format("{}.{}", nameSpace, name);
 			else
 				fullName = name;
 
-			MonoClass* monoClass = mono_class_from_name(image, nameSpace, name);
+			MonoClass* monoClass = mono_class_from_name(_data->appAssemblyImage, nameSpace, name);
 
 			if (monoClass == entityClass)
 				continue;
@@ -248,10 +260,11 @@ namespace Azteck
 		return instance;
 	}
 
-	ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
+	ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore)
 		: _classNamespace(classNamespace), _className(className)
 	{
-		_monoClass = mono_class_from_name(_data->coreAssemblyImage, classNamespace.c_str(), className.c_str());
+		_monoClass = mono_class_from_name(isCore ? _data->coreAssemblyImage : _data->appAssemblyImage, 
+			classNamespace.c_str(), className.c_str());
 	}
 
 	MonoObject* ScriptClass::instantiate()
