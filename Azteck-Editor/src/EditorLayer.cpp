@@ -51,8 +51,6 @@ namespace Azteck
 			SceneSerializer serializer(_activeScene);
 			serializer.deserialize(sceneFilePath);
 		}
-
-		Renderer2D::setLineWidth(3.0f);
 	}
 
 	void EditorLayer::onDetach()

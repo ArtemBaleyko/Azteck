@@ -6,5 +6,6 @@ namespace Azteck
 	{
 	public:
 		static void registerFunctions();
+		static void registerComponents();
 	};
 }

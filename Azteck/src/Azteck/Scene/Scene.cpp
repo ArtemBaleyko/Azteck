@@ -6,6 +6,8 @@
 #include "Entity.h"
 #include "ScriptableEntity.h"
 
+#include "Azteck/Scripting/ScriptEngine.h"
+
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
@@ -54,21 +56,34 @@ namespace Azteck
 		auto& tag = entity.addComponent<TagComponent>();
 		tag.tag = name.empty() ? "Entity" : name;
 
+		_entityMap[uuid] = entity;
+
 		return entity;
 	}
 
 	void Scene::destroyEntity(Entity entity)
 	{
 		_registry.destroy(entity);
+		_entityMap.erase(entity.getUUID());
 	}
 
 	void Scene::onRuntimeStart()
 	{
 		onPhysics2DStart();
+
+		ScriptEngine::onRuntimeStart(this);
+
+		auto view = getAllEntitiesWith<ScriptComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+			ScriptEngine::onCreateEntity(entity);
+		}
 	}
 
 	void Scene::onRuntimeStop()
 	{
+		ScriptEngine::onRuntimeStop();
 		onPhysics2DStop();
 	}
 
@@ -84,6 +99,7 @@ namespace Azteck
 
 	void Scene::onUpdateRuntime(Timestep ts)
 	{
+		onUpdateScriptComponents(ts);
 		onUpdateNativeScriptComponents(ts);
 		onUpdatePhysics(ts);
 
@@ -158,26 +174,42 @@ namespace Azteck
 		return {};
 	}
 
-	template<typename Component>
+	template<typename... Component>
 	static void copyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
-		auto view = src.view<Component>();
-		for (auto e : view)
-		{
-			UUID uuid = src.get<IDComponent>(e).id;
-			AZ_CORE_ASSERT(enttMap.find(uuid) != enttMap.end(), "Unknown entity");
-			entt::entity dstEnttID = enttMap.at(uuid);
+		([&]()
+			{
+				auto view = src.view<Component>();
+				for (auto srcEntity : view)
+				{
+					entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).id);
 
-			auto& component = src.get<Component>(e);
-			dst.emplace_or_replace<Component>(dstEnttID, component);
-		}
+					auto& srcComponent = src.get<Component>(srcEntity);
+					dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+				}
+			}(), ...);
 	}
 
-	template<typename Component>
+	template<typename... Component>
+	static void copyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+	{
+		copyComponent<Component...>(dst, src, enttMap);
+	}
+
+	template<typename... Component>
 	static void copyComponentIfExists(Entity dst, Entity src)
 	{
-		if (src.hasComponent<Component>())
-			dst.addOrReplaceComponent<Component>(src.getComponent<Component>());
+		([&]()
+			{
+				if (src.hasComponent<Component>())
+					dst.addOrReplaceComponent<Component>(src.getComponent<Component>());
+			}(), ...);
+	}
+
+	template<typename... Component>
+	static void copyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
+	{
+		copyComponentIfExists<Component...>(dst, src);
 	}
 
 	void Scene::duplicateEntity(Entity entity)
@@ -185,14 +217,15 @@ namespace Azteck
 		const std::string& name = entity.getName();
 		Entity newEntity = createEntity(name);
 
-		copyComponentIfExists<TransformComponent>(newEntity, entity);
-		copyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
-		copyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-		copyComponentIfExists<CameraComponent>(newEntity, entity);
-		copyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-		copyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-		copyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-		copyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+		copyComponentIfExists(AllComponents{}, newEntity, entity);
+	}
+
+	Entity Scene::getEntityByUUID(UUID uuid)
+	{
+		if (_entityMap.find(uuid) != _entityMap.end())
+			return { _entityMap.at(uuid), this };
+
+		return {};
 	}
 
 	Ref<Scene> Scene::copy(const Ref<Scene>& other)
@@ -215,14 +248,7 @@ namespace Azteck
 			enttMap[uuid] = (entt::entity)newEntity;
 		}
 
-		copyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-		copyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		copyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
 
 		return newScene;
 	}
@@ -318,6 +344,16 @@ namespace Azteck
 		}
 	}
 
+	void Scene::onUpdateScriptComponents(Timestep ts)
+	{
+		auto view = getAllEntitiesWith<ScriptComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+			ScriptEngine::onUpdateEntity(entity, ts);
+		}
+	}
+
 	void Scene::onUpdateNativeScriptComponents(Timestep ts)
 	{
 		getAllEntitiesWith<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
@@ -377,6 +413,11 @@ namespace Azteck
 	{
 		if (_viewportWidth > 0 && _viewportHeight > 0)
 			component.camera.setViewportSize(_viewportWidth, _viewportHeight);
+	}
+
+	template<>
+	void Scene::onComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
+	{
 	}
 
 	template<>

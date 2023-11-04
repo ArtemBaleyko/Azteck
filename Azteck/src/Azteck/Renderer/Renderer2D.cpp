@@ -72,7 +72,7 @@ namespace Azteck
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
 
-		float lineWidth = 2.0f;
+		float lineWidth = 1.0f;
 
 		Ref<Texture2D> whiteTexture;
 

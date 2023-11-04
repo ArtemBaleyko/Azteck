@@ -39,6 +39,8 @@ namespace Azteck
 
 		void duplicateEntity(Entity entity);
 
+		Entity getEntityByUUID(UUID uuid);
+
 		template<typename... Components>
 		auto getAllEntitiesWith()
 		{
@@ -55,6 +57,7 @@ namespace Azteck
 		void onPhysics2DStop();
 
 		void onUpdatePhysics(Timestep ts);
+		void onUpdateScriptComponents(Timestep ts);
 		void onUpdateNativeScriptComponents(Timestep ts);
 
 		void renderScene(EditorCamera& camera);
@@ -66,5 +69,7 @@ namespace Azteck
 		uint32_t _viewportHeight;
 
 		b2World* _physicsWorld = nullptr;
+
+		std::unordered_map<UUID, entt::entity> _entityMap;
 	};
 }

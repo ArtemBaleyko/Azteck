@@ -89,6 +89,14 @@ namespace Azteck
 		bool fixedAspectRatio = false;
 	};
 
+	struct ScriptComponent
+	{
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+
+		std::string className;
+	};
+
 	class ScriptableEntity;
 
 	struct NativeScriptComponent
@@ -159,4 +167,15 @@ namespace Azteck
 		// Storage for runtime
 		void* runtimeFixture = nullptr;
 	};
+
+	template<typename... Component>
+	struct ComponentGroup
+	{
+	};
+
+	using AllComponents =
+		ComponentGroup<TransformComponent, SpriteRendererComponent,
+		CircleRendererComponent, CameraComponent, ScriptComponent,
+		NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent,
+		CircleCollider2DComponent>;
 }

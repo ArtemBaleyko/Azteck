@@ -236,6 +236,12 @@ namespace Azteck
 				cc.primary = cameraComponent["Primary"].as<bool>();
 				cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
+		
+			if (auto scriptComponent = entity["ScriptComponent"])
+			{
+				auto& sc = deserializedEntity.addComponent<ScriptComponent>();
+				sc.className = scriptComponent["ClassName"].as<std::string>();
+			}
 
 			if (auto spriteRenderComponent = entity["SpriteRendererComponent"])
 			{
@@ -351,6 +357,16 @@ namespace Azteck
 			out << YAML::Key << "Primary" << YAML::Value << cameraComponent.primary;
 			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.fixedAspectRatio;
 
+			out << YAML::EndMap;
+		}
+
+		if (entity.hasComponent<ScriptComponent>())
+		{
+			auto& scriptComponent = entity.getComponent<ScriptComponent>();
+
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
+			out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.className;
 			out << YAML::EndMap;
 		}
 

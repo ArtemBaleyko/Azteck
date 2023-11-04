@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Azteck/Scene/Components.h"
+#include "Azteck/Scripting/ScriptEngine.h"
 
 namespace Azteck
 {
@@ -121,6 +122,7 @@ namespace Azteck
 		if (ImGui::BeginPopup("AddComponent"))
 		{
 			displayAddComponentEntry<CameraComponent>("Camera");
+			displayAddComponentEntry<ScriptComponent>("Script");
 			displayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 			displayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
 			displayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
@@ -200,6 +202,23 @@ namespace Azteck
 				if (ImGui::DragFloat("Far Clip", &farClip, 0.1f))
 					camera.setPerspectiveFarClip(farClip);
 			}
+		});
+
+		drawComponent<ScriptComponent>("Script", entity, [](auto& component)
+		{
+			bool scriptClassExists = ScriptEngine::entityClassExists(component.className);
+
+			static char buffer[64];
+			strcpy(buffer, component.className.c_str());
+
+			if (!scriptClassExists)
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+
+			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+				component.className = buffer;
+
+			if (!scriptClassExists)
+				ImGui::PopStyleColor();
 		});
 
 		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) 
