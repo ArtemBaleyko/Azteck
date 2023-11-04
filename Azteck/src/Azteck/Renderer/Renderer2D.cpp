@@ -275,7 +275,6 @@ namespace Azteck
 		// TODO: implement for circles
 		// if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 		// 	NextBatch();
-
 		constexpr size_t circleVertexCount = 4;
 
 		for (size_t i = 0; i < circleVertexCount; i++)

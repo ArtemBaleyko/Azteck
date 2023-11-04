@@ -117,7 +117,7 @@ namespace Azteck
 				for (auto entity : view)
 				{
 					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-					Renderer2D::drawSprite(transform.getTransform(), sprite);
+					Renderer2D::drawSprite(transform.getTransform(), sprite, static_cast<int>(entity));
 				}
 			}
 

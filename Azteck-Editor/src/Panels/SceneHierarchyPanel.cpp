@@ -204,7 +204,7 @@ namespace Azteck
 			}
 		});
 
-		drawComponent<ScriptComponent>("Script", entity, [](auto& component)
+		drawComponent<ScriptComponent>("Script", entity, [entity](auto& component) mutable
 		{
 			bool scriptClassExists = ScriptEngine::entityClassExists(component.className);
 
@@ -216,6 +216,24 @@ namespace Azteck
 
 			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 				component.className = buffer;
+
+			Ref<ScriptInstance> scriptInstance = ScriptEngine::getEntityScriptInstance(entity.getUUID());
+			if (scriptInstance)
+			{
+				const auto& fields = scriptInstance->getScriptClass()->getFields();
+
+				for (const auto& [name, field] : fields)
+				{
+					if (field.type == ScriptFieldType::Float)
+					{
+						float data = scriptInstance->getFieldValue<float>(name);
+						if (ImGui::DragFloat(name.c_str(), &data))
+						{
+							scriptInstance->setFieldValue(name, data);
+						}
+					}
+				}
+			}
 
 			if (!scriptClassExists)
 				ImGui::PopStyleColor();
