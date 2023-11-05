@@ -3,6 +3,8 @@
 
 #include "Entity.h"
 #include "Components.h"
+#include "Azteck/Scripting/ScriptEngine.h"
+#include "Azteck/Core/UUID.h"
 
 #define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/yaml.h>
@@ -83,10 +85,40 @@ namespace YAML
 			return true;
 		}
 	};
+
+	template<>
+	struct convert<Azteck::UUID>
+	{
+		static Node encode(const Azteck::UUID& uuid)
+		{
+			Node node;
+			node.push_back((uint64_t)uuid);
+			return node;
+		}
+
+		static bool decode(const Node& node, Azteck::UUID& uuid)
+		{
+			uuid = node.as<uint64_t>();
+			return true;
+		}
+	};
 }
 
 namespace Azteck
 {
+#define WRITE_SCRIPT_FIELD(FieldType, Type)           \
+			case ScriptFieldType::FieldType:          \
+				out << scriptField.getValue<Type>();  \
+				break
+
+#define READ_SCRIPT_FIELD(FieldType, Type)             \
+	case ScriptFieldType::FieldType:                   \
+	{                                                  \
+		Type data = scriptField["Data"].as<Type>();    \
+		fieldInstance.setValue(data);                  \
+		break;                                         \
+	}
+
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
 	{
 		out << YAML::Flow;
@@ -241,6 +273,48 @@ namespace Azteck
 			{
 				auto& sc = deserializedEntity.addComponent<ScriptComponent>();
 				sc.className = scriptComponent["ClassName"].as<std::string>();
+
+				if (auto scriptFields = scriptComponent["ScriptFields"])
+				{
+					Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(sc.className);
+					AZ_CORE_ASSERT(entityClass, "Entity class is nullptr");
+					const auto& fields = entityClass->getFields();
+					auto& entityFields = ScriptEngine::getScriptFieldMap(deserializedEntity);
+
+					for (auto scriptField : scriptFields)
+					{
+						std::string name = scriptField["Name"].as<std::string>();
+						std::string typeString = scriptField["Type"].as<std::string>();
+						ScriptFieldType type = Utils::scriptFieldTypeFromString(typeString);
+
+						ScriptFieldInstance& fieldInstance = entityFields[name];
+
+						if (fields.find(name) == fields.end())
+							continue;
+
+						fieldInstance.field = fields.at(name);
+
+						switch (type)
+						{
+							READ_SCRIPT_FIELD(Float, float);
+							READ_SCRIPT_FIELD(Double, double);
+							READ_SCRIPT_FIELD(Bool, bool);
+							READ_SCRIPT_FIELD(Char, char);
+							READ_SCRIPT_FIELD(Byte, int8_t);
+							READ_SCRIPT_FIELD(Short, int16_t);
+							READ_SCRIPT_FIELD(Int, int32_t);
+							READ_SCRIPT_FIELD(Long, int64_t);
+							READ_SCRIPT_FIELD(UByte, uint8_t);
+							READ_SCRIPT_FIELD(UShort, uint16_t);
+							READ_SCRIPT_FIELD(UInt, uint32_t);
+							READ_SCRIPT_FIELD(ULong, uint64_t);
+							READ_SCRIPT_FIELD(Vector2, glm::vec2);
+							READ_SCRIPT_FIELD(Vector3, glm::vec3);
+							READ_SCRIPT_FIELD(Vector4, glm::vec4);
+							READ_SCRIPT_FIELD(Entity, UUID);
+						}
+					}
+				}
 			}
 
 			if (auto spriteRenderComponent = entity["SpriteRendererComponent"])
@@ -367,6 +441,54 @@ namespace Azteck
 			out << YAML::Key << "ScriptComponent";
 			out << YAML::BeginMap;
 			out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.className;
+
+			if (Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(scriptComponent.className))
+			{
+				const auto& fields = entityClass->getFields();
+				if (!fields.empty())
+				{
+					out << YAML::Key << "ScriptFields" << YAML::Value;
+
+					auto& entityFields = ScriptEngine::getScriptFieldMap(entity);
+
+					out << YAML::BeginSeq;
+					for (const auto& [name, field] : fields)
+					{
+						if (entityFields.find(name) == entityFields.end())
+							continue;
+
+						out << YAML::BeginMap;
+						out << YAML::Key << "Name" << YAML::Value << name;
+						out << YAML::Key << "Type" << YAML::Value << Utils::scriptFieldTypeToString(field.type);
+
+						out << YAML::Key << "Data" << YAML::Value;
+						ScriptFieldInstance& scriptField = entityFields.at(name);
+
+						switch (field.type)
+						{
+							WRITE_SCRIPT_FIELD(Float, float);
+							WRITE_SCRIPT_FIELD(Double, double);
+							WRITE_SCRIPT_FIELD(Bool, bool);
+							WRITE_SCRIPT_FIELD(Char, char);
+							WRITE_SCRIPT_FIELD(Byte, int8_t);
+							WRITE_SCRIPT_FIELD(Short, int16_t);
+							WRITE_SCRIPT_FIELD(Int, int32_t);
+							WRITE_SCRIPT_FIELD(Long, int64_t);
+							WRITE_SCRIPT_FIELD(UByte, uint8_t);
+							WRITE_SCRIPT_FIELD(UShort, uint16_t);
+							WRITE_SCRIPT_FIELD(UInt, uint32_t);
+							WRITE_SCRIPT_FIELD(ULong, uint64_t);
+							WRITE_SCRIPT_FIELD(Vector2, glm::vec2);
+							WRITE_SCRIPT_FIELD(Vector3, glm::vec3);
+							WRITE_SCRIPT_FIELD(Vector4, glm::vec4);
+							WRITE_SCRIPT_FIELD(Entity, UUID);
+						}
+						out << YAML::EndMap;
+					}
+					out << YAML::EndSeq;
+				}
+			}
+
 			out << YAML::EndMap;
 		}
 
