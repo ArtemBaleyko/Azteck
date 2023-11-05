@@ -41,6 +41,11 @@ namespace Azteck
 		return glm::dot(*parameter, *parameter);
 	}
 
+	static MonoObject* GetScriptInstance(UUID entityID)
+	{
+		return ScriptEngine::getManagedInstance(entityID);
+	}
+
 	static bool Entity_HasComponent(UUID entityID, MonoReflectionType* componentType)
 	{
 		Scene* scene = ScriptEngine::getSceneContext();
@@ -51,6 +56,22 @@ namespace Azteck
 
 		MonoType* managedType = mono_reflection_type_get_type(componentType);
 		return _entityHasComponentFuncs.at(managedType)(entity);
+	}
+
+	static uint64_t Entity_FindEntityByName(MonoString* name)
+	{
+		char* nameCStr = mono_string_to_utf8(name);
+
+		Scene* scene = ScriptEngine::getSceneContext();
+		AZ_CORE_ASSERT(scene, "Scene is nullptr");
+
+		Entity entity = scene->getEntityByName(nameCStr);
+		mono_free(nameCStr);
+
+		if (!entity)
+			return 0;
+
+		return entity.getUUID();
 	}
 
 	static void TransformComponent_GetTranslation(UUID entityID, glm::vec3* outTranslation)
@@ -140,7 +161,10 @@ namespace Azteck
 		AZ_ADD_INTERNAL_CALL(NativeLog_Vector);
 		AZ_ADD_INTERNAL_CALL(NativeLog_VectorDot);
 
+		AZ_ADD_INTERNAL_CALL(GetScriptInstance);
 		AZ_ADD_INTERNAL_CALL(Entity_HasComponent);
+		AZ_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+
 		AZ_ADD_INTERNAL_CALL(TransformComponent_GetTranslation);
 		AZ_ADD_INTERNAL_CALL(TransformComponent_SetTranslation);
 

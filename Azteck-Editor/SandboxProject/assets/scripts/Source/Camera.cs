@@ -1,4 +1,5 @@
 ﻿using Azteck;
+using System;
 
 namespace Sandbox
 {
@@ -6,8 +7,20 @@ namespace Sandbox
 	{
 		public float Speed = 1.0f;
 
+		public float DistanceFromPlayer = 5.0f;
+
+		private Entity _player;
+
+		void OnCreate()
+		{
+			_player = FindEntityByName("Player");
+		}
+
 		void OnUpdate(float ts)
 		{
+			if (_player != null)
+				Translation = new Vector3(_player.Translation.XY, DistanceFromPlayer);
+
 			Vector3 velocity = Vector3.Zero;
 
 			if (Input.IsKeyDown(KeyCode.Up))

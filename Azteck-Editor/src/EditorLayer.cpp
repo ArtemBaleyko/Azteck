@@ -61,13 +61,15 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
+		_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
+
 		const FrameBufferSpecification& spec = _frameBuffer->getSpecification();
+
 		if (_viewportSize.x > 0.0f && _viewportSize.y > 0.0f &&
 			(spec.width != _viewportSize.x || spec.height != _viewportSize.y))
 		{
 			_frameBuffer->resize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 			_editorCamera.setViewportSize(_viewportSize.x, _viewportSize.y);
-			_activeScene->onViewportResize((uint32_t)_viewportSize.x, (uint32_t)_viewportSize.y);
 		}
 
 		Renderer2D::resetStats();
@@ -280,7 +282,7 @@ namespace Azteck
 	void EditorLayer::newScene()
 	{
 		_editorScene = createRef<Scene>();
-		_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+		//_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
 		_sceneHierarchyPanel.setContext(_editorScene);
 
 		_activeScene = _editorScene;
@@ -310,7 +312,7 @@ namespace Azteck
 		if (serializer.deserialize(filepath.string()))
 		{
 			_editorScene = newScene;
-			_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
+			//_editorScene->onViewportResize(static_cast<uint32_t>(_viewportSize.x), static_cast<uint32_t>(_viewportSize.y));
 			_sceneHierarchyPanel.setContext(_editorScene);
 
 			_activeScene = _editorScene;

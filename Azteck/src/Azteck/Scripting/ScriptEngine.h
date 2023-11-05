@@ -122,6 +122,8 @@ namespace Azteck
 			setFieldValueInternal(name, &value);
 		}
 
+		MonoObject* getManagedObject() { return _instance; }
+
 	private:
 		bool getFieldValueInternal(const std::string& name, void* buffer);
 		bool setFieldValueInternal(const std::string& name, const void* value);
@@ -164,6 +166,8 @@ namespace Azteck
 		static MonoImage* getCoreAssemblyImage();
 
 		static Ref<ScriptInstance> getEntityScriptInstance(UUID entityID);
+
+		static MonoObject* getManagedInstance(UUID uuid);
 
 	private:
 		static void initMono();

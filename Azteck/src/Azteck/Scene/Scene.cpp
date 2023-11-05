@@ -152,6 +152,9 @@ namespace Azteck
 
 	void Scene::onViewportResize(uint32_t width, uint32_t height)
 	{
+		if (_viewportWidth == width && _viewportHeight == height)
+			return;
+
 		_viewportWidth = width;
 		_viewportHeight = height;
 
@@ -229,6 +232,20 @@ namespace Azteck
 	{
 		if (_entityMap.find(uuid) != _entityMap.end())
 			return { _entityMap.at(uuid), this };
+
+		return {};
+	}
+
+	Entity Scene::getEntityByName(std::string_view name)
+	{
+		auto view = getAllEntitiesWith<TagComponent>();
+
+		for (auto entity : view)
+		{
+			const TagComponent& tc = view.get<TagComponent>(entity);
+			if (tc.tag == name)
+				return Entity{ entity, this };
+		}
 
 		return {};
 	}

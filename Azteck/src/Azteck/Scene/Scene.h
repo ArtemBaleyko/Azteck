@@ -42,6 +42,7 @@ namespace Azteck
 		void duplicateEntity(Entity entity);
 
 		Entity getEntityByUUID(UUID uuid);
+		Entity getEntityByName(std::string_view name);
 
 		template<typename... Components>
 		auto getAllEntitiesWith()

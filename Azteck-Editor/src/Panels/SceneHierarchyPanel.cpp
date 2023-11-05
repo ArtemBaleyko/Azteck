@@ -206,6 +206,11 @@ namespace Azteck
 
 		drawComponent<ScriptComponent>("Script", entity, [entity, scene = _context](auto& component) mutable
 		{
+			if (component.className == "Sandbox.Playe")
+			{
+				__debugbreak();
+			}
+
 			bool scriptClassExists = ScriptEngine::entityClassExists(component.className);
 
 			static char buffer[64];
@@ -238,6 +243,8 @@ namespace Azteck
 			}
 			else if (scriptClassExists)
 			{
+
+				AZ_CORE_WARN("ClassName: {}, Exists: {}", component.className, scriptClassExists);
 				Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(component.className);
 				const auto& fields = entityClass->getFields();
 
@@ -271,7 +278,7 @@ namespace Azteck
 							}
 						}
 					}
-				}
+					}
 			}
 
 			if (!scriptClassExists)

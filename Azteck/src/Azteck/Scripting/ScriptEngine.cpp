@@ -369,6 +369,12 @@ namespace Azteck
 		return it->second;
 	}
 
+	MonoObject* ScriptEngine::getManagedInstance(UUID uuid)
+	{
+		AZ_CORE_ASSERT(_data->entityInstances.find(uuid) != _data->entityInstances.end(), "Entity is not found");
+		return _data->entityInstances.at(uuid)->getManagedObject();
+	}
+
 	MonoObject* ScriptEngine::instantiateClass(MonoClass* monoClass)
 	{
 		MonoObject* instance = mono_object_new(_data->appDomain, monoClass);
