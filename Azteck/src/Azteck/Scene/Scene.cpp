@@ -34,6 +34,7 @@ namespace Azteck
 	Scene::Scene()
 		: _viewportWidth(0)
 		, _viewportHeight(0)
+		, _isRunning(false)
 	{
 	}
 
@@ -69,6 +70,8 @@ namespace Azteck
 
 	void Scene::onRuntimeStart()
 	{
+		_isRunning = true;
+
 		onPhysics2DStart();
 
 		ScriptEngine::onRuntimeStart(this);
@@ -83,6 +86,8 @@ namespace Azteck
 
 	void Scene::onRuntimeStop()
 	{
+		_isRunning = false;
+
 		ScriptEngine::onRuntimeStop();
 		onPhysics2DStop();
 	}

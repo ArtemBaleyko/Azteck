@@ -204,12 +204,12 @@ namespace Azteck
 			}
 		});
 
-		drawComponent<ScriptComponent>("Script", entity, [entity](auto& component) mutable
+		drawComponent<ScriptComponent>("Script", entity, [entity, scene = _context](auto& component) mutable
 		{
 			bool scriptClassExists = ScriptEngine::entityClassExists(component.className);
 
 			static char buffer[64];
-			strcpy(buffer, component.className.c_str());
+			strcpy_s(buffer, sizeof(buffer), component.className.c_str());
 
 			if (!scriptClassExists)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
@@ -217,19 +217,58 @@ namespace Azteck
 			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
 				component.className = buffer;
 
-			Ref<ScriptInstance> scriptInstance = ScriptEngine::getEntityScriptInstance(entity.getUUID());
-			if (scriptInstance)
+			if (scene->isRunning())
 			{
-				const auto& fields = scriptInstance->getScriptClass()->getFields();
+				Ref<ScriptInstance> scriptInstance = ScriptEngine::getEntityScriptInstance(entity.getUUID());
+				if (scriptInstance)
+				{
+					const auto& fields = scriptInstance->getScriptClass()->getFields();
+					for (const auto& [name, field] : fields)
+					{
+						if (field.type == ScriptFieldType::Float)
+						{
+							float data = scriptInstance->getFieldValue<float>(name);
+							if (ImGui::DragFloat(name.c_str(), &data))
+							{
+								scriptInstance->setFieldValue(name, data);
+							}
+						}
+					}
+				}
+			}
+			else if (scriptClassExists)
+			{
+				Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(component.className);
+				const auto& fields = entityClass->getFields();
 
+				auto& entityFields = ScriptEngine::getScriptFieldMap(entity);
 				for (const auto& [name, field] : fields)
 				{
-					if (field.type == ScriptFieldType::Float)
+					// Field has been set in editor
+					if (entityFields.find(name) != entityFields.end())
 					{
-						float data = scriptInstance->getFieldValue<float>(name);
-						if (ImGui::DragFloat(name.c_str(), &data))
+						ScriptFieldInstance& scriptField = entityFields.at(name);
+
+						// Display control to set it maybe
+						if (field.type == ScriptFieldType::Float)
 						{
-							scriptInstance->setFieldValue(name, data);
+							float data = scriptField.getValue<float>();
+							if (ImGui::DragFloat(name.c_str(), &data))
+								scriptField.setValue(data);
+						}
+					}
+					else
+					{
+						// Display control to set it maybe
+						if (field.type == ScriptFieldType::Float)
+						{
+							float data = 0.0f;
+							if (ImGui::DragFloat(name.c_str(), &data))
+							{
+								ScriptFieldInstance& fieldInstance = entityFields[name];
+								fieldInstance.field = field;
+								fieldInstance.setValue(data);
+							}
 						}
 					}
 				}

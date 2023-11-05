@@ -30,6 +30,8 @@ namespace Azteck
 		void onSimulationStart();
 		void onSimulationStop();
 
+		bool isRunning() const { return _isRunning; }
+
 		void onUpdateRuntime(Timestep ts);
 		void onUpdateSimulation(Timestep ts, EditorCamera& camera);
 		void onUpdateEditor(Timestep ts, EditorCamera& camera);
@@ -69,6 +71,8 @@ namespace Azteck
 		uint32_t _viewportHeight;
 
 		b2World* _physicsWorld = nullptr;
+
+		bool _isRunning;
 
 		std::unordered_map<UUID, entt::entity> _entityMap;
 	};

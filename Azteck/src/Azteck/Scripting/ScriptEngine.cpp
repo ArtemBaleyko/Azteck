@@ -160,6 +160,7 @@ namespace Azteck
 
 		std::unordered_map<std::string, Ref<ScriptClass>> entityClasses;
 		std::unordered_map<UUID, Ref<ScriptInstance>> entityInstances;
+		std::unordered_map<UUID, ScriptFieldMap> entityScriptFields;
 
 		// Runtime
 		Scene* SceneContext = nullptr;
@@ -240,8 +241,19 @@ namespace Azteck
 		const auto& sc = entity.getComponent<ScriptComponent>();
 		if (ScriptEngine::entityClassExists(sc.className))
 		{
+			UUID entityID = entity.getUUID();
+
 			Ref<ScriptInstance> instance = createRef<ScriptInstance>(_data->entityClasses[sc.className], entity);
-			_data->entityInstances[entity.getUUID()] = instance;
+			_data->entityInstances[entityID] = instance;
+
+			// Copy field values
+			if (_data->entityScriptFields.find(entityID) != _data->entityScriptFields.end())
+			{
+				const ScriptFieldMap& fieldMap = _data->entityScriptFields.at(entityID);
+				for (const auto& [name, fieldInstance] : fieldMap)
+					instance->setFieldValueInternal(name, fieldInstance._buffer);
+			}
+
 			instance->invokeOnCreate();
 		}
 	}
@@ -260,6 +272,15 @@ namespace Azteck
 		return _data->SceneContext;
 	}
 
+	Ref<ScriptClass> ScriptEngine::getEntityClass(const std::string& name)
+	{
+		auto it = _data->entityClasses.find(name);
+		if (it == _data->entityClasses.end())
+			return nullptr;
+
+		return it->second;
+	}
+
 	void ScriptEngine::onRuntimeStop()
 	{
 		_data->SceneContext = nullptr;
@@ -270,6 +291,14 @@ namespace Azteck
 	std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::getEntityClasses()
 	{
 		return _data->entityClasses;
+	}
+
+	ScriptFieldMap& ScriptEngine::getScriptFieldMap(Entity entity)
+	{
+		AZ_CORE_ASSERT(entity, "Invalid entity");
+
+		UUID entityID = entity.getUUID();
+		return _data->entityScriptFields[entityID];
 	}
 
 	void ScriptEngine::loadAssemblyClasses()
@@ -333,7 +362,6 @@ namespace Azteck
 
 	Ref<ScriptInstance> ScriptEngine::getEntityScriptInstance(UUID entityID)
 	{
-		auto& t = _data->entityInstances;
 		auto it = _data->entityInstances.find(entityID);
 		if (it == _data->entityInstances.end())
 			return nullptr;

@@ -48,8 +48,7 @@ namespace Azteck
 		if (commandLineArgs.count > 1)
 		{
 			auto sceneFilePath = commandLineArgs[1];
-			SceneSerializer serializer(_activeScene);
-			serializer.deserialize(sceneFilePath);
+			openScene(sceneFilePath);
 		}
 	}
 
@@ -162,19 +161,19 @@ namespace Azteck
 			}
 			case Key::W:
 			{
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !_activeScene->isRunning())
 					_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
 			}
 			case Key::E:
 			{
-				if (!ImGuizmo::IsUsing())	
+				if (!ImGuizmo::IsUsing() && !_activeScene->isRunning())
 					_gizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
 			}
 			case Key::R:
 			{
-				if (!ImGuizmo::IsUsing())
+				if (!ImGuizmo::IsUsing() && !_activeScene->isRunning())
 					_gizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
 			}
@@ -541,7 +540,7 @@ namespace Azteck
 
 		_isViewportFocused = ImGui::IsWindowFocused();
 		_isViewportHovered = ImGui::IsWindowHovered();
-		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportFocused && !_isViewportHovered);
+		Application::getInstance().getImGuiLayer()->setBlockEvents(!_isViewportHovered);
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		_viewportSize = { viewportSize.x, viewportSize.y };
