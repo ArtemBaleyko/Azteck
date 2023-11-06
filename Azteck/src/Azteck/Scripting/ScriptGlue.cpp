@@ -4,8 +4,6 @@
 #include "mono/metadata/object.h"
 #include "mono/metadata/reflection.h"
 
-#include "box2d/b2_body.h"
-
 #include "ScriptEngine.h"
 
 #include "Azteck/Core/UUID.h"
@@ -14,6 +12,10 @@
 
 #include "Azteck/Scene/Scene.h"
 #include "Azteck/Scene/Entity.h"
+
+#include "Azteck/Physics/Physics2D.h"
+
+#include "box2d/b2_body.h"
 
 namespace Azteck
 {
@@ -117,6 +119,43 @@ namespace Azteck
 		auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
 		b2Body* body = (b2Body*)rb2d.runtimeBody;
 		body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
+	}
+
+	static void Rigidbody2DComponent_GetLinearVelocity(UUID entityID, glm::vec2* outLinearVelocity)
+	{
+		Scene* scene = ScriptEngine::getSceneContext();
+		AZ_CORE_ASSERT(scene, "Scene is nullptr");
+		Entity entity = scene->getEntityByUUID(entityID);
+		AZ_CORE_ASSERT(entity, "Entity is unknown");
+
+		auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+		b2Body* body = (b2Body*)rb2d.runtimeBody;
+		const b2Vec2& linearVelocity = body->GetLinearVelocity();
+		*outLinearVelocity = glm::vec2(linearVelocity.x, linearVelocity.y);
+	}
+
+	static Rigidbody2DComponent::BodyType Rigidbody2DComponent_GetType(UUID entityID)
+	{
+		Scene* scene = ScriptEngine::getSceneContext();
+		AZ_CORE_ASSERT(scene, "Scene is nullptr");
+		Entity entity = scene->getEntityByUUID(entityID);
+		AZ_CORE_ASSERT(entity, "Entity is unknown");
+
+		auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+		b2Body* body = (b2Body*)rb2d.runtimeBody;
+		return Utils::rigidbody2DTypeFromBox2DBody(body->GetType());
+	}
+
+	static void Rigidbody2DComponent_SetType(UUID entityID, Rigidbody2DComponent::BodyType bodyType)
+	{
+		Scene* scene = ScriptEngine::getSceneContext();
+		AZ_CORE_ASSERT(scene, "Scene is nullptr");
+		Entity entity = scene->getEntityByUUID(entityID);
+		AZ_CORE_ASSERT(entity, "Entity is unknown");
+
+		auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
+		b2Body* body = (b2Body*)rb2d.runtimeBody;
+		body->SetType(Utils::rigidbody2DTypeToBox2DBody(bodyType));
 	}
 
 	static bool Input_IsKeyDown(KeyCode keycode)

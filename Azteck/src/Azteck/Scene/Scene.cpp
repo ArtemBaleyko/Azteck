@@ -288,7 +288,7 @@ namespace Azteck
 			auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
 
 			b2BodyDef bodyDef;
-			bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.type);
+			bodyDef.type = Utils::rigidbody2DTypeToBox2DBody(rb2d.type);
 			bodyDef.fixedRotation = rb2d.fixedRotation;
 			bodyDef.position.Set(transform.translation.x, transform.translation.y);
 			bodyDef.angle = transform.rotation.z;

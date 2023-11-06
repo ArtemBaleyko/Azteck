@@ -7,7 +7,7 @@
 namespace Azteck {
 	namespace Utils {
 
-		b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType)
+		inline b2BodyType rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType)
 		{
 			switch (bodyType)
 			{
@@ -20,7 +20,7 @@ namespace Azteck {
 			return b2_staticBody;
 		}
 
-		inline Rigidbody2DComponent::BodyType Rigidbody2DTypeFromBox2DBody(b2BodyType bodyType)
+		inline Rigidbody2DComponent::BodyType rigidbody2DTypeFromBox2DBody(b2BodyType bodyType)
 		{
 			switch (bodyType)
 			{
