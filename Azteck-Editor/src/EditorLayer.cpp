@@ -55,7 +55,8 @@ namespace Azteck
 		}
 		else
 		{
-			newProject();
+			if (!openProject())
+				Application::getInstance().close();
 		}
 	}
 
@@ -153,7 +154,7 @@ namespace Azteck
 			case Key::O:
 			{
 				if (isControl)
-					openScene();
+					openProject();
 				break;
 			}
 			case Key::Q:
@@ -294,6 +295,16 @@ namespace Azteck
 	void EditorLayer::newProject()
 	{
 		Project::create();
+	}
+
+	bool EditorLayer::openProject()
+	{
+		auto filepath = FileDialogs::openFile("Azteck Project (*.azproj)\0*.azproj\0");
+		if (!filepath.has_value())
+			return false;
+
+		openProject(filepath.value());
+		return true;
 	}
 
 	void EditorLayer::openProject(const std::filesystem::path& path)
@@ -537,18 +548,18 @@ namespace Azteck
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N"))
-					newScene();
-
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					openScene();
+				if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
+					openProject();
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Save", "Ctrl+S"))
+				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+					newScene();
+
+				if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
 					saveScene();
 
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
 					saveSceneAs();
 
 				ImGui::Separator();

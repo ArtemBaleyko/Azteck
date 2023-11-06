@@ -34,6 +34,7 @@ namespace Azteck
 		void onOverlayRender();
 
 		void newProject();
+		bool openProject();
 		void openProject(const std::filesystem::path& path);
 		void saveProject();
 

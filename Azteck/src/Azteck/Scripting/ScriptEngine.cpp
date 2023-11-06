@@ -159,8 +159,11 @@ namespace Azteck
 		Scope<filewatch::FileWatch<std::string>> appAssemblyFileWatcher;
 		bool assemblyReloadPending = false;
 
+#ifdef AZ_DEBUG
 		bool enableDebugging = true;
-
+#else
+		bool enableDebugging = false;
+#endif
 		// Runtime
 		Scene* SceneContext = nullptr;
 	};

@@ -3,11 +3,11 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Azteck/Scene/Components.h"
 #include "Azteck/Scripting/ScriptEngine.h"
+#include "Azteck/UI/UI.h"
 
 namespace Azteck
 {
@@ -206,21 +206,18 @@ namespace Azteck
 
 		drawComponent<ScriptComponent>("Script", entity, [entity, scene = _context](auto& component) mutable
 		{
-			if (component.className == "Sandbox.Playe")
-			{
-				__debugbreak();
-			}
-
 			bool scriptClassExists = ScriptEngine::entityClassExists(component.className);
 
 			static char buffer[64];
 			strcpy_s(buffer, sizeof(buffer), component.className.c_str());
 
-			if (!scriptClassExists)
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+			UI::ScopedStyleColor textColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f), !scriptClassExists);
 
 			if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+			{
 				component.className = buffer;
+				return;
+			}
 
 			if (scene->isRunning())
 			{
@@ -278,9 +275,6 @@ namespace Azteck
 					}
 					}
 			}
-
-			if (!scriptClassExists)
-				ImGui::PopStyleColor();
 		});
 
 		drawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) 
