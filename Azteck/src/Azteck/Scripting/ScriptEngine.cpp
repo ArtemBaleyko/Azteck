@@ -7,6 +7,8 @@
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/object.h"
 #include "mono/metadata/tabledefs.h"
+#include "mono/metadata/mono-debug.h"
+#include "mono/metadata/threads.h"
 
 #include "FileWatch.h"
 
@@ -67,7 +69,7 @@ namespace Azteck
 			return buffer;
 		}
 
-		static MonoAssembly* loadMonoAssembly(const std::filesystem::path& assemblyPath)
+		static MonoAssembly* loadMonoAssembly(const std::filesystem::path& assemblyPath, bool loadPDB = false)
 		{
 			uint32_t fileSize = 0;
 			char* fileData = readBytes(assemblyPath, &fileSize);
@@ -82,6 +84,22 @@ namespace Azteck
 
 				AZ_CORE_ERROR(errorMessage);
 				return nullptr;
+			}
+
+			if (loadPDB)
+			{
+				std::filesystem::path pdbPath = assemblyPath;
+				pdbPath.replace_extension(".pdb");
+
+				if (std::filesystem::exists(pdbPath))
+				{
+					uint32_t pdbFileSize = 0;
+					char* pdbFileData = readBytes(pdbPath, &pdbFileSize);
+					mono_debug_open_image_from_memory(image, (const mono_byte*)pdbFileData, pdbFileSize);
+
+					AZ_CORE_INFO("Loaded PDB {}", pdbPath);
+					delete[] pdbFileData;
+				}
 			}
 
 			std::string pathString = assemblyPath.string();
@@ -173,6 +191,8 @@ namespace Azteck
 		Scope<filewatch::FileWatch<std::string>> appAssemblyFileWatcher;
 		bool assemblyReloadPending = false;
 
+		bool enableDebugging = true;
+
 		// Runtime
 		Scene* SceneContext = nullptr;
 	};
@@ -224,10 +244,26 @@ namespace Azteck
 	{
 		mono_set_assemblies_path("mono/lib");
 
+		if (_data->enableDebugging)
+		{
+			const char* argv[2] = {
+				"--debugger-agent=transport=dt_socket,address=127.0.0.1:2550,server=y,suspend=n,loglevel=3,logfile=MonoDebugger.log",
+				"--soft-breakpoints"
+			};
+
+			mono_jit_parse_options(2, (char**)argv);
+			mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+		}
+
 		MonoDomain* rootDomain = mono_jit_init("AzteckJITRuntime");
 		AZ_CORE_ASSERT(rootDomain, "Root domain is not initialized");
 
 		_data->rootDomain = rootDomain;
+
+		if (_data->enableDebugging)
+			mono_debug_domain_create(_data->rootDomain);
+
+		mono_thread_set_main(mono_thread_current());
 	}
 
 	void ScriptEngine::shutdownMono()
@@ -247,14 +283,14 @@ namespace Azteck
 		mono_domain_set(_data->appDomain, true);
 
 		_data->coreAssemblyFilepath = filepath;
-		_data->coreAssembly = Utils::loadMonoAssembly(filepath);
+		_data->coreAssembly = Utils::loadMonoAssembly(filepath, _data->enableDebugging);
 		_data->coreAssemblyImage = mono_assembly_get_image(_data->coreAssembly);
 	}
 
 	void ScriptEngine::loadAppAssembly(const std::filesystem::path& filepath)
 	{
 		_data->appAssemblyFilepath = filepath;
-		_data->appAssembly = Utils::loadMonoAssembly(filepath);
+		_data->appAssembly = Utils::loadMonoAssembly(filepath, _data->enableDebugging);
 		_data->appAssemblyImage = mono_assembly_get_image(_data->appAssembly);
 
 		_data->appAssemblyFileWatcher = createScope<filewatch::FileWatch<std::string>>(filepath.string(), onAppAssemblyFileSystemEvent);
@@ -452,7 +488,8 @@ namespace Azteck
 
 	MonoObject* ScriptClass::invokeMethod(MonoObject* instance, MonoMethod* method, void** params)
 	{
-		return mono_runtime_invoke(method, instance, params, nullptr);
+		MonoObject* exception = nullptr;
+		return mono_runtime_invoke(method, instance, params, &exception);
 	}
 
 	ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity)
