@@ -276,42 +276,43 @@ namespace Azteck
 
 				if (auto scriptFields = scriptComponent["ScriptFields"])
 				{
-					Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(sc.className);
-					AZ_CORE_ASSERT(entityClass, "Entity class is nullptr");
-					const auto& fields = entityClass->getFields();
-					auto& entityFields = ScriptEngine::getScriptFieldMap(deserializedEntity);
-
-					for (auto scriptField : scriptFields)
+					if (Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(sc.className))
 					{
-						std::string name = scriptField["Name"].as<std::string>();
-						std::string typeString = scriptField["Type"].as<std::string>();
-						ScriptFieldType type = Utils::scriptFieldTypeFromString(typeString);
+						const auto& fields = entityClass->getFields();
+						auto& entityFields = ScriptEngine::getScriptFieldMap(deserializedEntity);
 
-						ScriptFieldInstance& fieldInstance = entityFields[name];
-
-						if (fields.find(name) == fields.end())
-							continue;
-
-						fieldInstance.field = fields.at(name);
-
-						switch (type)
+						for (auto scriptField : scriptFields)
 						{
-							READ_SCRIPT_FIELD(Float, float);
-							READ_SCRIPT_FIELD(Double, double);
-							READ_SCRIPT_FIELD(Bool, bool);
-							READ_SCRIPT_FIELD(Char, char);
-							READ_SCRIPT_FIELD(Byte, int8_t);
-							READ_SCRIPT_FIELD(Short, int16_t);
-							READ_SCRIPT_FIELD(Int, int32_t);
-							READ_SCRIPT_FIELD(Long, int64_t);
-							READ_SCRIPT_FIELD(UByte, uint8_t);
-							READ_SCRIPT_FIELD(UShort, uint16_t);
-							READ_SCRIPT_FIELD(UInt, uint32_t);
-							READ_SCRIPT_FIELD(ULong, uint64_t);
-							READ_SCRIPT_FIELD(Vector2, glm::vec2);
-							READ_SCRIPT_FIELD(Vector3, glm::vec3);
-							READ_SCRIPT_FIELD(Vector4, glm::vec4);
-							READ_SCRIPT_FIELD(Entity, UUID);
+							std::string name = scriptField["Name"].as<std::string>();
+							std::string typeString = scriptField["Type"].as<std::string>();
+							ScriptFieldType type = Utils::scriptFieldTypeFromString(typeString);
+
+							ScriptFieldInstance& fieldInstance = entityFields[name];
+
+							if (fields.find(name) == fields.end())
+								continue;
+
+							fieldInstance.field = fields.at(name);
+
+							switch (type)
+							{
+								READ_SCRIPT_FIELD(Float, float);
+								READ_SCRIPT_FIELD(Double, double);
+								READ_SCRIPT_FIELD(Bool, bool);
+								READ_SCRIPT_FIELD(Char, char);
+								READ_SCRIPT_FIELD(Byte, int8_t);
+								READ_SCRIPT_FIELD(Short, int16_t);
+								READ_SCRIPT_FIELD(Int, int32_t);
+								READ_SCRIPT_FIELD(Long, int64_t);
+								READ_SCRIPT_FIELD(UByte, uint8_t);
+								READ_SCRIPT_FIELD(UShort, uint16_t);
+								READ_SCRIPT_FIELD(UInt, uint32_t);
+								READ_SCRIPT_FIELD(ULong, uint64_t);
+								READ_SCRIPT_FIELD(Vector2, glm::vec2);
+								READ_SCRIPT_FIELD(Vector3, glm::vec3);
+								READ_SCRIPT_FIELD(Vector4, glm::vec4);
+								READ_SCRIPT_FIELD(Entity, UUID);
+							}
 						}
 					}
 				}

@@ -190,8 +190,17 @@ namespace Azteck
 		initMono();
 		ScriptGlue::registerFunctions();
 
-		loadAssembly("resources/scripts/Azteck-ScriptCore.dll");
-		loadAppAssembly("SandboxProject/assets/scripts/binaries/Sandbox.dll");
+		if (!loadAssembly("resources/scripts/Azteck-ScriptCore.dll"))
+		{
+			AZ_CORE_ERROR("[ScriptEngine] Could not load Azteck-ScriptCore assembly");
+			return;
+		}
+
+		if (!loadAppAssembly("SandboxProject/assets/scripts/binaries/Sandbox.dll"))
+		{
+			AZ_CORE_ERROR("[ScriptEngine] Could not load app assembly");
+			return;
+		}
 
 		loadAssemblyClasses();
 
@@ -245,24 +254,36 @@ namespace Azteck
 		_data->rootDomain = nullptr;
 	}
 
-	void ScriptEngine::loadAssembly(const std::filesystem::path& filepath)
+	bool ScriptEngine::loadAssembly(const std::filesystem::path& filepath)
 	{
 		_data->appDomain = mono_domain_create_appdomain("AzteckScriptRuntime", nullptr);
 		mono_domain_set(_data->appDomain, true);
 
 		_data->coreAssemblyFilepath = filepath;
 		_data->coreAssembly = Utils::loadMonoAssembly(filepath, _data->enableDebugging);
+
+		if (_data->coreAssembly == nullptr)
+			return false;
+
 		_data->coreAssemblyImage = mono_assembly_get_image(_data->coreAssembly);
+
+		return true;
 	}
 
-	void ScriptEngine::loadAppAssembly(const std::filesystem::path& filepath)
+	bool ScriptEngine::loadAppAssembly(const std::filesystem::path& filepath)
 	{
 		_data->appAssemblyFilepath = filepath;
 		_data->appAssembly = Utils::loadMonoAssembly(filepath, _data->enableDebugging);
+
+		if (_data->appAssembly == nullptr)
+			return false;
+
 		_data->appAssemblyImage = mono_assembly_get_image(_data->appAssembly);
 
 		_data->appAssemblyFileWatcher = createScope<filewatch::FileWatch<std::string>>(filepath.string(), onAppAssemblyFileSystemEvent);
 		_data->assemblyReloadPending = false;
+
+		return true;
 	}
 
 	void ScriptEngine::reloadAssembly()
@@ -316,10 +337,15 @@ namespace Azteck
 	void ScriptEngine::onUpdateEntity(Entity entity, Timestep ts)
 	{
 		UUID entityUUID = entity.getUUID();
-		AZ_CORE_ASSERT(_data->entityInstances.find(entityUUID) != _data->entityInstances.end(), "UNknown entity");
-
-		Ref<ScriptInstance> instance = _data->entityInstances[entityUUID];
-		instance->invokeOnUpdate((float)ts);
+		if (_data->entityInstances.find(entityUUID) != _data->entityInstances.end())
+		{
+			Ref<ScriptInstance> instance = _data->entityInstances[entityUUID];
+			instance->invokeOnUpdate((float)ts);
+		}
+		else
+		{
+			AZ_CORE_ERROR("Could not find ScriptInstance for entity {}", entityUUID);
+		}
 	}
 
 	Scene* ScriptEngine::getSceneContext()
