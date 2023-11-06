@@ -13,6 +13,7 @@ namespace Azteck
 
 	private:
 		std::filesystem::path _currentDirectory;
+		std::filesystem::path _baseDirectory;
 
 		Ref<Texture2D> _directoryIcon;
 		Ref<Texture2D> _fileIcon;

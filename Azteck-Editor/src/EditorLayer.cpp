@@ -50,8 +50,12 @@ namespace Azteck
 		auto commandLineArgs = Application::getInstance().getSpecification().args;
 		if (commandLineArgs.count > 1)
 		{
-			auto sceneFilePath = commandLineArgs[1];
-			openScene(sceneFilePath);
+			auto projectFilePath = commandLineArgs[1];
+			openProject(projectFilePath);
+		}
+		else
+		{
+			newProject();
 		}
 	}
 
@@ -287,6 +291,26 @@ namespace Azteck
 		Renderer2D::endScene();
 	}
 
+	void EditorLayer::newProject()
+	{
+		Project::create();
+	}
+
+	void EditorLayer::openProject(const std::filesystem::path& path)
+	{
+		if (Project::load(path))
+		{
+			auto startScenePath = Project::getAssetFileSystemPath(Project::getActive()->getConfig().startScenePath);
+			openScene(startScenePath);
+
+			_contentBrowserPanel = createScope<ContentBrowserPanel>();
+		}
+	}
+
+	void EditorLayer::saveProject()
+	{
+	}
+
 	void EditorLayer::newScene()
 	{
 		_editorScene = createRef<Scene>();
@@ -411,7 +435,7 @@ namespace Azteck
 
 
 		_sceneHierarchyPanel.onImGuiRender();
-		_contentBrowserPanel.onImGuiRender();
+		_contentBrowserPanel->onImGuiRender();
 
 		uiMenubar();
 		uiStats();

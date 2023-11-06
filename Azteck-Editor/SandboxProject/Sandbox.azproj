@@ -1,0 +1,5 @@
+Project:
+  Name: Sandbox
+  StartScene: "scenes/physics.yaml"
+  AssetDirectory: "assets"
+  ScriptModulePath: "scripts/binaries/Sandbox.dll"

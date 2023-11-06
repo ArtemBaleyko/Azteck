@@ -293,7 +293,7 @@ namespace Azteck
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 				{
 					const wchar_t* path = (const wchar_t*)payload->Data;
-					std::filesystem::path texturePath = std::filesystem::path("assets") / path;
+					std::filesystem::path texturePath(path);
 					
 					Ref<Texture2D> texture = Texture2D::create(texturePath.string());
 					if (texture->isLoaded())

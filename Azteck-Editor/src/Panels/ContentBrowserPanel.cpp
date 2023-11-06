@@ -1,14 +1,15 @@
 #include "azpch.h"
 #include "ContentBrowserPanel.h"
 
+#include "Azteck/Project/Project.h"
+
 #include <imgui/imgui.h>
 
 namespace Azteck {
-	static const std::filesystem::path ASSETS_DIRECTORY = "assets";
-
 	ContentBrowserPanel::ContentBrowserPanel()
-		: _currentDirectory(ASSETS_DIRECTORY)
 	{
+		_baseDirectory = Project::getAssetDirectory();
+		_currentDirectory = _baseDirectory;
 		_directoryIcon = Texture2D::create("resources/icons/ContentBrowser/DirectoryIcon.png");
 		_fileIcon = Texture2D::create("resources/icons/ContentBrowser/FileIcon.png");
 	}
@@ -17,7 +18,7 @@ namespace Azteck {
 	{
 		ImGui::Begin("Content Browser");
 
-		if (_currentDirectory != std::filesystem::path(ASSETS_DIRECTORY))
+		if (_currentDirectory != _baseDirectory)
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -49,8 +50,7 @@ namespace Azteck {
 
 			if (ImGui::BeginDragDropSource())
 			{
-				auto relativePath = std::filesystem::relative(path, ASSETS_DIRECTORY);
-				const wchar_t* itemPath = relativePath.c_str();
+				const wchar_t* itemPath = path.c_str();
 				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 				ImGui::EndDragDropSource();
 			}

@@ -40,7 +40,7 @@ Entities:
     SpriteRendererComponent:
       Color: [0.99613899, 0.857679546, 0.0269226599, 1]
       TilingFactor: 5.80000019
-      TexturePath: assets\textures\checkerboard.png
+      TexturePath: textures\checkerboard.png
     Rigidbody2DComponent:
       BodyType: Dynamic
       FixedRotation: false

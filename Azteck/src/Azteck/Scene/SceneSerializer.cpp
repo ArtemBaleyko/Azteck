@@ -6,6 +6,8 @@
 #include "Azteck/Scripting/ScriptEngine.h"
 #include "Azteck/Core/UUID.h"
 
+#include "Azteck/Project/Project.h"
+
 #define YAML_CPP_STATIC_DEFINE
 #include <yaml-cpp/yaml.h>
 
@@ -329,7 +331,8 @@ namespace Azteck
 				if (spriteRenderComponent["TexturePath"])
 				{
 					std::string texturePath = spriteRenderComponent["TexturePath"].as<std::string>();
-					src.texture = Texture2D::create(texturePath);
+					auto path = Project::getAssetFileSystemPath(texturePath);
+					src.texture = Texture2D::create(path.string());
 				}
 			}
 

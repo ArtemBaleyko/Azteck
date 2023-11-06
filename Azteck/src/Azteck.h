@@ -21,6 +21,8 @@
 #include "Azteck/Scene/ScriptableEntity.h"
 #include "Azteck/Scene/Components.h"
 
+#include "Azteck/Project/Project.h"
+
 // -----Renderer-----------------
 #include "Azteck/Renderer/Renderer.h"
 #include "Azteck/Renderer/Renderer2D.h"

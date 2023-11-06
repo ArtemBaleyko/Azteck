@@ -33,6 +33,10 @@ namespace Azteck
 
 		void onOverlayRender();
 
+		void newProject();
+		void openProject(const std::filesystem::path& path);
+		void saveProject();
+
 		void newScene();
 		void openScene();
 		void openScene(const std::filesystem::path& filepath);
@@ -77,7 +81,7 @@ namespace Azteck
 
 		//Panels
 		SceneHierarchyPanel _sceneHierarchyPanel;
-		ContentBrowserPanel _contentBrowserPanel;
+		Scope<ContentBrowserPanel> _contentBrowserPanel;
 
 		enum class SceneState
 		{
