@@ -197,6 +197,8 @@ namespace Azteck
 			default:
 				break;
 		}
+
+		return false;
 	}
 
 	bool EditorLayer::onMouseButtonPressed(MouseButtonPressedEvent& e)

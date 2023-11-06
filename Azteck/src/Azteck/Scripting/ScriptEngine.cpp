@@ -14,6 +14,8 @@
 
 #include "Azteck/Core/Application.h"
 #include "Azteck/Core/Timer.h"
+#include "Azteck/Core/Buffers.h"
+#include "Azteck/Core/FileSystem.h"
 
 namespace Azteck 
 {
@@ -40,43 +42,13 @@ namespace Azteck
 
 	namespace Utils 
 	{
-		// TODO: move to FileSystem class
-		static char* readBytes(const std::filesystem::path& filepath, uint32_t* outSize)
-		{
-			std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
-
-			if (!stream)
-			{
-				// Failed to open the file
-				return nullptr; 
-			}
-
-			std::streampos end = stream.tellg();
-			stream.seekg(0, std::ios::beg);
-			uint64_t size = end - stream.tellg();
-
-			if (size == 0)
-			{
-				// File is empty
-				return nullptr;
-			}
-
-			char* buffer = new char[size];
-			stream.read((char*)buffer, size);
-			stream.close();
-
-			*outSize = (uint32_t)size;
-			return buffer;
-		}
-
 		static MonoAssembly* loadMonoAssembly(const std::filesystem::path& assemblyPath, bool loadPDB = false)
 		{
-			uint32_t fileSize = 0;
-			char* fileData = readBytes(assemblyPath, &fileSize);
+			ScopedBuffer fileData = FileSystem::readFileBinary(assemblyPath);
 
 			// NOTE: We can't use this image for anything other than loading the assembly because this image doesn't have a reference to the assembly
 			MonoImageOpenStatus status;
-			MonoImage* image = mono_image_open_from_data_full(fileData, fileSize, 1, &status, 0);
+			MonoImage* image = mono_image_open_from_data_full(fileData.as<char>(), fileData.size(), 1, &status, 0);
 
 			if (status != MONO_IMAGE_OK)
 			{
@@ -93,20 +65,16 @@ namespace Azteck
 
 				if (std::filesystem::exists(pdbPath))
 				{
-					uint32_t pdbFileSize = 0;
-					char* pdbFileData = readBytes(pdbPath, &pdbFileSize);
-					mono_debug_open_image_from_memory(image, (const mono_byte*)pdbFileData, pdbFileSize);
+					ScopedBuffer pdbFileData = FileSystem::readFileBinary(pdbPath);
+					mono_debug_open_image_from_memory(image, pdbFileData.as<const mono_byte>(), pdbFileData.size());
 
 					AZ_CORE_INFO("Loaded PDB {}", pdbPath);
-					delete[] pdbFileData;
 				}
 			}
 
 			std::string pathString = assemblyPath.string();
 			MonoAssembly* assembly = mono_assembly_load_from_full(image, pathString.c_str(), &status, 0);
 			mono_image_close(image);
-
-			delete[] fileData;
 
 			return assembly;
 		}
