@@ -152,6 +152,7 @@ namespace Azteck
 
 	void ScriptGlue::registerComponents()
 	{
+		_entityHasComponentFuncs.clear();
 		registerComponent(AllComponents{});
 	}
 

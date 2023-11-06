@@ -151,6 +151,8 @@ namespace Azteck
 		static void loadAssembly(const std::filesystem::path& filepath);
 		static void loadAppAssembly(const std::filesystem::path& filepath);
 
+		static void reloadAssembly();
+
 		static void onRuntimeStart(Scene* scene);
 		static void onRuntimeStop();
 

@@ -43,6 +43,7 @@ project "Azteck"
 		"%{IncludeDir.VulkanSDK}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
+		"%{IncludeDir.filewatch}"
 	}
 
 	links

@@ -8,6 +8,11 @@
 #include "mono/metadata/object.h"
 #include "mono/metadata/tabledefs.h"
 
+#include "FileWatch.h"
+
+#include "Azteck/Core/Application.h"
+#include "Azteck/Core/Timer.h"
+
 namespace Azteck 
 {
 	static std::unordered_map<std::string, ScriptFieldType> scriptFieldTypeMap =
@@ -156,11 +161,17 @@ namespace Azteck
 		MonoAssembly* appAssembly = nullptr;
 		MonoImage* appAssemblyImage = nullptr;
 
+		std::filesystem::path coreAssemblyFilepath;
+		std::filesystem::path appAssemblyFilepath;
+
 		ScriptClass entityClass;
 
 		std::unordered_map<std::string, Ref<ScriptClass>> entityClasses;
 		std::unordered_map<UUID, Ref<ScriptInstance>> entityInstances;
 		std::unordered_map<UUID, ScriptFieldMap> entityScriptFields;
+
+		Scope<filewatch::FileWatch<std::string>> appAssemblyFileWatcher;
+		bool assemblyReloadPending = false;
 
 		// Runtime
 		Scene* SceneContext = nullptr;
@@ -168,18 +179,35 @@ namespace Azteck
 
 	static ScriptEngineData* _data = nullptr;
 
+	static void onAppAssemblyFileSystemEvent(const std::string& path, const filewatch::Event change_type)
+	{
+		if (!_data->assemblyReloadPending && change_type == filewatch::Event::modified)
+		{
+			_data->assemblyReloadPending = true;
+
+			Application::getInstance().submitToMainThread([path]()
+				{
+					_data->appAssemblyFileWatcher.reset();
+					ScriptEngine::reloadAssembly();
+
+					AZ_CORE_TRACE("{} has been reloaded", path);
+				});
+		}
+	}
+
 	void ScriptEngine::init()
 	{
 		_data = new ScriptEngineData();
 
 		initMono();
+		ScriptGlue::registerFunctions();
+
 		loadAssembly("resources/scripts/Azteck-ScriptCore.dll");
 		loadAppAssembly("SandboxProject/assets/scripts/binaries/Sandbox.dll");
 
 		loadAssemblyClasses();
 
 		ScriptGlue::registerComponents();
-		ScriptGlue::registerFunctions();
 
 		// Retrieve and instantiate class (with constructor)
 		_data->entityClass = ScriptClass("Azteck", "Entity", true);
@@ -204,10 +232,12 @@ namespace Azteck
 
 	void ScriptEngine::shutdownMono()
 	{
-		// mono_domain_unload(_data->AppDomain);
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_unload(_data->appDomain);
 		_data->appDomain = nullptr;
 
-		// mono_jit_cleanup(_data->RootDomain);
+		mono_jit_cleanup(_data->rootDomain);
 		_data->rootDomain = nullptr;
 	}
 
@@ -216,14 +246,35 @@ namespace Azteck
 		_data->appDomain = mono_domain_create_appdomain("AzteckScriptRuntime", nullptr);
 		mono_domain_set(_data->appDomain, true);
 
+		_data->coreAssemblyFilepath = filepath;
 		_data->coreAssembly = Utils::loadMonoAssembly(filepath);
 		_data->coreAssemblyImage = mono_assembly_get_image(_data->coreAssembly);
 	}
 
 	void ScriptEngine::loadAppAssembly(const std::filesystem::path& filepath)
 	{
+		_data->appAssemblyFilepath = filepath;
 		_data->appAssembly = Utils::loadMonoAssembly(filepath);
 		_data->appAssemblyImage = mono_assembly_get_image(_data->appAssembly);
+
+		_data->appAssemblyFileWatcher = createScope<filewatch::FileWatch<std::string>>(filepath.string(), onAppAssemblyFileSystemEvent);
+		_data->assemblyReloadPending = false;
+	}
+
+	void ScriptEngine::reloadAssembly()
+	{
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_unload(_data->appDomain);
+
+		loadAssembly(_data->coreAssemblyFilepath);
+		loadAppAssembly(_data->appAssemblyFilepath);
+		loadAssemblyClasses();
+
+		ScriptGlue::registerComponents();
+
+		// Retrieve and instantiate class
+		_data->entityClass = ScriptClass("Azteck", "Entity", true);
 	}
 
 	void ScriptEngine::onRuntimeStart(Scene* scene)

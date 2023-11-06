@@ -9,6 +9,7 @@
 #include "Azteck/Scene/SceneSerializer.h"
 #include "Azteck/Utils/PlatformUtils.h"
 #include "Azteck/Math/Math.h"
+#include "Azteck/Scripting/ScriptEngine.h"
 
 namespace Azteck
 {
@@ -175,8 +176,11 @@ namespace Azteck
 			}
 			case Key::R:
 			{
-				if (!ImGuizmo::IsUsing() && !_activeScene->isRunning())
+				if (isControl)
+					ScriptEngine::reloadAssembly();
+				else if (!ImGuizmo::IsUsing() && !_activeScene->isRunning())
 					_gizmoType = ImGuizmo::OPERATION::SCALE;
+
 				break;
 			}
 			case Key::Delete:
@@ -495,7 +499,17 @@ namespace Azteck
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Exit")) Application::getInstance().close();
+				if (ImGui::MenuItem("Exit")) 
+					Application::getInstance().close();
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Script"))
+			{
+				if (ImGui::MenuItem("Reload assembly", "Ctrl+R"))
+					ScriptEngine::reloadAssembly();
+
 				ImGui::EndMenu();
 			}
 

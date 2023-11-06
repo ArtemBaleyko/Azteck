@@ -55,11 +55,15 @@ namespace Azteck
 		inline static Application& getInstance() { return *_instance; }
 		inline const ApplicationSpecification& getSpecification() const { return _spec; }
 
+		void submitToMainThread(const std::function<void()>& function);
+
 	private:
 		void run();
 
 		bool onWindowClose(WindowCloseEvent& e);
 		bool onWindowResized(WindowResizedEvent& e);
+
+		void executeMainThreadQueue();
 
 	private:
 		ApplicationSpecification _spec;
@@ -71,6 +75,9 @@ namespace Azteck
 		bool _isMinimised;
 		bool _isRunning;
 		float _lastFrameTime;
+
+		std::vector<std::function<void()>> _mainThreadQueue;
+		std::mutex _mainThreadQueueMutex;
 
 	private:
 		static Application* _instance;

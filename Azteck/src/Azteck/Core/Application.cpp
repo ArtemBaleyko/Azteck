@@ -108,6 +108,23 @@ namespace Azteck
 		return false;
 	}
 
+	void Application::executeMainThreadQueue()
+	{
+		std::scoped_lock<std::mutex> lock(_mainThreadQueueMutex);
+
+		for (auto& func : _mainThreadQueue)
+			func();
+
+		_mainThreadQueue.clear();
+	}
+
+	void Application::submitToMainThread(const std::function<void()>& function)
+	{
+		std::scoped_lock<std::mutex> lock(_mainThreadQueueMutex);
+
+		_mainThreadQueue.emplace_back(function);
+	}
+
 	void Application::run()
 	{
 		AZ_PROFILE_FUNCTION();
@@ -119,6 +136,8 @@ namespace Azteck
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - _lastFrameTime;
 			_lastFrameTime = time;
+
+			executeMainThreadQueue();
 
 			if (!_isMinimised)
 			{
