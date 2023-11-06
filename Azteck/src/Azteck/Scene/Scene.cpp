@@ -66,8 +66,8 @@ namespace Azteck
 
 	void Scene::destroyEntity(Entity entity)
 	{
-		_registry.destroy(entity);
 		_entityMap.erase(entity.getUUID());
+		_registry.destroy(entity);
 	}
 
 	void Scene::onRuntimeStart()

@@ -192,10 +192,13 @@ namespace Azteck
 			}
 			case Key::Delete:
 			{
-				if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
+				if (Application::getInstance().getImGuiLayer()->getActiveWidgetID() == 0)
 				{
-					_activeScene->destroyEntity(selectedEntity);
-					_sceneHierarchyPanel.clearSelection();
+					if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
+					{
+						_activeScene->destroyEntity(selectedEntity);
+						_sceneHierarchyPanel.clearSelection();
+					}
 				}
 				break;
 			}
@@ -311,6 +314,8 @@ namespace Azteck
 	{
 		if (Project::load(path))
 		{
+			ScriptEngine::init();
+
 			auto startScenePath = Project::getAssetFileSystemPath(Project::getActive()->getConfig().startScenePath);
 			openScene(startScenePath);
 

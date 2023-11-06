@@ -33,7 +33,6 @@ namespace Azteck
 		_window->setEventCallback(AZ_BIND_EVENT_FN(Application::onEvent));
 
 		Renderer::init();
-		ScriptEngine::init();
 
 		_imGuiLayer = new ImGuiLayer;
 		pushOverlay(_imGuiLayer);

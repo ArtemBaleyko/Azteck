@@ -25,6 +25,8 @@ namespace Azteck
 
 		void setDarkThemeColors();
 
+		uint32_t getActiveWidgetID() const;
+
 	private:
 		bool _blockEvents;
 	};

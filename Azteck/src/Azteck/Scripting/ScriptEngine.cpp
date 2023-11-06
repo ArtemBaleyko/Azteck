@@ -16,6 +16,7 @@
 #include "Azteck/Core/Timer.h"
 #include "Azteck/Core/Buffers.h"
 #include "Azteck/Core/FileSystem.h"
+#include "Azteck/Project/Project.h"
 
 namespace Azteck 
 {
@@ -199,7 +200,9 @@ namespace Azteck
 			return;
 		}
 
-		if (!loadAppAssembly("SandboxProject/assets/scripts/binaries/Sandbox.dll"))
+		auto scriptModulePath = Project::getAssetDirectory() / Project::getActive()->getConfig().scriptModulePath;
+
+		if (!loadAppAssembly(scriptModulePath))
 		{
 			AZ_CORE_ERROR("[ScriptEngine] Could not load app assembly");
 			return;
