@@ -7,6 +7,7 @@
 #include "ScriptableEntity.h"
 
 #include "Azteck/Scripting/ScriptEngine.h"
+#include "Azteck/Physics/Physics2D.h"
 
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
@@ -16,21 +17,6 @@
 
 namespace Azteck
 {
-	static b2BodyType toBox2DBodyType(Rigidbody2DComponent::BodyType type)
-	{
-		switch (type)
-		{
-			case Azteck::Rigidbody2DComponent::BodyType::Static: return b2BodyType::b2_staticBody;
-			case Azteck::Rigidbody2DComponent::BodyType::Dynamic: return b2BodyType::b2_dynamicBody;
-			case Azteck::Rigidbody2DComponent::BodyType::Kinematic: return b2BodyType::b2_kinematicBody;
-			default:
-				break;
-		}
-
-		AZ_CORE_ASSERT(false, "Box2D doesn`t support provided body type - {0}", (int)type);
-		return b2BodyType::b2_staticBody;
-	}
-
 	Scene::Scene()
 		: _viewportWidth(0)
 		, _viewportHeight(0)
@@ -232,12 +218,14 @@ namespace Azteck
 		copyComponentIfExists<Component...>(dst, src);
 	}
 
-	void Scene::duplicateEntity(Entity entity)
+	Entity Scene::duplicateEntity(Entity entity)
 	{
-		const std::string& name = entity.getName();
+		std::string name = entity.getName();
 		Entity newEntity = createEntity(name);
 
 		copyComponentIfExists(AllComponents{}, newEntity, entity);
+
+		return newEntity;
 	}
 
 	Entity Scene::getEntityByUUID(UUID uuid)
@@ -300,7 +288,7 @@ namespace Azteck
 			auto& rb2d = entity.getComponent<Rigidbody2DComponent>();
 
 			b2BodyDef bodyDef;
-			bodyDef.type = toBox2DBodyType(rb2d.type);
+			bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.type);
 			bodyDef.fixedRotation = rb2d.fixedRotation;
 			bodyDef.position.Set(transform.translation.x, transform.translation.y);
 			bodyDef.angle = transform.rotation.z;

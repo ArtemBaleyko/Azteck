@@ -44,7 +44,7 @@ namespace Azteck
 
 		Entity getPrimaryCamera();
 
-		void duplicateEntity(Entity entity);
+		Entity duplicateEntity(Entity entity);
 
 		Entity getEntityByUUID(UUID uuid);
 		Entity getEntityByName(std::string_view name);

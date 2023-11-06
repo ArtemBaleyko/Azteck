@@ -269,7 +269,10 @@ namespace Azteck
 			return;
 
 		if (Entity selectedEntity = _sceneHierarchyPanel.getSelectedEntity())
-			_editorScene->duplicateEntity(selectedEntity);
+		{
+			Entity newEntity = _editorScene->duplicateEntity(selectedEntity);
+			_sceneHierarchyPanel.setSelectedEntity(newEntity);
+		}
 	}
 
 	void EditorLayer::onOverlayRender()
