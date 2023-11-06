@@ -31,6 +31,11 @@ namespace Azteck
 		void onSimulationStop();
 
 		bool isRunning() const { return _isRunning; }
+		bool isPaused() const { return _isPaused; }
+
+		void setPaused(bool paused) { _isPaused = paused; }
+
+		void step(int frames = 1);
 
 		void onUpdateRuntime(Timestep ts);
 		void onUpdateSimulation(Timestep ts, EditorCamera& camera);
@@ -74,6 +79,9 @@ namespace Azteck
 		b2World* _physicsWorld = nullptr;
 
 		bool _isRunning;
+		bool _isPaused;
+
+		int _stepFrames;
 
 		std::unordered_map<UUID, entt::entity> _entityMap;
 	};

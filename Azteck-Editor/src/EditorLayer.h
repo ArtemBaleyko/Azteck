@@ -90,5 +90,7 @@ namespace Azteck
 		Ref<Texture2D> _iconPlay;
 		Ref<Texture2D> _iconStop;
 		Ref<Texture2D> _iconSimulate;
+		Ref<Texture2D> _iconPause;
+		Ref<Texture2D> _iconStep;
 	};
 }

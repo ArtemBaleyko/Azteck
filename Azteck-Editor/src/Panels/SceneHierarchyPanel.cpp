@@ -243,8 +243,6 @@ namespace Azteck
 			}
 			else if (scriptClassExists)
 			{
-
-				AZ_CORE_WARN("ClassName: {}, Exists: {}", component.className, scriptClassExists);
 				Ref<ScriptClass> entityClass = ScriptEngine::getEntityClass(component.className);
 				const auto& fields = entityClass->getFields();
 

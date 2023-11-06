@@ -35,6 +35,8 @@ namespace Azteck
 		: _viewportWidth(0)
 		, _viewportHeight(0)
 		, _isRunning(false)
+		, _isPaused(false)
+		, _stepFrames(0)
 	{
 	}
 
@@ -102,11 +104,19 @@ namespace Azteck
 		onPhysics2DStop();
 	}
 
+	void Scene::step(int frames)
+	{
+		_stepFrames = frames;
+	}
+
 	void Scene::onUpdateRuntime(Timestep ts)
 	{
-		onUpdateScriptComponents(ts);
-		onUpdateNativeScriptComponents(ts);
-		onUpdatePhysics(ts);
+		if (!_isPaused || _stepFrames-- > 0)
+		{
+			onUpdateScriptComponents(ts);
+			onUpdateNativeScriptComponents(ts);
+			onUpdatePhysics(ts);
+		}
 
 		Entity primaryCameraEntity = getPrimaryCamera();
 
@@ -141,7 +151,9 @@ namespace Azteck
 
 	void Scene::onUpdateSimulation(Timestep ts, EditorCamera& camera)
 	{
-		onUpdatePhysics(ts);
+		if (!_isPaused || _stepFrames-- > 0)
+			onUpdatePhysics(ts);
+
 		renderScene(camera);
 	}
 

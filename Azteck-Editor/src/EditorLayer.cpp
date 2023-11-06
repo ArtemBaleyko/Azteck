@@ -31,6 +31,8 @@ namespace Azteck
 		_iconPlay = Texture2D::create("resources/icons/PlayButton.png");
 		_iconStop = Texture2D::create("resources/icons/StopButton.png");
 		_iconSimulate = Texture2D::create("resources/icons/SimulateButton.png");
+		_iconPause = Texture2D::create("resources/icons/PauseButton.png");
+		_iconStep = Texture2D::create("resources/icons/StepButton.png");
 
 		FrameBufferSpecification spec;
 		spec.width = 1280;
@@ -444,12 +446,11 @@ namespace Azteck
 		const bool isEditOrSimulateState = _sceneState == SceneState::Edit || _sceneState == SceneState::Simulate;
 		const bool isEditOrPlayState = _sceneState == SceneState::Edit || _sceneState == SceneState::Play;
 
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+		if (isEditOrPlayState)
 		{
 			Ref<Texture2D> icon = isEditOrSimulateState ? _iconPlay : _iconStop;
-
-			// Center button
-			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-
 			if (ImGui::ImageButton((ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
 			{
 				if (isEditOrSimulateState)
@@ -459,9 +460,11 @@ namespace Azteck
 			}
 		}
 
-		ImGui::SameLine();
-
+		if (isEditOrSimulateState)
 		{
+			if (isEditOrPlayState)
+				ImGui::SameLine();
+
 			Ref<Texture2D> icon = isEditOrPlayState ? _iconSimulate : _iconStop;
 			if (ImGui::ImageButton((ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
 			{
@@ -469,6 +472,31 @@ namespace Azteck
 					onSceneSimulate();
 				else if (_sceneState == SceneState::Simulate)
 					onSceneStop();
+			}
+		}
+
+		if (_sceneState != SceneState::Edit)
+		{
+			bool isPaused = _activeScene->isPaused();
+			ImGui::SameLine();
+			{
+				Ref<Texture2D> icon = isPaused ? _iconPlay : _iconPause;
+				if (ImGui::ImageButton((ImTextureID)icon->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+				{
+					_activeScene->setPaused(!isPaused);
+				}
+			}
+
+			// Step button
+			if (isPaused)
+			{
+				ImGui::SameLine();
+				{
+					if (ImGui::ImageButton((ImTextureID)_iconStep->getRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) && toolbarEnabled)
+					{
+						_activeScene->step();
+					}
+				}
 			}
 		}
 
