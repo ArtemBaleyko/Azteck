@@ -331,8 +331,8 @@ namespace Azteck
 				if (spriteRenderComponent["TexturePath"])
 				{
 					std::string texturePath = spriteRenderComponent["TexturePath"].as<std::string>();
-					auto path = Project::getAssetFileSystemPath(texturePath);
-					src.texture = Texture2D::create(path.string());
+					//auto path = Project::getAssetFileSystemPath(texturePath);
+					src.texture = Texture2D::create(texturePath);
 				}
 			}
 
@@ -371,6 +371,16 @@ namespace Azteck
 				cc2d.friction = circleCollider2DComponent["Friction"].as<float>();
 				cc2d.restitution = circleCollider2DComponent["Restitution"].as<float>();
 				cc2d.restitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+			}
+
+			if (auto textComponent = entity["TextComponent"])
+			{
+				auto& tc = deserializedEntity.addComponent<TextComponent>();
+				tc.textString = textComponent["TextString"].as<std::string>();
+				// tc.fontAsset // TODO
+				tc.color = textComponent["Color"].as<glm::vec4>();
+				tc.kerning = textComponent["Kerning"].as<float>();
+				tc.lineSpacing = textComponent["LineSpacing"].as<float>();
 			}
 		}
 
@@ -564,6 +574,21 @@ namespace Azteck
 			out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.friction;
 			out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.restitution;
 			out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2dComponent.restitutionThreshold;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.hasComponent<TextComponent>())
+		{
+			out << YAML::Key << "TextComponent";
+			out << YAML::BeginMap;
+
+			auto& textComponent = entity.getComponent<TextComponent>();
+			out << YAML::Key << "TextString" << YAML::Value << textComponent.textString;
+			// TODO: textComponent.FontAsset
+			out << YAML::Key << "Color" << YAML::Value << textComponent.color;
+			out << YAML::Key << "Kerning" << YAML::Value << textComponent.kerning;
+			out << YAML::Key << "LineSpacing" << YAML::Value << textComponent.lineSpacing;
 
 			out << YAML::EndMap;
 		}

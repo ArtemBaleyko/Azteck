@@ -11,8 +11,12 @@
 #include "Azteck/Math/Math.h"
 #include "Azteck/Scripting/ScriptEngine.h"
 
+#include "Azteck/Renderer/Font.h"
+
 namespace Azteck
 {
+	static Ref<Font> font;
+
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 		, _isViewportFocused(false)
@@ -21,7 +25,7 @@ namespace Azteck
 		, _lastGizmoType(ImGuizmo::OPERATION::TRANSLATE)
 		, _showPhysicsColliders(false)
 	{
-
+		font = Font::getDefault();
 	}
 
 	void EditorLayer::onAttach()
@@ -741,8 +745,9 @@ namespace Azteck
 			glm::vec3 translation = tc.translation + glm::vec3(bc2d.offset, 0.001f);
 			glm::vec3 scale = tc.scale * glm::vec3(bc2d.size * 2.0f, 1.0f);
 
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.translation)
 				* glm::rotate(glm::mat4(1.0f), tc.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+				* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.offset, 0.001f))
 				* glm::scale(glm::mat4(1.0f), scale);
 
 			Renderer2D::drawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));

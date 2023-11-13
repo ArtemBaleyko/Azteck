@@ -8,6 +8,7 @@
 
 #include "Azteck/Scene/SceneCamera.h"
 #include "Azteck/Renderer/Texture.h"
+#include "Azteck/Renderer/Font.h"
 #include "Azteck/Core/UUID.h"
 
 namespace Azteck
@@ -168,6 +169,15 @@ namespace Azteck
 		void* runtimeFixture = nullptr;
 	};
 
+	struct TextComponent
+	{
+		std::string textString;
+		Ref<Font> fontAsset = Font::getDefault();
+		glm::vec4 color{ 1.0f };
+		float kerning = 0.0f;
+		float lineSpacing = 0.0f;
+	};
+
 	template<typename... Component>
 	struct ComponentGroup
 	{
@@ -177,5 +187,5 @@ namespace Azteck
 		ComponentGroup<TransformComponent, SpriteRendererComponent,
 		CircleRendererComponent, CameraComponent, ScriptComponent,
 		NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent,
-		CircleCollider2DComponent>;
+		CircleCollider2DComponent, TextComponent>;
 }

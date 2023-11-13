@@ -130,6 +130,15 @@ namespace Azteck
 					Renderer2D::drawCircle(transform.getTransform(), circle.color, circle.thickness, circle.fade, static_cast<int>(entity));
 				}
 			}
+			{
+				auto view = getAllEntitiesWith<TransformComponent, TextComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, text] = view.get<TransformComponent, TextComponent>(entity);
+
+					Renderer2D::drawString(text.textString, transform.getTransform(), text, static_cast<int>(entity));
+				}
+			}
 
 			Renderer2D::endScene();
 		}
@@ -301,7 +310,7 @@ namespace Azteck
 				auto& bc2d = entity.getComponent<BoxCollider2DComponent>();
 
 				b2PolygonShape shape;
-				shape.SetAsBox(bc2d.size.x * transform.scale.x, bc2d.size.y * transform.scale.y);
+				shape.SetAsBox(bc2d.size.x * transform.scale.x, bc2d.size.y * transform.scale.y, b2Vec2(bc2d.offset.x, bc2d.offset.y), 0.0f);
 
 				b2FixtureDef fixtureDef;
 				fixtureDef.shape = &shape;
@@ -415,6 +424,15 @@ namespace Azteck
 			}
 		}
 
+		{
+			auto view = getAllEntitiesWith<TransformComponent, TextComponent>();
+			for (auto entity : view)
+			{
+				auto [transform, text] = view.get<TransformComponent, TextComponent>(entity);
+				Renderer2D::drawString(text.textString, transform.getTransform(), text, static_cast<int>(entity));
+			}
+		}
+
 		Renderer2D::endScene();
 	}
 
@@ -474,6 +492,11 @@ namespace Azteck
 
 	template<>
 	void Scene::onComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+	{
+	}
+
+	template<>
+	void Scene::onComponentAdded<TextComponent>(Entity entity, TextComponent& component)
 	{
 	}
 }

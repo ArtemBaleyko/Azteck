@@ -5,6 +5,34 @@
 
 namespace Azteck
 {
+	namespace Utils {
+
+		static GLenum AzteckImageFormatToGLDataFormat(ImageFormat format)
+		{
+			switch (format)
+			{
+				case ImageFormat::RGB8:  return GL_RGB;
+				case ImageFormat::RGBA8: return GL_RGBA;
+			}
+
+			AZ_CORE_ASSERT(false, "Unkown format");
+			return 0;
+		}
+
+		static GLenum AzteckImageFormatToGLInternalFormat(ImageFormat format)
+		{
+			switch (format)
+			{
+				case ImageFormat::RGB8:  return GL_RGB8;
+				case ImageFormat::RGBA8: return GL_RGBA8;
+			}
+
+			AZ_CORE_ASSERT(false, "Unkown format");
+			return 0;
+		}
+
+	}
+
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		: _path(path)
 		, _internalFormat(0)
@@ -59,13 +87,15 @@ namespace Azteck
 		}
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
-		: _width(width)
-		, _height(height)
-		, _internalFormat(GL_RGBA8)
-		, _dataFormat(GL_RGBA)
+	OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification)
+		: _spec(specification)
+		, _width(_spec.width)
+		, _height(_spec.height)
 	{
 		AZ_PROFILE_FUNCTION();
+
+		_internalFormat = Utils::AzteckImageFormatToGLInternalFormat(_spec.format);
+		_dataFormat = Utils::AzteckImageFormatToGLDataFormat(_spec.format);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &_renderedId);
 		glTextureStorage2D(_renderedId, 1, _internalFormat, _width, _height);

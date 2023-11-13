@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "MSDFData.h"
+
 namespace Azteck
 {
 	struct QuadVertex
@@ -44,6 +46,18 @@ namespace Azteck
 		int entityID = -1;
 	};
 
+	struct TextVertex
+	{
+		glm::vec3 position;
+		glm::vec4 color;
+		glm::vec2 texCoord;
+
+		// TODO: bg color for outline/bg
+
+		// Editor-only
+		int entityID = -1;
+	};
+
 	struct Renderer2DData
 	{
 		static const uint32_t maxQuads = 10000;
@@ -71,13 +85,21 @@ namespace Azteck
 		uint32_t lineVertexCount = 0;
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
-
 		float lineWidth = 1.0f;
+
+		Ref<VertexArray> textVertexArray;
+		Ref<VertexBuffer> textVertexBuffer;
+		Ref<Shader> textShader;
+		uint32_t textIndexCount = 0;
+		TextVertex* textVertexBufferBase = nullptr;
+		TextVertex* textVertexBufferPtr = nullptr;
 
 		Ref<Texture2D> whiteTexture;
 
 		std::array<Ref<Texture2D>, maxTextureSlots> textureSlots;
 		uint32_t textureSlotIndex = 1;
+
+		Ref<Texture2D> fontAtlasTexture;
 
 		const glm::vec4 quadVertexPositions[4] = {
 			{ -0.5f, -0.5f, 0.0f, 1.0f },
@@ -113,8 +135,9 @@ namespace Azteck
 		initQuads();
 		initCircles();
 		initLines();
+		initText();
 
-		_data.whiteTexture = Texture2D::create(1, 1);
+		_data.whiteTexture = Texture2D::create(TextureSpecification{});
 		uint32_t whiteTextureData = 0xffffffff;
 		_data.whiteTexture->setData(&whiteTextureData, sizeof(whiteTextureData));
 
@@ -216,6 +239,18 @@ namespace Azteck
 
 			_data.stats.drawCalls++;
 		}
+
+		if (_data.textIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)_data.textVertexBufferPtr - (uint8_t*)_data.textVertexBufferBase);
+			_data.textVertexBuffer->setData(_data.textVertexBufferBase, dataSize);
+
+			_data.fontAtlasTexture->bind(0);
+
+			_data.textShader->bind();
+			RenderCommand::drawIndexed(_data.textVertexArray, _data.textIndexCount);
+			_data.stats.drawCalls++;
+		}
 	}
 
 	void Renderer2D::drawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -272,9 +307,6 @@ namespace Azteck
 	{
 		AZ_PROFILE_FUNCTION();
 
-		// TODO: implement for circles
-		// if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-		// 	NextBatch();
 		constexpr size_t circleVertexCount = 4;
 
 		for (size_t i = 0; i < circleVertexCount; i++)
@@ -339,6 +371,126 @@ namespace Azteck
 			drawQuad(transform, src.texture, src.color, src.tilingFactor, entityID);
 		else
 			drawQuad(transform, src.color, entityID);
+	}
+
+	void Renderer2D::drawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID)
+	{
+		const auto& fontGeometry = font->getMSDFData()->fontGeometry;
+		const auto& metrics = fontGeometry.getMetrics();
+		Ref<Texture2D> fontAtlas = font->getAtlasTexture();
+
+		_data.fontAtlasTexture = fontAtlas;
+
+		double x = 0.0;
+		double y = 0.0;
+
+		const float spaceGlyphAdvance = fontGeometry.getGlyph(' ')->getAdvance();
+
+		const double fsScale = 1.0 / (metrics.ascenderY - metrics.descenderY);
+
+		for (size_t i = 0; i < string.size(); i++)
+		{
+			char character = string[i];
+			if (character == '\r')
+				continue;
+
+			if (character == '\n')
+			{
+				x = 0;
+				y -= fsScale * metrics.lineHeight + textParams.lineSpacing;
+				continue;
+			}
+
+			if (character == ' ')
+			{
+				float advance = spaceGlyphAdvance;
+				if (i < string.size() - 1)
+				{
+					char nextCharacter = string[i + 1];
+					double dAdvance;
+					fontGeometry.getAdvance(dAdvance, character, nextCharacter);
+					advance = (float)dAdvance;
+				}
+
+				x += fsScale * advance + textParams.kerning;
+				continue;
+			}
+
+			if (character == '\t')
+			{
+				x += 4.0f * (fsScale * spaceGlyphAdvance + textParams.kerning);
+				continue;
+			}
+
+			auto glyph = fontGeometry.getGlyph(character);
+
+			if (!glyph)
+				glyph = fontGeometry.getGlyph('?');
+
+			if (!glyph)
+				return;
+
+			double al, ab, ar, at;
+			glyph->getQuadAtlasBounds(al, ab, ar, at);
+			glm::vec2 texCoordMin((float)al, (float)ab);
+			glm::vec2 texCoordMax((float)ar, (float)at);
+
+			double pl, pb, pr, pt;
+			glyph->getQuadPlaneBounds(pl, pb, pr, pt);
+			glm::vec2 quadMin((float)pl, (float)pb);
+			glm::vec2 quadMax((float)pr, (float)pt);
+
+			quadMin *= fsScale, quadMax *= fsScale;
+			quadMin += glm::vec2(x, y);
+			quadMax += glm::vec2(x, y);
+
+			float texelWidth = 1.0f / fontAtlas->getWidth();
+			float texelHeight = 1.0f / fontAtlas->getHeight();
+			texCoordMin *= glm::vec2(texelWidth, texelHeight);
+			texCoordMax *= glm::vec2(texelWidth, texelHeight);
+
+			// render here
+			_data.textVertexBufferPtr->position = transform * glm::vec4(quadMin, 0.0f, 1.0f);
+			_data.textVertexBufferPtr->color = textParams.color;
+			_data.textVertexBufferPtr->texCoord = texCoordMin;
+			_data.textVertexBufferPtr->entityID = entityID; // TODO
+			_data.textVertexBufferPtr++;
+
+			_data.textVertexBufferPtr->position = transform * glm::vec4(quadMin.x, quadMax.y, 0.0f, 1.0f);
+			_data.textVertexBufferPtr->color = textParams.color;
+			_data.textVertexBufferPtr->texCoord = { texCoordMin.x, texCoordMax.y };
+			_data.textVertexBufferPtr->entityID = entityID; // TODO
+			_data.textVertexBufferPtr++;
+
+			_data.textVertexBufferPtr->position = transform * glm::vec4(quadMax, 0.0f, 1.0f);
+			_data.textVertexBufferPtr->color = textParams.color;
+			_data.textVertexBufferPtr->texCoord = texCoordMax;
+			_data.textVertexBufferPtr->entityID = entityID; // TODO
+			_data.textVertexBufferPtr++;
+
+			_data.textVertexBufferPtr->position = transform * glm::vec4(quadMax.x, quadMin.y, 0.0f, 1.0f);
+			_data.textVertexBufferPtr->color = textParams.color;
+			_data.textVertexBufferPtr->texCoord = { texCoordMax.x, texCoordMin.y };
+			_data.textVertexBufferPtr->entityID = entityID; // TODO
+			_data.textVertexBufferPtr++;
+
+			_data.textIndexCount += 6;
+			_data.stats.quadCount++;
+
+			if (i < string.size() - 1)
+			{
+				double advance = glyph->getAdvance();
+				char nextCharacter = string[i + 1];
+				fontGeometry.getAdvance(advance, character, nextCharacter);
+
+				x += fsScale * advance + textParams.kerning;
+			}
+		}
+	}
+
+	void Renderer2D::drawString(const std::string& string, const glm::mat4& transform, const TextComponent& component, int entityID)
+	{
+		drawString(string, component.fontAsset, transform, { component.color, component.kerning, component.lineSpacing }, entityID);
 	}
 
 	float Renderer2D::getLineWidth()
@@ -463,6 +615,9 @@ namespace Azteck
 		_data.lineVertexCount = 0;
 		_data.lineVertexBufferPtr = _data.lineVertexBufferBase;
 
+		_data.textIndexCount = 0;
+		_data.textVertexBufferPtr = _data.textVertexBufferBase;
+
 		_data.textureSlotIndex = 1;
 	}
 
@@ -581,5 +736,41 @@ namespace Azteck
 		_data.lineVertexBufferBase = new LineVertex[_data.maxVertices];
 
 		_data.lineShader = Shader::create("assets/shaders/Renderer2D_Line.glsl");
+	}
+
+	void Renderer2D::initText()
+	{
+		_data.textVertexArray = VertexArray::create();
+
+		_data.textVertexBuffer = VertexBuffer::create(_data.maxVertices * sizeof(TextVertex));
+		_data.textVertexBuffer->setLayout({
+			{ ShaderDataType::Float3, "a_Position"     },
+			{ ShaderDataType::Float4, "a_Color"        },
+			{ ShaderDataType::Float2, "a_TexCoord"     },
+			{ ShaderDataType::Int,    "a_EntityID"     }
+			});
+
+		uint32_t* indices = new uint32_t[_data.maxIndices];
+		uint32_t offset = 0;
+
+		for (uint32_t i = 0; i < _data.maxIndices; i += 6)
+		{
+			indices[i + 0] = offset + 0;
+			indices[i + 1] = offset + 1;
+			indices[i + 2] = offset + 2;
+
+			indices[i + 3] = offset + 2;
+			indices[i + 4] = offset + 3;
+			indices[i + 5] = offset + 0;
+
+			offset += 4;
+		}
+
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::create(indices, _data.maxIndices);
+		_data.textVertexArray->addVertexBuffer(_data.textVertexBuffer);
+		_data.textVertexArray->setIndexBuffer(indexBuffer);
+		_data.textVertexBufferBase = new TextVertex[_data.maxVertices];
+
+		_data.textShader = Shader::create("assets/shaders/Renderer2D_Text.glsl");
 	}
 }

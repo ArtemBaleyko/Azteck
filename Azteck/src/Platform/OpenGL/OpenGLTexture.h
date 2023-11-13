@@ -10,9 +10,11 @@ namespace Azteck
 	{
 	public:
 		OpenGLTexture2D(const std::string& path);
-		OpenGLTexture2D(uint32_t width, uint32_t height);
+		OpenGLTexture2D(const TextureSpecification& specification);
 
 		virtual ~OpenGLTexture2D();
+
+		virtual const TextureSpecification& getSpecification() const override { return _spec; }
 
 		void setData(void* data, uint32_t size) override;
 
@@ -28,6 +30,8 @@ namespace Azteck
 		bool operator==(const Texture& other) const override;
 
 	private:
+		TextureSpecification _spec;
+
 		std::string _path;
 		uint32_t _width;
 		uint32_t _height;

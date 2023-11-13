@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui/misc/cpp/imgui_stdlib.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -128,6 +129,7 @@ namespace Azteck
 			displayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
 			displayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
 			displayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
+			displayAddComponentEntry<TextComponent>("Text Component");
 
 			ImGui::EndPopup();
 		}
@@ -351,6 +353,14 @@ namespace Azteck
 			ImGui::DragFloat("Friction", &component.friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution Threshold", &component.restitutionThreshold, 0.01f, 0.0f);
+		});
+
+		drawComponent<TextComponent>("Text Renderer", entity, [](auto& component)
+		{
+			ImGui::InputTextMultiline("Text String", &component.textString);
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+			ImGui::DragFloat("Kerning", &component.kerning, 0.025f);
+			ImGui::DragFloat("Line Spacing", &component.lineSpacing, 0.025f);
 		});
 	}
 

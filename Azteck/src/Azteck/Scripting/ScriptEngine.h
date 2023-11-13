@@ -13,6 +13,7 @@ extern "C" {
 	typedef struct _MonoAssembly MonoAssembly;
 	typedef struct _MonoImage MonoImage;
 	typedef struct _MonoClassField MonoClassField;
+	typedef struct _MonoString MonoString;
 }
 
 namespace Azteck 
@@ -170,6 +171,8 @@ namespace Azteck
 		static Ref<ScriptInstance> getEntityScriptInstance(UUID entityID);
 
 		static MonoObject* getManagedInstance(UUID uuid);
+
+		static MonoString* createString(const char* string);
 
 	private:
 		static void initMono();

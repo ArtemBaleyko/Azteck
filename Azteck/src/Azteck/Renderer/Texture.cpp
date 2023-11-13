@@ -30,7 +30,7 @@ namespace Azteck
 		}
 	}
 
-	Ref<Azteck::Texture2D> Texture2D::create(uint32_t width, uint32_t height)
+	Ref<Azteck::Texture2D> Texture2D::create(const TextureSpecification& specification)
 	{
 		switch (Renderer::getAPI())
 		{
@@ -42,7 +42,7 @@ namespace Azteck
 
 		case RendererAPI::API::OpenGL:
 		{
-			return createRef<OpenGLTexture2D>(width, height);
+			return createRef<OpenGLTexture2D>(specification);
 		}
 
 		default:

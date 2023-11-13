@@ -23,3 +23,6 @@
 [submodule "Azteck/vendor/Box2d"]
 	path = Azteck/vendor/Box2d
 	url = ../../ArtemBaleyko/box2d.git
+[submodule "Azteck/vendor/msdf-atlas-gen"]
+	path = Azteck/vendor/msdf-atlas-gen
+	url = ../../ArtemBaleyko/msdf-atlas-gen.git

@@ -43,7 +43,9 @@ project "Azteck"
 		"%{IncludeDir.VulkanSDK}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
-		"%{IncludeDir.filewatch}"
+		"%{IncludeDir.filewatch}",
+		"%{IncludeDir.msdfgen}",
+		"%{IncludeDir.msdf_atlas_gen}",
 	}
 
 	links
@@ -54,6 +56,7 @@ project "Azteck"
 		"yaml-cpp",
 		"opengl32.lib",
 		"Box2D",
+		"msdf-atlas-gen",
 
 		"%{Library.mono}",
 	}

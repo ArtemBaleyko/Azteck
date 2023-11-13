@@ -462,6 +462,11 @@ namespace Azteck
 		return _data->entityInstances.at(uuid)->getManagedObject();
 	}
 
+	MonoString* ScriptEngine::createString(const char* string)
+	{
+		return mono_string_new(_data->appDomain, string);
+	}
+
 	MonoObject* ScriptEngine::instantiateClass(MonoClass* monoClass)
 	{
 		MonoObject* instance = mono_object_new(_data->appDomain, monoClass);

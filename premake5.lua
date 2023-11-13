@@ -31,6 +31,7 @@ group "Dependencies"
 	include "Azteck/vendor/imgui"
 	include "Azteck/vendor/yaml-cpp"
 	include "Azteck/vendor/Box2D"
+	include "Azteck/vendor/msdf-atlas-gen"
 group ""
 
 group "Core"

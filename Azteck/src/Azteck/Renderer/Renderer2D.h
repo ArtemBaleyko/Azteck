@@ -5,11 +5,20 @@
 #include "Camera.h"
 #include "EditorCamera.h"
 #include "Azteck/Scene/Components.h"
+#include "Font.h"
 
 namespace Azteck
 {
 	class Renderer2D
 	{
+	public:
+		struct TextParams
+		{
+			glm::vec4 color{ 1.0f };
+			float kerning = 0.0f;
+			float lineSpacing = 0.0f;
+		};
+
 	public:
 		static void init();
 		static void shutdown();
@@ -45,6 +54,9 @@ namespace Azteck
 
 		static void drawSprite(const glm::mat4& transform, const SpriteRendererComponent& src, int entityID = -1);
 
+		static void drawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID = -1);
+		static void drawString(const std::string& string, const glm::mat4& transform, const TextComponent& component, int entityID = -1);
+
 		static float getLineWidth();
 		static void setLineWidth(float width);
 
@@ -65,6 +77,7 @@ namespace Azteck
 		static void initQuads();
 		static void initCircles();
 		static void initLines();
+		static void initText();
 
 		static void drawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, float tilingFactor, int entityID = -1);
 
